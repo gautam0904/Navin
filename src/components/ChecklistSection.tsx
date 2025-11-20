@@ -69,21 +69,30 @@ export const ChecklistSection: React.FC<ChecklistSectionProps> = ({
   const isEditingSection = editingSection === section.id;
 
   return (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-all duration-200 mb-4">
+    <div
+      className="rounded-xl bg-bg-secondary dark:bg-bg-secondary transition-all duration-200 group/section shadow-sm hover:shadow-md mb-4 cursor-pointer"
+      style={{
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06)'
+      }}
+      onClick={onToggle}
+    >
       {/* Section Header */}
-      <div className="px-6 py-5 bg-gradient-to-r from-gray-50 to-white border-b border-gray-300">
-        <div className="flex items-center justify-between gap-4">
-          <button
-            onClick={onToggle}
-            className="flex-1 flex items-center gap-3 text-left group"
-          >
-            <div className="p-2 bg-white rounded-xl shadow-sm border border-gray-300 group-hover:shadow-md transition-all">
-              {isExpanded ? (
-                <ChevronDown className="text-blue-600" size={20} />
-              ) : (
-                <ChevronRight className="text-gray-500 group-hover:text-blue-600 transition-colors" size={20} />
-              )}
-            </div>
+      <div
+        className="w-full px-6 py-5 bg-bg-surface-2/50 dark:bg-bg-surface-2/40 hover:bg-bg-surface-2 dark:hover:bg-bg-surface-2/80 transition-all duration-150 rounded-t-xl flex items-center justify-between gap-4"
+        style={{ minHeight: '64px' }}
+      >
+        <div className="flex items-center gap-4 flex-1 text-left">
+          {/* Fixed-size icon container for alignment - always visible */}
+          <div className="w-10 h-10 flex-shrink-0 bg-primary dark:bg-primary text-white dark:text-white rounded-lg shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-150 flex items-center justify-center">
+            {isExpanded ? (
+              <ChevronDown className="text-white dark:text-white transition-transform duration-150" size={20} />
+            ) : (
+              <ChevronRight className="text-white dark:text-white transition-transform duration-150" size={20} />
+            )}
+          </div>
+
+          {/* Section Title */}
+          <div className="flex-1 min-w-0">
             {isEditingSection ? (
               <input
                 type="text"
@@ -93,60 +102,76 @@ export const ChecklistSection: React.FC<ChecklistSectionProps> = ({
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === 'Escape') onEditingSectionBlur();
                 }}
-                className="text-xl font-bold text-gray-900 border-b-2 border-blue-500 focus:outline-none bg-white flex-1 px-2"
+                className="text-xl font-semibold text-text-primary dark:text-text-primary border-b-2 border-primary dark:border-primary focus:outline-none bg-transparent w-full px-2 py-1"
                 autoFocus
                 onClick={(e) => e.stopPropagation()}
               />
             ) : (
-              <h2 className="text-xl font-bold text-gray-800 flex-1">{section.title}</h2>
+              <h2 className="text-xl font-semibold text-text-primary dark:text-text-primary tracking-tight">
+                {section.title}
+              </h2>
             )}
-          </button>
-          <div className="flex items-center gap-3">
-            {isAdminMode && (
-              <div className="flex gap-2">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSectionEdit();
-                  }}
-                  className="p-2 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-200"
-                >
-                  <Edit2 size={18} className="text-blue-600" />
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSectionDelete();
-                  }}
-                  className="p-2 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200"
-                >
-                  <Trash2 size={18} className="text-red-600" />
-                </button>
-              </div>
-            )}
-            <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-300">
-              <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-green-500 to-emerald-500 transition-all duration-500 rounded-full"
-                  style={{ width: `${sectionPercent}%` }}
-                />
-              </div>
-              <span className="text-sm font-bold text-gray-800 min-w-[60px]">
-                {sectionCompleted}/{sectionTotal}
-              </span>
-              {sectionCompleted === sectionTotal && sectionTotal > 0 && (
-                <div className="p-1 bg-green-50 rounded-lg border border-green-200">
-                  <Check className="text-green-600" size={18} />
-                </div>
-              )}
+            {/* Progress bar under title */}
+            <div className="mt-2 progress-container" style={{ height: '6px', maxWidth: '300px' }}>
+              <div
+                className="progress-fill"
+                style={{ width: `${sectionPercent}%` }}
+              />
             </div>
+          </div>
+        </div>
+
+        {/* Right side: Admin controls + Progress counter */}
+        <div className="flex items-center gap-3 flex-shrink-0">
+          {isAdminMode && (
+            <div
+              className="flex gap-1.5 p-1.5 bg-bg-secondary dark:bg-bg-secondary rounded-lg shadow-sm"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSectionEdit();
+                }}
+                className="p-2 hover:bg-primary/10 dark:hover:bg-primary/25 rounded-md transition-all duration-150 hover:scale-105 active:scale-95"
+                title="Edit Section"
+              >
+                <Edit2 size={16} className="text-primary dark:text-primary" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSectionDelete();
+                }}
+                className="p-2 hover:bg-red-50 dark:hover:bg-red-900/40 rounded-md transition-all duration-150 hover:scale-105 active:scale-95"
+                title="Delete Section"
+              >
+                <Trash2 size={16} className="text-red-600 dark:text-red-400" />
+              </button>
+            </div>
+          )}
+          {/* Fixed-width pill-style progress counter */}
+          <div
+            className="px-4 py-2 bg-bg-surface-2 dark:bg-bg-surface-3 rounded-full shadow-sm flex items-center gap-2"
+            style={{ minWidth: '100px', justifyContent: 'flex-end' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <span className="text-sm font-bold text-text-primary dark:text-text-primary">
+              {sectionCompleted}/{sectionTotal}
+            </span>
+            <span className="text-xs font-semibold text-primary dark:text-primary-light">
+              {sectionPercent}%
+            </span>
+            {sectionCompleted === sectionTotal && sectionTotal > 0 && (
+              <Check className="text-primary dark:text-primary-light flex-shrink-0" size={14} strokeWidth={3} />
+            )}
           </div>
         </div>
       </div>
 
       {/* Section Content */}
       {isExpanded && (
-        <div className="p-6 space-y-5">
+        <div className="px-6 py-4 space-y-3 bg-bg-secondary dark:bg-bg-secondary rounded-b-xl">
           {/* Checklist Items */}
           <div className="space-y-2">
             {section.items.map((item) => (
@@ -173,7 +198,7 @@ export const ChecklistSection: React.FC<ChecklistSectionProps> = ({
           {isAdminMode && (
             <button
               onClick={onItemAdd}
-              className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 text-green-700 rounded-xl transition-all font-semibold border-2 border-green-200"
+              className="button-primary flex items-center gap-2"
             >
               <Plus size={18} />
               Add Item

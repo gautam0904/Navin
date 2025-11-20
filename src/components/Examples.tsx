@@ -33,7 +33,7 @@ export const Examples: React.FC<ExamplesProps> = ({
       <div className="pt-4 border-t-2 border-gray-200">
         <button
           onClick={onToggle}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl transition-all font-semibold border border-blue-200 mb-5"
+          className="flex items-center gap-2 px-4 py-2 bg-primary/10 dark:bg-primary/15 hover:bg-primary/20 dark:hover:bg-primary/25 text-primary dark:text-primary rounded-lg transition-all font-medium border border-primary/30 dark:border-primary/30 shadow-sm hover:shadow-md mb-5"
         >
           {isExpanded ? 'Hide' : 'Show'} Examples
           <ChevronDown
@@ -64,10 +64,11 @@ export const Examples: React.FC<ExamplesProps> = ({
   if (!hasTextExamples && !hasCodeExamples && !hasLegacyCode) return null;
 
   return (
-    <div className="pt-4 border-t-2 border-gray-200">
+    <div className="pt-4 border-t-2 border-border-medium dark:border-border-light">
       <button
         onClick={onToggle}
-        className="flex items-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl transition-all font-semibold border border-blue-200"
+        className="flex items-center gap-2 px-4 py-2 bg-primary/10 dark:bg-primary/15 hover:bg-primary/20 dark:hover:bg-primary/25 text-primary dark:text-primary rounded-lg transition-all font-medium border border-primary/30 dark:border-primary/30 shadow-sm hover:shadow-md"
+        style={{ height: 'var(--button-height)' }}
       >
         {isExpanded ? 'Hide' : 'Show'} Examples
         <ChevronDown
@@ -80,31 +81,31 @@ export const Examples: React.FC<ExamplesProps> = ({
         <div className="mt-5 space-y-5 animate-fade-in">
           {section.examples && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-300 rounded-2xl p-5 shadow-lg">
+              <div className="bg-primary/10 dark:bg-primary/15 border border-primary/30 dark:border-primary/30 rounded-lg p-5 shadow-md">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-green-100 rounded-xl border border-green-200">
-                    <Check size={20} className="text-green-600" />
+                  <div className="p-2 bg-primary/20 dark:bg-primary/30 rounded-lg border border-primary/30 dark:border-primary/30">
+                    <Check size={20} className="text-primary dark:text-primary" />
                   </div>
-                  <h4 className="font-bold text-green-800 text-lg">Good Examples</h4>
+                  <h4 className="font-bold text-primary dark:text-primary text-lg">Good Examples</h4>
                 </div>
                 <ul className="space-y-2">
                   {section.examples.good.map((ex, i) => (
-                    <li key={i} className="font-mono text-sm text-green-700 bg-white/60 px-3 py-2 rounded-lg border border-green-200">
+                    <li key={i} className="font-mono text-sm text-text-secondary dark:text-text-secondary bg-bg-surface-2 dark:bg-bg-surface-2 px-3 py-2 rounded-md border border-border-medium dark:border-border-medium shadow-sm">
                       {ex}
                     </li>
                   ))}
                 </ul>
               </div>
-              <div className="bg-gradient-to-br from-red-50 to-pink-50 border-2 border-red-300 rounded-2xl p-5 shadow-lg">
+              <div className="bg-red-50 dark:bg-red-900/30 border-2 border-red-200 dark:border-red-800 rounded-2xl p-5 shadow-lg">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-red-100 rounded-xl border border-red-200">
-                    <X size={20} className="text-red-600" />
+                  <div className="p-2 bg-red-100 dark:bg-red-900/50 rounded-lg border border-red-200 dark:border-red-800">
+                    <X size={20} className="text-red-600 dark:text-red-400" />
                   </div>
-                  <h4 className="font-bold text-red-800 text-lg">Bad Examples</h4>
+                  <h4 className="font-bold text-red-600 dark:text-red-400 text-lg">Bad Examples</h4>
                 </div>
                 <ul className="space-y-2">
                   {section.examples.bad.map((ex, i) => (
-                    <li key={i} className="font-mono text-sm text-red-700 bg-white/60 px-3 py-2 rounded-lg border border-red-200">
+                    <li key={i} className="font-mono text-sm text-red-600 dark:text-red-400 bg-bg-secondary/60 dark:bg-bg-secondary/60 px-3 py-2 rounded-lg border border-red-200 dark:border-red-800">
                       {ex}
                     </li>
                   ))}
@@ -114,19 +115,19 @@ export const Examples: React.FC<ExamplesProps> = ({
           )}
 
           {section.codeExamples && section.codeExamples.good.length > 0 && (
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-2xl p-5 shadow-lg">
+            <div className="bg-primary/10 dark:bg-primary/15 border border-primary/30 dark:border-primary/30 rounded-lg p-5 shadow-md">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-blue-100 rounded-xl border border-blue-200 relative">
-                  <Code2 size={20} className="text-blue-600" />
-                  <Check size={14} className="text-green-600 absolute -top-1 -right-1 bg-white rounded-full p-0.5" />
+                <div className="p-2 bg-primary/20 dark:bg-primary/30 rounded-xl border border-primary/30 dark:border-primary/40 relative">
+                  <Code2 size={20} className="text-primary dark:text-primary" />
+                  <Check size={14} className="text-primary dark:text-primary absolute -top-1 -right-1 bg-bg-secondary dark:bg-bg-secondary rounded-full p-0.5" />
                 </div>
-                <h4 className="font-bold text-blue-800 text-lg">Good Code Examples</h4>
+                <h4 className="font-bold text-primary dark:text-primary text-lg">Good Code Examples</h4>
               </div>
               <div className="space-y-3">
                 {section.codeExamples.good.map((codeEx, i) => (
-                  <div key={i} className="bg-white rounded-lg p-3 border border-blue-200">
+                  <div key={i} className="bg-bg-secondary dark:bg-bg-secondary rounded-lg p-3 border border-primary/30 dark:border-primary/40">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-semibold">
+                      <span className="px-2 py-1 bg-primary/20 dark:bg-primary/30 text-primary dark:text-primary rounded text-xs font-semibold">
                         {codeEx.language.toUpperCase()}
                       </span>
                     </div>
@@ -144,19 +145,19 @@ export const Examples: React.FC<ExamplesProps> = ({
           )}
 
           {section.codeExamples && section.codeExamples.bad.length > 0 && (
-            <div className="bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-300 rounded-2xl p-5 shadow-lg">
+            <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-5 shadow-md">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-orange-100 rounded-xl border border-orange-200 relative">
-                  <Code2 size={20} className="text-orange-600" />
-                  <X size={14} className="text-red-600 absolute -top-1 -right-1 bg-white rounded-full p-0.5" />
+                <div className="p-2 bg-red-100 dark:bg-red-900/50 rounded-xl border border-red-200 dark:border-red-800 relative">
+                  <Code2 size={20} className="text-red-600 dark:text-red-400" />
+                  <X size={14} className="text-red-600 dark:text-red-400 absolute -top-1 -right-1 bg-bg-secondary dark:bg-bg-secondary rounded-full p-0.5" />
                 </div>
-                <h4 className="font-bold text-orange-800 text-lg">Bad Code Examples</h4>
+                <h4 className="font-bold text-red-600 dark:text-red-400 text-lg">Bad Code Examples</h4>
               </div>
               <div className="space-y-3">
                 {section.codeExamples.bad.map((codeEx, i) => (
-                  <div key={i} className="bg-white rounded-lg p-3 border border-orange-200">
+                  <div key={i} className="bg-bg-secondary dark:bg-bg-secondary rounded-lg p-3 border border-red-200 dark:border-red-800">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded text-xs font-semibold">
+                      <span className="px-2 py-1 bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 rounded text-xs font-semibold">
                         {codeEx.language.toUpperCase()}
                       </span>
                     </div>
@@ -175,8 +176,8 @@ export const Examples: React.FC<ExamplesProps> = ({
 
           {/* Legacy Single Code Example */}
           {section.codeExample && (
-            <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 overflow-x-auto shadow-2xl border-2 border-gray-700">
-              <pre className="text-sm font-mono text-gray-100 leading-relaxed">
+            <div className="bg-bg-secondary dark:bg-bg-secondary rounded-lg p-6 overflow-x-auto shadow-md border border-border-medium dark:border-border-medium">
+              <pre className="text-sm font-mono text-wild-sand dark:text-loblolly leading-relaxed">
                 {section.codeExample}
               </pre>
             </div>

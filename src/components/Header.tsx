@@ -1,5 +1,5 @@
 import React from 'react';
-import { Download, RotateCcw, Settings, Save, Copy, XCircle, Plus, FolderOpen } from 'lucide-react';
+import { Download, RotateCcw, Settings, Save, Copy, XCircle, Plus, FolderOpen, ClipboardList, AlertTriangle } from 'lucide-react';
 import { ProgressBar } from './ProgressBar';
 import { useProject } from '../contexts/ProjectContext';
 
@@ -35,110 +35,114 @@ export const Header: React.FC<HeaderProps> = ({
   const { currentProject } = useProject();
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border border-gray-200">
-      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-6">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="inline-flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full border border-blue-200">
-              <span className="text-2xl">🧩</span>
-              <span className="text-sm font-semibold text-blue-700">PRE-COMMIT CHECKLIST</span>
+    <div
+      className="mb-8 rounded-xl bg-bg-secondary dark:bg-bg-secondary shadow-sm"
+      style={{ padding: 'var(--space-xl)' }}
+    >
+      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+        {/* Left Block: Title, Subtitle, Progress */}
+        <div className="flex-1" style={{ paddingLeft: 0 }}>
+          <div className="flex items-center gap-3 mb-3">
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-gradient-to-r from-primary to-primary-dark dark:from-primary dark:to-primary-dark text-text-inverse dark:text-text-inverse rounded-lg shadow-sm">
+              <ClipboardList className="w-5 h-5" />
+              <span className="text-sm font-bold text-text-inverse dark:text-text-inverse tracking-wide">PRE-COMMIT CHECKLIST</span>
             </div>
             {currentProject && (
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full border border-indigo-200">
-                <FolderOpen className="w-4 h-4 text-indigo-600" />
-                <span className="text-xs font-semibold text-indigo-700">{currentProject.name}</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/10 dark:bg-primary/15 rounded-lg shadow-sm">
+                <FolderOpen className="w-4 h-4 text-primary dark:text-primary" />
+                <span className="text-sm font-semibold text-primary dark:text-primary">{currentProject.name}</span>
               </div>
             )}
           </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3">
+          <h1 className="text-3xl font-bold text-text-primary dark:text-text-primary mb-3 tracking-tight leading-tight">
             {currentProject ? `${currentProject.name} Checklist` : 'Frontend Implementation Checklist'}
           </h1>
-          <p className="text-gray-700 text-lg font-medium">
-            {currentProject 
+          <p className="text-base text-text-secondary dark:text-text-secondary leading-relaxed max-w-2xl mb-1">
+            {currentProject
               ? `Project-specific criteria for ${currentProject.name}. Each project has its own checklist.`
               : 'Follow every item before committing your code'
             }
           </p>
-          {currentProject && (
-            <p className="text-sm text-gray-500 mt-2">
-              💡 Switch projects to see different criteria. Each project maintains separate checklist sections and progress.
-            </p>
-          )}
         </div>
-        <div className="flex flex-wrap gap-3">
+
+        {/* Right Block: Admin, Reset, Export */}
+        <div className="flex flex-wrap gap-2 items-start">
           {isAdminMode ? (
             <>
               <button
                 onClick={onSave}
-                className={`flex items-center gap-2 px-5 py-3 rounded-xl transition-all font-semibold shadow-lg border ${
-                  hasUnsavedChanges
-                    ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white shadow-green-200 animate-pulse border-green-300'
-                    : 'bg-gray-100 text-gray-700 border-gray-300'
-                }`}
+                disabled={!hasUnsavedChanges}
+                className={`h-10 px-4 rounded-lg bg-bg-surface-2 dark:bg-bg-surface-2 hover:bg-bg-surface-3 dark:hover:bg-bg-surface-3 text-text-secondary dark:text-text-secondary font-medium text-sm transition-all duration-150 flex items-center gap-2 shadow-sm hover:shadow-md ${!hasUnsavedChanges ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                <Save size={20} />
-                {hasUnsavedChanges ? 'Ready to Save' : 'No Changes'}
+                <Save size={16} />
+                {hasUnsavedChanges ? 'Save' : 'No Changes'}
               </button>
               <button
                 onClick={onCopyCode}
-                className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white rounded-xl transition-all font-semibold shadow-lg shadow-indigo-200 border border-indigo-300"
+                className="h-10 px-4 rounded-lg bg-primary dark:bg-primary hover:bg-primary-dark dark:hover:bg-primary-dark text-white dark:text-white font-medium text-sm transition-all duration-150 flex items-center gap-2 shadow-sm hover:shadow-md"
               >
-                <Copy size={20} />
+                <Copy size={16} />
                 Copy Code
               </button>
               <button
                 onClick={onExitAdmin}
-                className="flex items-center gap-2 px-5 py-3 bg-red-50 hover:bg-red-100 rounded-xl transition-colors text-red-600 font-semibold border border-red-200"
+                className="h-10 px-4 rounded-lg bg-bg-surface-2 dark:bg-bg-surface-2 hover:bg-red-50 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 font-medium text-sm transition-all duration-150 flex items-center gap-2 shadow-sm hover:shadow-md"
               >
-                <XCircle size={20} />
+                <XCircle size={16} />
                 Exit
               </button>
             </>
           ) : (
-            <button
-              onClick={onAdminClick}
-              className="flex items-center gap-2 px-5 py-3 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors text-blue-600 font-semibold border border-blue-200"
-            >
-              <Settings size={20} />
-              Admin
-            </button>
+            <>
+              <button
+                onClick={onAdminClick}
+                className="h-10 px-4 rounded-lg bg-bg-surface-2 dark:bg-bg-surface-2 hover:bg-bg-surface-3 dark:hover:bg-bg-surface-3 text-primary dark:text-primary font-medium text-sm transition-all duration-150 flex items-center gap-2 shadow-sm hover:shadow-md"
+              >
+                <Settings size={16} />
+                Admin
+              </button>
+              <button
+                onClick={onReset}
+                className="h-10 px-4 rounded-lg bg-bg-surface-2 dark:bg-bg-surface-2 hover:bg-bg-surface-3 dark:hover:bg-bg-surface-3 text-text-secondary dark:text-text-secondary font-medium text-sm transition-all duration-150 flex items-center gap-2 shadow-sm hover:shadow-md"
+              >
+                <RotateCcw size={16} />
+                Reset
+              </button>
+              <button
+                onClick={onExport}
+                className="h-10 px-4 rounded-lg bg-primary dark:bg-primary hover:bg-primary-dark dark:hover:bg-primary-dark text-white dark:text-white font-medium text-sm transition-all duration-150 flex items-center gap-2 shadow-sm hover:shadow-md"
+              >
+                <Download size={16} />
+                Export
+              </button>
+            </>
           )}
-          <button
-            onClick={onReset}
-            className="flex items-center gap-2 px-5 py-3 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors text-gray-700 font-semibold border border-gray-300"
-          >
-            <RotateCcw size={20} />
-            Reset
-          </button>
-          <button
-            onClick={onExport}
-            className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-xl transition-all font-semibold shadow-lg shadow-blue-200 border border-blue-300"
-          >
-            <Download size={20} />
-            Export
-          </button>
         </div>
       </div>
 
-      <ProgressBar
-        progressPercent={progressPercent}
-        completedItems={completedItems}
-        totalItems={totalItems}
-      />
+      {/* Progress Bar - Aligned with left margin */}
+      <div className="mt-6 pt-6 border-t border-border-light dark:border-border-medium">
+        <ProgressBar
+          progressPercent={progressPercent}
+          completedItems={completedItems}
+          totalItems={totalItems}
+        />
+      </div>
 
       {isAdminMode && (
-        <div className="mt-6 pt-6 border-t-2 border-gray-200">
+        <div className="mt-6 pt-6 border-t border-border-light dark:border-border-medium">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <button
               onClick={onAddSection}
-              className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-xl transition-all font-semibold shadow-lg shadow-green-200 border border-green-300"
+              className="h-10 px-4 rounded-lg bg-primary dark:bg-primary hover:bg-primary-dark dark:hover:bg-primary-dark text-white dark:text-white font-medium text-sm transition-all duration-150 flex items-center gap-2 shadow-sm hover:shadow-md"
             >
-              <Plus size={20} />
+              <Plus size={16} />
               Add New Section
             </button>
             {hasUnsavedChanges && (
-              <div className="flex items-center gap-2 px-4 py-2 bg-yellow-50 border-2 border-yellow-200 rounded-xl">
-                <span className="text-yellow-700 font-semibold">⚠️ Click "Copy Code" to save permanently</span>
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg text-sm shadow-sm">
+                <AlertTriangle className="w-4 h-4 text-yellow-700 dark:text-yellow-400 flex-shrink-0" />
+                <span className="text-yellow-700 dark:text-yellow-400 font-medium">Click "Copy Code" to save permanently</span>
               </div>
             )}
           </div>

@@ -47,7 +47,7 @@ export const SettingsPage = () => {
     try {
       setIsImporting(true);
       const importData = await ExportService.importFromJSON();
-      
+
       if (!importData) {
         return; // User cancelled
       }
@@ -77,7 +77,7 @@ export const SettingsPage = () => {
     try {
       setIsImporting(true);
       const importData = await ExportService.importFromClipboard();
-      
+
       if (!importData) {
         return;
       }
@@ -102,21 +102,21 @@ export const SettingsPage = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex items-center gap-3">
-        <Settings className="w-6 h-6 text-indigo-600" />
-        <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
+        <Settings className="w-6 h-6 text-primary dark:text-accent" />
+        <h1 className="text-3xl font-bold text-text-primary dark:text-text-primary">Settings</h1>
       </div>
 
-      <div className="bg-white rounded-lg shadow-md p-6 space-y-6">
+      <div className="bg-bg-secondary dark:bg-bg-secondary rounded-xl shadow-sm p-6 space-y-6 border border-border-light dark:border-border-medium transition-colors">
         <section>
           <div className="flex items-center gap-2 mb-4">
-            <Database className="w-5 h-5 text-gray-600" />
-            <h2 className="text-xl font-semibold text-gray-800">Database</h2>
+            <Database className="w-5 h-5 text-text-secondary dark:text-text-secondary" />
+            <h2 className="text-xl font-semibold text-text-primary dark:text-text-primary">Database</h2>
           </div>
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-bg-surface-2 dark:bg-bg-surface-2 rounded-lg border border-border-light dark:border-border-medium shadow-sm">
               <div>
-                <p className="font-medium text-gray-900">Database Location</p>
-                <p className="text-sm text-gray-600">Stored locally in app data directory</p>
+                <p className="font-semibold text-text-primary dark:text-text-primary mb-1">Database Location</p>
+                <p className="text-sm text-text-secondary dark:text-text-secondary">Stored locally in app data directory</p>
               </div>
             </div>
           </div>
@@ -124,18 +124,18 @@ export const SettingsPage = () => {
 
         <section>
           <div className="flex items-center gap-2 mb-4">
-            <RefreshCw className="w-5 h-5 text-gray-600" />
-            <h2 className="text-xl font-semibold text-gray-800">Data Management</h2>
+            <RefreshCw className="w-5 h-5 text-text-secondary dark:text-text-secondary" />
+            <h2 className="text-xl font-semibold text-text-primary dark:text-text-primary">Data Management</h2>
           </div>
           <div className="space-y-3">
             <button
               onClick={handleResetProgress}
-              className="w-full flex items-center gap-3 p-4 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg transition-colors"
+              className="w-full flex items-center gap-3 p-4 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 rounded-lg transition-all duration-150 border border-red-200 dark:border-red-800 shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-[0.99]"
             >
-              <Trash2 className="w-5 h-5" />
-              <span className="font-medium">Reset All Progress</span>
+              <Trash2 className="w-5 h-5 shrink-0" />
+              <span className="font-semibold">Reset All Progress</span>
             </button>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-text-secondary dark:text-text-secondary">
               This will clear all checked items but keep your checklist structure intact.
             </p>
           </div>
@@ -143,35 +143,35 @@ export const SettingsPage = () => {
 
         <section>
           <div className="flex items-center gap-2 mb-4">
-            <Share2 className="w-5 h-5 text-gray-600" />
-            <h2 className="text-xl font-semibold text-gray-800">Data Portability</h2>
+            <Share2 className="w-5 h-5 text-text-secondary dark:text-text-secondary" />
+            <h2 className="text-xl font-semibold text-text-primary dark:text-text-primary">Data Portability</h2>
           </div>
           <div className="space-y-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <button
                 onClick={handleExport}
                 disabled={isExporting}
-                className="flex items-center gap-3 p-4 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-3 p-4 bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 text-primary dark:text-accent rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed border border-primary/30 dark:border-primary/40 shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-[0.99]"
               >
-                <Download className="w-5 h-5" />
-                <span className="font-medium">{isExporting ? 'Exporting...' : 'Export to JSON'}</span>
+                <Download className="w-5 h-5 shrink-0" />
+                <span className="font-semibold">{isExporting ? 'Exporting...' : 'Export to JSON'}</span>
               </button>
               <button
                 onClick={handleImport}
                 disabled={isImporting}
-                className="flex items-center gap-3 p-4 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-3 p-4 bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/50 text-green-600 dark:text-green-400 rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed border border-green-200 dark:border-green-800 shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-[0.99]"
               >
-                <Upload className="w-5 h-5" />
-                <span className="font-medium">{isImporting ? 'Importing...' : 'Import from JSON'}</span>
+                <Upload className="w-5 h-5 shrink-0" />
+                <span className="font-semibold">{isImporting ? 'Importing...' : 'Import from JSON'}</span>
               </button>
             </div>
             <button
               onClick={handleImportFromClipboard}
               disabled={isImporting}
-              className="w-full flex items-center gap-3 p-4 bg-teal-50 hover:bg-teal-100 text-teal-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-teal-200"
+              className="w-full flex items-center gap-3 p-4 bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/50 text-green-600 dark:text-green-400 rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed border border-green-200 dark:border-green-800 shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-[0.99]"
             >
-              <Clipboard className="w-5 h-5" />
-              <span className="font-medium">{isImporting ? 'Importing...' : 'Import from Clipboard'}</span>
+              <Clipboard className="w-5 h-5 shrink-0" />
+              <span className="font-semibold">{isImporting ? 'Importing...' : 'Import from Clipboard'}</span>
             </button>
             <button
               onClick={() => {
@@ -181,12 +181,12 @@ export const SettingsPage = () => {
                   alert('Share feature is loading...');
                 }
               }}
-              className="w-full flex items-center justify-center gap-3 p-4 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg transition-colors border border-purple-200"
+              className="w-full flex items-center justify-center gap-3 p-4 bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 text-primary dark:text-accent rounded-lg transition-all duration-150 border border-primary/30 dark:border-primary/40 shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-[0.99]"
             >
-              <Share2 className="w-5 h-5" />
-              <span className="font-medium">Share via P2P (Offline)</span>
+              <Share2 className="w-5 h-5 shrink-0" />
+              <span className="font-semibold">Share via P2P (Offline)</span>
             </button>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-text-secondary dark:text-text-secondary">
               Export your checklist data and progress to a JSON file that can be shared across devices.
               Import to restore data from a previously exported file. Use P2P sharing for direct device-to-device transfer without internet.
             </p>
@@ -195,19 +195,19 @@ export const SettingsPage = () => {
 
         <section>
           <div className="flex items-center gap-2 mb-4">
-            <FolderOpen className="w-5 h-5 text-gray-600" />
-            <h2 className="text-xl font-semibold text-gray-800">Projects</h2>
+            <FolderOpen className="w-5 h-5 text-text-secondary dark:text-text-secondary" />
+            <h2 className="text-xl font-semibold text-text-primary dark:text-text-primary">Projects</h2>
           </div>
           <div className="space-y-3">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-text-secondary dark:text-text-secondary">
               Manage multiple projects, each with its own checklist criteria.
             </p>
             <Link
               to="/projects"
-              className="w-full flex items-center justify-center gap-2 p-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg transition-colors"
+              className="w-full flex items-center justify-center gap-2 p-3 bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 text-primary dark:text-accent rounded-lg transition-all duration-150 border border-primary/30 dark:border-primary/40 shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-[0.99]"
             >
-              <FolderOpen className="w-5 h-5" />
-              <span className="font-medium">Manage Projects</span>
+              <FolderOpen className="w-5 h-5 shrink-0" />
+              <span className="font-semibold">Manage Projects</span>
             </Link>
           </div>
         </section>
@@ -215,11 +215,11 @@ export const SettingsPage = () => {
         {isAdminMode && (
           <section>
             <div className="flex items-center gap-2 mb-4">
-              <Settings className="w-5 h-5 text-gray-600" />
-              <h2 className="text-xl font-semibold text-gray-800">Admin Mode</h2>
+              <Settings className="w-5 h-5 text-text-secondary dark:text-text-secondary" />
+              <h2 className="text-xl font-semibold text-text-primary dark:text-text-primary">Admin Mode</h2>
             </div>
-            <div className="p-4 bg-indigo-50 rounded-lg">
-              <p className="text-sm text-indigo-800">
+            <div className="p-4 bg-primary/10 dark:bg-primary/20 rounded-lg border border-primary/30 dark:border-primary/40">
+              <p className="text-sm text-primary dark:text-accent">
                 You are currently in admin mode. You can edit checklist items and sections.
               </p>
             </div>

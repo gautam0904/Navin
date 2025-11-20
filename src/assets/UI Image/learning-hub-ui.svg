@@ -1,0 +1,202 @@
+<svg viewBox="0 0 1400 900" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1400" height="900" fill="#0d1117"/>
+  
+  <!-- Header -->
+  <rect x="20" y="20" width="1360" height="70" fill="#161b22" rx="6"/>
+  <text x="40" y="60" fill="#c9d1d9" font-size="24" font-weight="700">📚 Learning Hub - Testing Best Practices</text>
+  
+  <!-- Main Content Area -->
+  <rect x="20" y="110" width="660" height="770" fill="#161b22" rx="6"/>
+  
+  <!-- Checklist Section Header -->
+  <text x="40" y="145" fill="#c9d1d9" font-size="18" font-weight="600">Testing Checklist</text>
+  
+  <!-- Checklist Items -->
+  <g transform="translate(40, 160)">
+    <!-- Item 1 - Active/Selected -->
+    <rect width="620" height="60" fill="#1c2128" stroke="#58a6ff" stroke-width="2" rx="4"/>
+    <circle cx="20" cy="30" r="10" fill="#238636"/>
+    <path d="M16 30 L19 33 L24 26" stroke="white" stroke-width="2" fill="none"/>
+    <text x="45" y="25" fill="#58a6ff" font-size="14" font-weight="600">test-2: Followed "AAA pattern" (Arrange, Act, Assert)</text>
+    <text x="45" y="45" fill="#8b949e" font-size="12">Structure tests with clear setup, execution, and verification phases</text>
+    
+    <!-- Item 2 -->
+    <rect y="70" width="620" height="60" fill="#1c2128" rx="4"/>
+    <circle cx="20" cy="100" r="10" fill="#238636"/>
+    <path d="M16 100 L19 103 L24 96" stroke="white" stroke-width="2" fill="none"/>
+    <text x="45" y="95" fill="#c9d1d9" font-size="14" font-weight="600">test-1: Wrote unit tests for critical business logic</text>
+    <text x="45" y="115" fill="#8b949e" font-size="12">Cover edge cases and error scenarios</text>
+    
+    <!-- Item 3 -->
+    <rect y="140" width="620" height="60" fill="#1c2128" rx="4"/>
+    <circle cx="20" cy="170" r="10" fill="none" stroke="#484f58" stroke-width="2"/>
+    <text x="45" y="165" fill="#c9d1d9" font-size="14" font-weight="600">test-3: Covered edge cases and error scenarios</text>
+    <text x="45" y="185" fill="#8b949e" font-size="12">Test null values, empty arrays, and error conditions</text>
+    
+    <!-- Item 4 -->
+    <rect y="210" width="620" height="60" fill="#1c2128" rx="4"/>
+    <circle cx="20" cy="240" r="10" fill="none" stroke="#484f58" stroke-width="2"/>
+    <text x="45" y="235" fill="#c9d1d9" font-size="14" font-weight="600">test-4: Mocked external dependencies properly</text>
+    <text x="45" y="255" fill="#8b949e" font-size="12">Use proper mocking for APIs, services, and third-party libraries</text>
+  </g>
+  
+  <!-- Description Section -->
+  <rect x="40" y="460" width="620" height="180" fill="#1c2128" rx="4"/>
+  <text x="60" y="490" fill="#58a6ff" font-size="16" font-weight="600">Why AAA Pattern Matters</text>
+  <text x="60" y="520" fill="#c9d1d9" font-size="13">The AAA (Arrange-Act-Assert) pattern makes tests more readable and maintainable by clearly</text>
+  <text x="60" y="540" fill="#c9d1d9" font-size="13">separating test setup, execution, and verification. This structure helps other developers</text>
+  <text x="60" y="560" fill="#c9d1d9" font-size="13">understand what's being tested and makes debugging failures easier.</text>
+  
+  <text x="60" y="595" fill="#8b949e" font-size="12">💡 Best Practice: Always add comments or blank lines between each phase</text>
+  <text x="60" y="615" fill="#8b949e" font-size="12">🎯 Goal: Each test should tell a clear story of setup → action → expectation</text>
+  
+  <!-- Resources -->
+  <rect x="40" y="660" width="620" height="80" fill="#1c2128" rx="4"/>
+  <text x="60" y="690" fill="#c9d1d9" font-size="14" font-weight="600">📖 Additional Resources</text>
+  <text x="60" y="715" fill="#58a6ff" font-size="12" text-decoration="underline">→ Testing Best Practices Guide</text>
+  <text x="60" y="735" fill="#58a6ff" font-size="12" text-decoration="underline">→ Common Testing Mistakes to Avoid</text>
+  
+  <!-- Code Example Panel -->
+  <rect x="700" y="110" width="680" height="770" fill="#161b22" rx="6"/>
+  
+  <!-- Code Header -->
+  <rect x="700" y="110" width="680" height="45" fill="#1c2128" rx="6"/>
+  <text x="720" y="140" fill="#c9d1d9" font-size="16" font-weight="600">Code Example</text>
+  <rect x="1280" y="125" width="80" height="20" fill="#238636" rx="3"/>
+  <text x="1320" y="140" fill="white" font-size="11" font-weight="600" text-anchor="middle">GOOD ✓</text>
+  
+  <!-- Code Editor -->
+  <rect x="720" y="170" width="640" height="500" fill="#0d1117" rx="4"/>
+  
+  <!-- Line Numbers -->
+  <g fill="#484f58" font-family="monospace" font-size="12">
+    <text x="735" y="195">1</text>
+    <text x="735" y="215">2</text>
+    <text x="735" y="235">3</text>
+    <text x="735" y="255">4</text>
+    <text x="735" y="275">5</text>
+    <text x="735" y="295">6</text>
+    <text x="735" y="315">7</text>
+    <text x="735" y="335">8</text>
+    <text x="735" y="355">9</text>
+    <text x="735" y="375">10</text>
+    <text x="735" y="395">11</text>
+    <text x="735" y="415">12</text>
+    <text x="735" y="435">13</text>
+    <text x="735" y="455">14</text>
+    <text x="735" y="475">15</text>
+    <text x="735" y="495">16</text>
+    <text x="735" y="515">17</text>
+    <text x="735" y="535">18</text>
+    <text x="735" y="555">19</text>
+    <text x="735" y="575">20</text>
+  </g>
+  
+  <!-- Code Content with Highlighting -->
+  <g font-family="monospace" font-size="12">
+    <!-- Arrange Section -->
+    <text x="760" y="195" fill="#7ee787">describe</text>
+    <text x="825" y="195" fill="#c9d1d9">(</text>
+    <text x="835" y="195" fill="#a5d6ff">'UserService'</text>
+    <text x="925" y="195" fill="#c9d1d9">, () => {</text>
+    
+    <text x="770" y="215" fill="#7ee787">test</text>
+    <text x="810" y="215" fill="#c9d1d9">(</text>
+    <text x="820" y="215" fill="#a5d6ff">'should create user successfully'</text>
+    <text x="1060" y="215" fill="#c9d1d9">, () => {</text>
+    
+    <!-- Arrange comment highlighted -->
+    <rect x="775" y="225" width="565" height="18" fill="#58a6ff" opacity="0.15"/>
+    <text x="780" y="235" fill="#8b949e">// Arrange</text>
+    
+    <text x="780" y="255" fill="#ff7b72">const</text>
+    <text x="835" y="255" fill="#c9d1d9">userData = {</text>
+    
+    <text x="790" y="275" fill="#c9d1d9">name:</text>
+    <text x="850" y="275" fill="#a5d6ff">'John Doe'</text>
+    <text x="945" y="275" fill="#c9d1d9">,</text>
+    
+    <text x="790" y="295" fill="#c9d1d9">email:</text>
+    <text x="855" y="295" fill="#a5d6ff">'john@example.com'</text>
+    
+    <text x="780" y="315" fill="#c9d1d9">};</text>
+    
+    <text x="780" y="335" fill="#ff7b72">const</text>
+    <text x="835" y="335" fill="#c9d1d9">mockRepo = </text>
+    <text x="940" y="335" fill="#d2a8ff">jest</text>
+    <text x="980" y="335" fill="#c9d1d9">.fn();</text>
+    
+    <text x="780" y="355" fill="#c9d1d9"> </text>
+    
+    <!-- Act comment highlighted -->
+    <rect x="775" y="365" width="565" height="18" fill="#d29922" opacity="0.15"/>
+    <text x="780" y="375" fill="#8b949e">// Act</text>
+    
+    <text x="780" y="395" fill="#ff7b72">const</text>
+    <text x="835" y="395" fill="#c9d1d9">result = </text>
+    <text x="915" y="395" fill="#ff7b72">await</text>
+    <text x="975" y="395" fill="#c9d1d9">userService.</text>
+    <text x="1100" y="395" fill="#d2a8ff">createUser</text>
+    <text x="1195" y="395" fill="#c9d1d9">(userData);</text>
+    
+    <text x="780" y="415" fill="#c9d1d9"> </text>
+    
+    <!-- Assert comment highlighted -->
+    <rect x="775" y="425" width="565" height="18" fill="#a371f7" opacity="0.15"/>
+    <text x="780" y="435" fill="#8b949e">// Assert</text>
+    
+    <text x="780" y="455" fill="#d2a8ff">expect</text>
+    <text x="835" y="455" fill="#c9d1d9">(result).</text>
+    <text x="920" y="455" fill="#d2a8ff">toBeDefined</text>
+    <text x="1035" y="455" fill="#c9d1d9">();</text>
+    
+    <text x="780" y="475" fill="#d2a8ff">expect</text>
+    <text x="835" y="475" fill="#c9d1d9">(result.name).</text>
+    <text x="965" y="475" fill="#d2a8ff">toBe</text>
+    <text x="1010" y="475" fill="#c9d1d9">(</text>
+    <text x="1020" y="475" fill="#a5d6ff">'John Doe'</text>
+    <text x="1110" y="475" fill="#c9d1d9">);</text>
+    
+    <text x="780" y="495" fill="#d2a8ff">expect</text>
+    <text x="835" y="495" fill="#c9d1d9">(mockRepo).</text>
+    <text x="950" y="495" fill="#d2a8ff">toHaveBeenCalledWith</text>
+    <text x="1145" y="495" fill="#c9d1d9">(userData);</text>
+    
+    <text x="770" y="515" fill="#c9d1d9">});</text>
+    
+    <text x="760" y="535" fill="#c9d1d9">});</text>
+  </g>
+  
+  <!-- Annotations -->
+  <g>
+    <!-- Arrange annotation -->
+    <line x1="750" y1="234" x2="710" y2="234" stroke="#58a6ff" stroke-width="2"/>
+    <circle cx="710" cy="234" r="4" fill="#58a6ff"/>
+    <text x="580" y="238" fill="#58a6ff" font-size="11" font-weight="600" text-anchor="end">Setup test data</text>
+    
+    <!-- Act annotation -->
+    <line x1="750" y1="374" x2="710" y2="374" stroke="#d29922" stroke-width="2"/>
+    <circle cx="710" cy="374" r="4" fill="#d29922"/>
+    <text x="550" y="378" fill="#d29922" font-size="11" font-weight="600" text-anchor="end">Execute the function</text>
+    
+    <!-- Assert annotation -->
+    <line x1="750" y1="434" x2="710" y2="434" stroke="#a371f7" stroke-width="2"/>
+    <circle cx="710" cy="434" r="4" fill="#a371f7"/>
+    <text x="540" y="438" fill="#a371f7" font-size="11" font-weight="600" text-anchor="end">Verify the outcome</text>
+  </g>
+  
+  <!-- Bad Example Toggle -->
+  <rect x="720" y="690" width="640" height="50" fill="#1c2128" rx="4"/>
+  <text x="740" y="720" fill="#c9d1d9" font-size="13">💡 See what NOT to do:</text>
+  <rect x="920" y="704" width="160" height="30" fill="#f85149" rx="4"/>
+  <text x="1000" y="725" fill="white" font-size="13" font-weight="600" text-anchor="middle">View Bad Example ✗</text>
+  
+  <!-- Compare Section -->
+  <rect x="720" y="760" width="640" height="100" fill="#1c2128" rx="4"/>
+  <text x="740" y="790" fill="#c9d1d9" font-size="14" font-weight="600">✨ Key Differences:</text>
+  <text x="740" y="815" fill="#7ee787" font-size="12">✓ Clear separation with comments</text>
+  <text x="740" y="835" fill="#7ee787" font-size="12">✓ Logical grouping of related operations</text>
+  <text x="740" y="855" fill="#7ee787" font-size="12">✓ Easy to understand test flow</text>
+</g>
+</svg>

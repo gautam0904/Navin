@@ -1,4 +1,5 @@
 import { BrowserRouter } from 'react-router-dom';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { AppProvider } from './contexts/AppContext';
 import { ProjectProvider } from './contexts/ProjectContext';
 import { Layout } from './components/Layout';
@@ -8,14 +9,16 @@ import { AppRouter } from './router/AppRouter';
 const App = () => {
   return (
     <BrowserRouter>
-      <ProjectProvider>
-        <AppProvider>
-          <Layout>
-            <Modals />
-            <AppRouter />
-          </Layout>
-        </AppProvider>
-      </ProjectProvider>
+      <ThemeProvider>
+        <ProjectProvider>
+          <AppProvider>
+            <Layout>
+              <Modals />
+              <AppRouter />
+            </Layout>
+          </AppProvider>
+        </ProjectProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 };

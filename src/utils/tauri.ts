@@ -1,36 +1,19 @@
-/**
- * Tauri utilities
- * Helper functions to check Tauri availability and safely invoke commands
- */
-
-/**
- * Check if running in Tauri environment
- * This is a best-effort check - the actual test is trying to invoke
- */
 export const isTauri = (): boolean => {
   if (typeof window === 'undefined') {
     return false;
   }
 
-  // Check for Tauri v2 __TAURI__ object
-  // Note: This might not be available immediately, so we'll also try to invoke anyway
   return '__TAURI__' in window || (typeof globalThis !== 'undefined' && '__TAURI__' in globalThis);
 };
 
-/**
- * Get the invoke function dynamically
- * This handles cases where the import might fail
- */
 const getInvokeFunction = async () => {
   try {
     const tauriApi = await import('@tauri-apps/api/core');
     
-    // Check if the module loaded correctly
     if (!tauriApi) {
       throw new Error('Tauri API module is undefined');
     }
     
-    // Try to get invoke from the module
     const invoke = tauriApi.invoke;
     
     if (!invoke) {
@@ -51,8 +34,6 @@ const getInvokeFunction = async () => {
       name: importError?.name
     });
     
-    // Only show the "not in Tauri" error if we're definitely not in Tauri
-    // Otherwise, it might be a different issue (like module loading)
     const inTauri = isTauri();
     
     if (!inTauri) {
@@ -70,10 +51,6 @@ const getInvokeFunction = async () => {
   }
 };
 
-/**
- * Safely invoke a Tauri command
- * This will work when running in Tauri desktop app
- */
 export const safeInvoke = async <T = any>(
   cmd: string,
   args?: Record<string, any>
@@ -82,14 +59,11 @@ export const safeInvoke = async <T = any>(
     const invoke = await getInvokeFunction();
     return await invoke<T>(cmd, args);
   } catch (error: any) {
-    // If it's already our custom error, re-throw it
     if (error?.message?.includes('Tauri') || error?.message?.includes('invoke')) {
       throw error;
     }
 
-    // Log the actual error for debugging
     console.error(`Failed to invoke Tauri command "${cmd}":`, error);
     throw error;
   }
 };
-
