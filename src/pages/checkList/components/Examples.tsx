@@ -1,6 +1,6 @@
 import React from 'react';
 import { Check, X, ChevronDown, Code2 } from 'lucide-react';
-import { ChecklistSection, CodeExamples } from '../types/checklist';
+import { ChecklistSection, CodeExamples } from '../../../types/checklist';
 import { EditableExamples } from './EditableExamples';
 import { CodeEditor } from './CodeEditor';
 

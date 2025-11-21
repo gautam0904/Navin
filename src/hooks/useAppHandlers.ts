@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useAppContext } from '../contexts/AppContext';
-import { useChecklist } from './useChecklist';
+import { useChecklist } from '../pages/checkList/hooks/useChecklist';
 import { exportProgress } from '../utils/exportProgress';
 
 /**

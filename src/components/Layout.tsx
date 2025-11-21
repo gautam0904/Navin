@@ -1,7 +1,8 @@
-import { ReactNode } from 'react';
-import { Navigation } from './Navigation';
-import { StatusBar } from './StatusBar';
-import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
+import { ReactNode, useState } from "react";
+import ResizableSidebar from "./ResizableSidebar";
+import Sidebar from "./Sidebar";
+import { StatusBar } from "./StatusBar";
+import { useKeyboardShortcuts } from "../hooks/useKeyboardShortcuts";
 
 interface LayoutProps {
   children: ReactNode;
@@ -10,16 +11,26 @@ interface LayoutProps {
 export const Layout = ({ children }: LayoutProps) => {
   useKeyboardShortcuts();
 
+  const [width, setWidth] = useState(260);
+
   return (
-    <div className="h-screen w-full bg-bg-primary dark:bg-bg-primary flex overflow-hidden transition-colors">
-      <Navigation />
+    <div className="h-screen w-full flex bg-bg-primary dark:bg-bg-primary overflow-hidden">
+
+      {/* Resizable VS Code Sidebar */}
+      <ResizableSidebar>
+        <Sidebar width={width} />
+      </ResizableSidebar>
+
+      {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <main className="flex-1 overflow-y-auto bg-bg-primary dark:bg-bg-primary">
-          <div className="h-full w-full p-8 max-w-7xl mx-auto">{children}</div>
+        <main className="flex-1 overflow-y-auto">
+          <div className="h-full w-full p-8 max-w-7xl mx-auto">
+            {children}
+          </div>
         </main>
+
         <StatusBar />
       </div>
     </div>
   );
 };
-

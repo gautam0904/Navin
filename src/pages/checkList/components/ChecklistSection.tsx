@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChevronDown, ChevronRight, Check, Edit2, Trash2, Plus } from 'lucide-react';
-import { ChecklistSection as ChecklistSectionType } from '../types/checklist';
+import { ChecklistSection as ChecklistSectionType } from '../../../types/checklist';
 import { ChecklistItem } from './ChecklistItem';
 import { Examples } from './Examples';
 
@@ -82,14 +82,11 @@ export const ChecklistSection: React.FC<ChecklistSectionProps> = ({
         style={{ minHeight: '64px' }}
       >
         <div className="flex items-center gap-4 flex-1 text-left">
-          {/* Fixed-size icon container for alignment - always visible */}
-          <div className="w-10 h-10 flex-shrink-0 bg-primary dark:bg-primary text-white dark:text-white rounded-lg shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-150 flex items-center justify-center">
-            {isExpanded ? (
-              <ChevronDown className="text-white dark:text-white transition-transform duration-150" size={20} />
-            ) : (
-              <ChevronRight className="text-white dark:text-white transition-transform duration-150" size={20} />
-            )}
-          </div>
+          {isExpanded ? (
+            <ChevronDown className="text-xl font-semibold text-text-primary dark:text-text-primary transition-transform duration-150" size={20} />
+          ) : (
+            <ChevronRight className="text-xl font-semibold text-text-primary dark:text-text-primary transition-transform duration-150" size={20} />
+          )}
 
           {/* Section Title */}
           <div className="flex-1 min-w-0">

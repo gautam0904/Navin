@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ClipboardList, TrendingUp, Settings, ArrowRight, FolderOpen, ChevronDown, ChevronRight, CheckCircle2, Database, Shield, FolderTree } from 'lucide-react';
 import { ROUTES } from '../constants/routes';
-import { useChecklist } from '../hooks/useChecklist';
+import { useChecklist } from './checkList/hooks/useChecklist';
 import { useProject } from '../contexts/ProjectContext';
 
 interface Feature {
@@ -49,13 +49,13 @@ export const HomePage = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
+    <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6 md:space-y-8">
       {/* Hero Section */}
-      <div className="space-y-3">
-        <h1 className="text-3xl font-bold text-text-primary dark:text-text-primary tracking-tight leading-tight">
+      <div className="space-y-2 sm:space-y-3">
+        <h1 className="text-2xl sm:text-3xl font-bold text-text-primary dark:text-text-primary tracking-tight leading-tight">
           Welcome to Navin
         </h1>
-        <p className="text-base text-text-secondary dark:text-text-secondary leading-relaxed max-w-2xl">
+        <p className="text-sm sm:text-base text-text-secondary dark:text-text-secondary leading-relaxed max-w-2xl">
           Your comprehensive developer checklist to maintain code quality and follow best practices
         </p>
         {currentProject && (
@@ -69,17 +69,17 @@ export const HomePage = () => {
       </div>
 
       {/* Progress Section */}
-      <div className="card space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="card space-y-4 sm:space-y-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
           <div className="flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-primary dark:text-primary" />
-            <h2 className="text-lg font-semibold text-text-primary dark:text-text-primary">
+            <TrendingUp className="w-5 h-5 text-primary dark:text-primary shrink-0" />
+            <h2 className="text-base sm:text-lg font-semibold text-text-primary dark:text-text-primary">
               Your Progress
             </h2>
           </div>
           <Link
             to={ROUTES.CHECKLIST}
-            className="button-primary text-sm"
+            className="button-primary text-sm w-full sm:w-auto text-center"
           >
             View Checklist
             <ArrowRight className="w-4 h-4 inline-block ml-1.5" />
@@ -125,8 +125,8 @@ export const HomePage = () => {
 
       {/* Features Section */}
       <div className="card" style={{ padding: 0 }}>
-        <div className="px-4 py-3 border-b border-border-light dark:border-border-medium">
-          <h2 className="text-lg font-semibold text-text-primary dark:text-text-primary">
+        <div className="px-3 sm:px-4 py-2 sm:py-3 border-b border-border-light dark:border-border-medium">
+          <h2 className="text-base sm:text-lg font-semibold text-text-primary dark:text-text-primary">
             Features
           </h2>
         </div>
@@ -139,24 +139,24 @@ export const HomePage = () => {
               <div key={feature.id} className="group">
                 <button
                   onClick={() => toggleFeature(feature.id)}
-                  className="w-full px-4 py-3.5 flex items-center gap-3 hover:bg-primary/5 dark:hover:bg-accent/5 active:bg-primary/10 dark:active:bg-accent/10 transition-colors text-left"
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3.5 flex items-center gap-2 sm:gap-3 hover:bg-primary/5 dark:hover:bg-accent/5 active:bg-primary/10 dark:active:bg-accent/10 transition-colors text-left"
                   title={isExpanded ? "Collapse" : "Expand for details"}
                 >
                   <div className="flex items-center gap-2 shrink-0">
                     {isExpanded ? (
-                      <ChevronDown className="w-4 h-4 text-text-tertiary dark:text-text-tertiary transition-transform" />
+                      <ChevronDown className="w-4 h-4 text-text-tertiary dark:text-text-tertiary transition-transform shrink-0" />
                     ) : (
-                      <ChevronRight className="w-4 h-4 text-text-tertiary dark:text-text-tertiary transition-transform group-hover:translate-x-0.5" />
+                      <ChevronRight className="w-4 h-4 text-text-tertiary dark:text-text-tertiary transition-transform group-hover:translate-x-0.5 shrink-0" />
                     )}
-                    <Icon className={`w-5 h-5 text-primary dark:text-accent transition-transform ${isExpanded ? 'scale-110' : 'group-hover:scale-105'}`} />
+                    <Icon className={`w-4 h-4 sm:w-5 sm:h-5 text-primary dark:text-accent transition-transform shrink-0 ${isExpanded ? 'scale-110' : 'group-hover:scale-105'}`} />
                   </div>
-                  <span className="flex-1 font-medium text-text-primary dark:text-text-primary">
+                  <span className="flex-1 font-medium text-text-primary dark:text-text-primary text-sm sm:text-base">
                     {feature.title}
                   </span>
                 </button>
                 {isExpanded && (
-                  <div className="px-4 pb-4 pl-12 animate-in slide-in-from-top-1 duration-200">
-                    <p className="text-sm text-text-secondary dark:text-text-secondary leading-relaxed">
+                  <div className="px-3 sm:px-4 pb-3 sm:pb-4 pl-10 sm:pl-12 animate-in slide-in-from-top-1 duration-200">
+                    <p className="text-xs sm:text-sm text-text-secondary dark:text-text-secondary leading-relaxed">
                       {feature.description}
                     </p>
                   </div>

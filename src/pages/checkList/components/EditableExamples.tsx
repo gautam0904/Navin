@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Check, X, Plus, Trash2, Edit2, Save, Code2 } from 'lucide-react';
-import { Examples, CodeExamples, CodeExample, LANGUAGES } from '../types/checklist';
+import { Examples, CodeExamples, CodeExample, LANGUAGES } from '../../../types/checklist';
 import { CodeEditor } from './CodeEditor';
 
 interface EditableExamplesProps {

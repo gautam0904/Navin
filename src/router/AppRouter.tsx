@@ -1,9 +1,9 @@
 import { Routes, Route } from 'react-router-dom';
 import { ROUTES } from '../constants/routes';
 import { HomePage } from '../pages/HomePage';
-import { ChecklistPage } from '../pages/ChecklistPage';
-import { ProjectsPage } from '../pages/ProjectsPage';
-import { SettingsPage } from '../pages/SettingsPage';
+import { ChecklistPage } from '../pages/checkList/ChecklistPage';
+import { ProjectsPage } from '../pages/project/ProjectsPage';
+import { SettingsPage } from '../pages/setting/SettingsPage';
 import { AboutPage } from '../pages/AboutPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 

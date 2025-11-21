@@ -38,6 +38,13 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
   line-height: 1.5;
   font-size: 14px;
+  overflow-x: hidden;
+}
+
+/* Prevent horizontal scroll on mobile */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 /* Typography Hierarchy */

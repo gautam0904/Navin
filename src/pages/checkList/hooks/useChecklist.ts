@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ChecklistSection, ChecklistItem, CodeExamples } from '../types/checklist';
-import { ChecklistService, ProgressService } from '../services';
-import { useProject } from '../contexts/ProjectContext';
+import { ChecklistSection, ChecklistItem, CodeExamples } from '../../../types/checklist'
+import { ChecklistService, ProgressService } from '../../../services';
+import { useProject } from '@contexts/ProjectContext';
 
 export const useChecklist = () => {
   const { currentProject } = useProject();

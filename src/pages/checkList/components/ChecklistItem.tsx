@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Edit2, Trash2, ChevronDown, ChevronRight, FileCode } from 'lucide-react';
-import { ChecklistItem as ChecklistItemType, CodeExamples } from '../types/checklist';
+import { ChecklistItem as ChecklistItemType, CodeExamples } from '../../../types/checklist';
 import { EditableExamples } from './EditableExamples';
 
 interface ChecklistItemProps {

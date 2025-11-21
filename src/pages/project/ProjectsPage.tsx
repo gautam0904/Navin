@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { FolderOpen, Plus, Edit2, Trash2, Check, X, Star, StarOff, ClipboardList, Eye, ArrowRight } from 'lucide-react';
-import { useProject } from '../contexts/ProjectContext';
-import { LoadingState } from '../components/LoadingState';
-import { ErrorState } from '../components/ErrorState';
-import { ProjectService } from '../services/project.service';
-import { ChecklistSection } from '../types/checklist';
+import { useProject } from '@contexts/ProjectContext';
+import { LoadingState } from '@components/LoadingState';
+import { ErrorState } from '@components/ErrorState';
+import { ProjectService } from '@services/project.service';
+import { ChecklistSection } from '../../types/checklist';
 import { Link } from 'react-router-dom';
-import { ROUTES } from '../constants/routes';
+import { ROUTES } from '@constants/routes';
 
 interface ProjectStats {
   projectId: string;
@@ -108,7 +108,7 @@ export const ProjectsPage = () => {
           const checklist = await ProjectService.getProjectChecklist(project.id);
 
           // Get completed items count
-          const { ProgressService } = await import('../services');
+          const { ProgressService } = await import('@services');
           const checkedItems = await ProgressService.getCheckedItems(project.id);
 
           const totalItems = checklist.reduce((sum, section) => sum + section.items.length, 0);
@@ -146,23 +146,23 @@ export const ProjectsPage = () => {
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-            <FolderOpen className="w-6 h-6 text-primary dark:text-accent" />
-            <h1 className="text-3xl font-bold text-text-primary dark:text-text-primary">Projects</h1>
+    <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex-1">
+          <div className="flex items-center gap-2 sm:gap-3 mb-2">
+            <FolderOpen className="w-5 h-5 sm:w-6 sm:h-6 text-primary dark:text-accent shrink-0" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-text-primary dark:text-text-primary">Projects</h1>
           </div>
-          <p className="text-text-secondary dark:text-text-secondary ml-9">
+          <p className="text-xs sm:text-sm text-text-secondary dark:text-text-secondary ml-7 sm:ml-9">
             Each project has its own checklist criteria. Switch between projects to see different checklists.
           </p>
         </div>
         <button
           onClick={() => setShowCreateForm(!showCreateForm)}
-          className="flex items-center gap-2 px-4 py-2 bg-primary dark:bg-accent hover:bg-primary-dark dark:hover:bg-accent-dark text-text-inverse dark:text-text-inverse rounded-lg transition-colors"
+          className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-primary dark:bg-accent hover:bg-primary-dark dark:hover:bg-accent-dark text-text-inverse dark:text-text-inverse rounded-lg transition-colors w-full sm:w-auto justify-center"
         >
-          <Plus className="w-5 h-5" />
-          <span>New Project</span>
+          <Plus className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
+          <span className="text-sm sm:text-base">New Project</span>
         </button>
       </div>
 

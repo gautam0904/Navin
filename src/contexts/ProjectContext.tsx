@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { ProjectService, Project } from '../services/project.service';
+import { ProjectService, Project } from '@services';
 
 interface ProjectContextType {
   projects: Project[];
