@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Lock } from 'lucide-react';
-import { ADMIN_PASSWORD } from '../constants/admin';
+import { ADMIN_PASSWORD } from '../../constants/admin';
 
 interface AdminPasswordModalProps {
   isOpen: boolean;

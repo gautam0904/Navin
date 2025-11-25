@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useAppContext } from '../contexts/AppContext';
+import { useAppContext } from '../../contexts/AppContext';
 import { AdminPasswordModal } from './AdminPasswordModal';
 import { NotificationModal } from './NotificationModal';
 import { ShareModal } from './ShareModal';
-import { useAppHandlers } from '../hooks/useAppHandlers';
+import { useAppHandlers } from '../../hooks/useAppHandlers';
 
 export const Modals = () => {
   const {

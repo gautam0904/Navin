@@ -1,6 +1,6 @@
 import { ChecklistContent } from './components/ChecklistContent';
-import { LoadingState } from '@components/LoadingState';
-import { ErrorState } from '@components/ErrorState';
+import { LoadingState } from '@components/ui/LoadingState';
+import { ErrorState } from '@components/ui/ErrorState';
 import { useChecklist } from './hooks/useChecklist';
 
 export const ChecklistPage = () => {

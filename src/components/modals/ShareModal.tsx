@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Wifi, WifiOff, Share2, QrCode, Copy, Check, AlertCircle } from 'lucide-react';
-import { ShareService, ShareProgress } from '../services';
+import { ShareService, ShareProgress } from '../../services';
 
 interface ShareModalProps {
   isOpen: boolean;

@@ -2,8 +2,8 @@ import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AppProvider } from './contexts/AppContext';
 import { ProjectProvider } from './contexts/ProjectContext';
-import { Layout } from './components/Layout';
-import { Modals } from './components/Modals';
+import { Layout } from './components/layout/Layout';
+import { Modals } from './components/modals/Modals';
 import { AppRouter } from './router/AppRouter';
 
 const App = () => {

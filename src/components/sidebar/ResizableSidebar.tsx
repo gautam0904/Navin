@@ -8,7 +8,7 @@ interface Props {
 
 export default function ResizableSidebar({
   children,
-  minWidth = 160,
+  minWidth = 60,
   maxWidth = 480,
 }: Props) {
   const [width, setWidth] = useState(260); // default VS Code width
@@ -39,15 +39,23 @@ export default function ResizableSidebar({
   return (
     <div
       style={{ width }}
-      className="h-full flex-shrink-0 bg-sidebar dark:bg-sidebar-dark border-r border-border relative select-none transition-none overflow-hidden"
+      className="h-full flex-shrink-0 bg-sidebar dark:bg-sidebar-dark border-r border-border/50 relative select-none transition-none overflow-hidden shadow-lg"
     >
-      <div className="h-full overflow-y-auto">{children}</div>
+      <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
+        {children}
+      </div>
 
       {/* Resize handle */}
       <div
-        className="absolute top-0 right-0 w-[5px] h-full cursor-col-resize hover:bg-primary/40 active:bg-primary/70"
+        className={`absolute top-0 right-0 w-1 h-full cursor-col-resize transition-all duration-200 ${
+          isResizing 
+            ? 'bg-primary/70' 
+            : 'bg-transparent hover:bg-primary/30'
+        }`}
         onMouseDown={() => setIsResizing(true)}
-      />
+      >
+        <div className="absolute top-1/2 -translate-y-1/2 right-0 w-1 h-12 rounded-l-full bg-primary/0 hover:bg-primary/50 transition-all duration-200" />
+      </div>
     </div>
   );
 }

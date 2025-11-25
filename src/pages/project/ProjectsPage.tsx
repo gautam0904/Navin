@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { FolderOpen, Plus, Edit2, Trash2, Check, X, Star, StarOff, ClipboardList, Eye, ArrowRight } from 'lucide-react';
 import { useProject } from '@contexts/ProjectContext';
-import { LoadingState } from '@components/LoadingState';
-import { ErrorState } from '@components/ErrorState';
+import { LoadingState } from '@components/ui/LoadingState';
+import { ErrorState } from '@components/ui/ErrorState';
 import { ProjectService } from '@services/project.service';
 import { ChecklistSection } from '../../types/checklist';
 import { Link } from 'react-router-dom';

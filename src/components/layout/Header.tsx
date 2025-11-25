@@ -1,7 +1,7 @@
 import React from 'react';
 import { Download, RotateCcw, Settings, Save, Copy, XCircle, Plus, FolderOpen, ClipboardList, AlertTriangle } from 'lucide-react';
-import { ProgressBar } from './ProgressBar';
-import { useProject } from '../contexts/ProjectContext';
+import { ProgressBar } from '../ui/ProgressBar';
+import { useProject } from '../../contexts/ProjectContext';
 
 interface HeaderProps {
   progressPercent: number;

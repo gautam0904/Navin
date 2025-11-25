@@ -1,5 +1,5 @@
 import { Database, Keyboard } from 'lucide-react';
-import { useProject } from '../contexts/ProjectContext';
+import { useProject } from '../../contexts/ProjectContext';
 
 export const StatusBar = () => {
   const { currentProject } = useProject();
@@ -9,7 +9,7 @@ export const StatusBar = () => {
       <div className="flex flex-wrap items-center gap-3 sm:gap-6">
         <div className="flex items-center gap-2">
           <Database className="w-4 h-4 text-primary dark:text-primary shrink-0" />
-          <span className="font-medium whitespace-nowrap">SQLite Storage Active</span>
+          <span className="font-medium whitespace-nowrap">Local Storage</span>
         </div>
         {currentProject && (
           <span className="text-text-secondary dark:text-text-tertiary font-medium">

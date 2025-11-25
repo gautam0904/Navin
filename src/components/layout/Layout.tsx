@@ -1,8 +1,8 @@
 import { ReactNode, useState } from "react";
-import ResizableSidebar from "./ResizableSidebar";
-import Sidebar from "./Sidebar";
+import ResizableSidebar from "../sidebar/ResizableSidebar";
+import Sidebar from "../sidebar/Sidebar";
 import { StatusBar } from "./StatusBar";
-import { useKeyboardShortcuts } from "../hooks/useKeyboardShortcuts";
+import { useKeyboardShortcuts } from "../../hooks/useKeyboardShortcuts";
 
 interface LayoutProps {
   children: ReactNode;

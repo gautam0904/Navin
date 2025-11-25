@@ -1,45 +1,49 @@
 import { Sun, Moon, Monitor } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
-export const ThemeToggle = () => {
+export const ThemeToggle = ({ collapsed }: { collapsed?: boolean }) => {
   const { theme, setTheme } = useTheme();
 
   return (
     <div className="w-full">
-      <div className="text-xs text-text-secondary dark:text-regent-gray font-medium mb-2 px-1">Theme</div>
-      <div className="flex gap-1 bg-bg-surface-2 dark:bg-bg-surface-2 rounded-lg border border-border-light dark:border-border-medium p-1 shadow-sm">
+      {!collapsed && (
+        <div className="text-xs text-text-secondary mb-2 px-1 font-medium">Theme</div>
+      )}
+
+      <div className={`flex gap-1 rounded-lg border border-border p-1 shadow-sm bg-bg-surface-2
+        ${collapsed ? "justify-center" : ""}
+      `}>
         <button
           onClick={() => setTheme('light')}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-md text-xs font-medium transition-all duration-150 ${theme === 'light'
-            ? 'bg-primary dark:bg-accent text-text-inverse dark:text-text-inverse shadow-sm'
-            : 'text-text-secondary dark:text-loblolly hover:bg-primary/10 dark:hover:bg-accent/10 hover:text-primary dark:hover:text-accent'
-            }`}
-          title="Light theme"
+          className={`flex items-center gap-2 justify-center rounded-md p-2 transition-all duration-150
+            ${collapsed ? "px-2" : "px-3"}
+            ${theme === 'light' ? 'bg-primary text-white shadow-sm' : 'text-text-secondary hover:bg-bg-surface-3'}
+          `}
         >
-          <Sun className="w-3.5 h-3.5" />
-          <span>Light</span>
+          <Sun className="w-4 h-4" />
+          {!collapsed && <span className="text-xs font-medium">Light</span>}
         </button>
+
         <button
           onClick={() => setTheme('dark')}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-md text-xs font-medium transition-all duration-150 ${theme === 'dark'
-            ? 'bg-primary dark:bg-accent text-text-inverse dark:text-text-inverse shadow-sm'
-            : 'text-text-secondary dark:text-loblolly hover:bg-primary/10 dark:hover:bg-accent/10 hover:text-primary dark:hover:text-accent'
-            }`}
-          title="Dark theme"
+          className={`flex items-center gap-2 justify-center rounded-md p-2 transition-all duration-150
+            ${collapsed ? "px-2" : "px-3"}
+            ${theme === 'dark' ? 'bg-primary text-white shadow-sm' : 'text-text-secondary hover:bg-bg-surface-3'}
+          `}
         >
-          <Moon className="w-3.5 h-3.5" />
-          <span>Dark</span>
+          <Moon className="w-4 h-4" />
+          {!collapsed && <span className="text-xs font-medium">Dark</span>}
         </button>
+
         <button
           onClick={() => setTheme('auto')}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-md text-xs font-medium transition-all duration-150 ${theme === 'auto'
-            ? 'bg-primary dark:bg-accent text-text-inverse dark:text-text-inverse shadow-sm'
-            : 'text-text-secondary dark:text-loblolly hover:bg-primary/10 dark:hover:bg-accent/10 hover:text-primary dark:hover:text-accent'
-            }`}
-          title="Auto (follow system preference)"
+          className={`flex items-center gap-2 justify-center rounded-md p-2 transition-all duration-150
+            ${collapsed ? "px-2" : "px-3"}
+            ${theme === 'auto' ? 'bg-primary text-white shadow-sm' : 'text-text-secondary hover:bg-bg-surface-3'}
+          `}
         >
-          <Monitor className="w-3.5 h-3.5" />
-          <span>Auto</span>
+          <Monitor className="w-4 h-4" />
+          {!collapsed && <span className="text-xs font-medium">Auto</span>}
         </button>
       </div>
     </div>

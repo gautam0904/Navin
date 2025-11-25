@@ -20,38 +20,38 @@ export default function Sidebar({ width }: SidebarProps) {
     totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
 
   return (
-    <aside className="h-full flex flex-col">
+    <aside className="h-full flex flex-col overflow-y-auto overflow-x-hidden bg-bg-secondary dark:bg-bg-secondary">
       {/* Header */}
-      <div className={`px-4 py-3 border-b border-border bg-bg-secondary dark:bg-bg-secondary`}>
+      <div className="px-4 py-3 border-b border-border">
         {!collapsed ? (
           <>
-            <h1 className="text-xl font-bold text-primary mb-2">Navin</h1>
+            <h1 className="text-xl font-bold text-text-primary mb-2">Navin</h1>
 
-            {currentProject && (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-xs text-text-secondary">
-                  <FolderOpen className="w-4 h-4" />
-                  <span className="font-medium truncate">{currentProject.name}</span>
-                </div>
-
-                {totalItems > 0 && (
-                  <div className="px-2 py-1.5 bg-bg-surface-2 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-text-secondary">
-                        {completedItems}/{totalItems}
-                      </span>
-                      <span className="text-xs font-medium text-primary">{progressPercent}%</span>
-                    </div>
-                  </div>
-                )}
-
-                {isAdminMode && (
-                  <span className="inline-block px-2 py-1 text-xs font-semibold bg-primary/10 text-primary rounded-md">
-                    Admin Mode
-                  </span>
-                )}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-xs text-text-secondary">
+                <FolderOpen className="w-4 h-4" />
+                <span className="font-medium truncate">
+                  {currentProject ? currentProject.name : "Default Project"}
+                </span>
               </div>
-            )}
+
+              {totalItems > 0 && (
+                <div className="px-2 py-1.5 bg-bg-surface-2 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-text-secondary">
+                      {completedItems}/{totalItems}
+                    </span>
+                    <span className="text-xs font-medium text-primary">{progressPercent}%</span>
+                  </div>
+                </div>
+              )}
+
+              {isAdminMode && (
+                <span className="inline-block px-2 py-1 text-xs font-semibold bg-primary/10 text-primary rounded-md">
+                  Admin Mode
+                </span>
+              )}
+            </div>
           </>
         ) : (
           <div className="flex items-center justify-center h-10">
@@ -60,16 +60,10 @@ export default function Sidebar({ width }: SidebarProps) {
         )}
       </div>
 
-      {/* Navigation */}
-      <div className="flex-1 overflow-auto">
-        <Navigation collapsed={collapsed} />
-      </div>
+      <Navigation collapsed={collapsed} />
 
-      {/* Footer */}
-      <div className="p-3 border-t border-border bg-bg-secondary dark:bg-bg-secondary">
-        <div className={`${collapsed ? "justify-center" : "justify-between items-center"} flex`}>
-          <ThemeToggle />
-        </div>
+      <div className="mt-auto p-3 border-t border-border">
+        <ThemeToggle collapsed={collapsed} />
       </div>
     </aside>
   );
