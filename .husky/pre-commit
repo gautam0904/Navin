@@ -1,11 +1,6 @@
 # Format the entire project
 npm run format
 
-# Stage all formatted files
-git add -A
-
 # Check for ESLint errors in the entire project
+# This will fail the commit if there are any linting errors
 npm run lint
-
-# Run lint-staged for additional checks if needed
-npx lint-staged
