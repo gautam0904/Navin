@@ -232,9 +232,9 @@ export const ChecklistItem: React.FC<ChecklistItemProps> = ({
         />
         <div className="flex gap-2 items-center">
           <ExamplesToggle
-            showExamples={showExamples}
-            hasExamples={hasExamples}
-            isAdminMode={isAdminMode}
+            showExamples={!!showExamples}
+            hasExamples={!!hasExamples}
+            isAdminMode={!!isAdminMode}
             onToggle={() => setShowExamples(!showExamples)}
           />
           {isAdminMode && <AdminControls onEdit={onEdit} onDelete={onDelete} />}

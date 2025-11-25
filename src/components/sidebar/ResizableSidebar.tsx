@@ -42,7 +42,7 @@ export default function ResizableSidebar({
   return (
     <div
       style={{ width }}
-      className="h-full flex-shrink-0 bg-sidebar dark:bg-sidebar-dark border-r border-border/50 relative select-none transition-none overflow-hidden shadow-lg"
+      className="h-full shrink-0 bg-sidebar dark:bg-sidebar-dark border-r border-border/50 relative select-none transition-none overflow-hidden shadow-lg"
     >
       <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
         {children}

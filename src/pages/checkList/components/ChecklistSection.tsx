@@ -1,8 +1,7 @@
 import React from 'react';
-import { ChevronDown, ChevronRight, Check, Edit2, Trash2, Plus } from 'lucide-react';
 import { ChecklistSection as ChecklistSectionType } from '../../../types/checklist';
-import { ChecklistItem } from './ChecklistItem';
-import { Examples } from './Examples';
+import { SectionHeader } from './SectionHeader';
+import { SectionContent } from './SectionContent';
 
 interface ChecklistSectionProps {
   section: ChecklistSectionType;
@@ -74,7 +73,6 @@ export const ChecklistSection: React.FC<ChecklistSectionProps> = ({
   onItemCodeExamplesChange,
   onItemCodeExampleChange,
   onItemExamplesSave,
-  // eslint-disable-next-line complexity
 }) => {
   const sectionCompleted = section.items.filter((item) => checkedItems[item.id]).length;
   const sectionTotal = section.items.length;
@@ -89,158 +87,43 @@ export const ChecklistSection: React.FC<ChecklistSectionProps> = ({
       }}
       onClick={onToggle}
     >
-      {/* Section Header */}
-      <div
-        className="w-full px-6 py-5 bg-bg-surface-2/50 dark:bg-bg-surface-2/40 hover:bg-bg-surface-2 dark:hover:bg-bg-surface-2/80 transition-all duration-150 rounded-t-xl flex items-center justify-between gap-4"
-        style={{ minHeight: '64px' }}
-      >
-        <div className="flex items-center gap-4 flex-1 text-left">
-          {isExpanded ? (
-            <ChevronDown
-              className="text-xl font-semibold text-text-primary dark:text-text-primary transition-transform duration-150"
-              size={20}
-            />
-          ) : (
-            <ChevronRight
-              className="text-xl font-semibold text-text-primary dark:text-text-primary transition-transform duration-150"
-              size={20}
-            />
-          )}
+      <SectionHeader
+        sectionTitle={section.title}
+        isExpanded={isExpanded}
+        isEditing={isEditingSection}
+        sectionPercent={sectionPercent}
+        sectionCompleted={sectionCompleted}
+        sectionTotal={sectionTotal}
+        isAdminMode={isAdminMode}
+        onSectionEdit={onSectionEdit}
+        onSectionDelete={onSectionDelete}
+        onSectionTitleChange={onSectionTitleChange}
+        onEditingSectionBlur={onEditingSectionBlur}
+      />
 
-          {/* Section Title */}
-          <div className="flex-1 min-w-0">
-            {isEditingSection ? (
-              <input
-                type="text"
-                value={section.title}
-                onChange={(e) => onSectionTitleChange(e.target.value)}
-                onBlur={onEditingSectionBlur}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === 'Escape') onEditingSectionBlur();
-                }}
-                className="text-xl font-semibold text-text-primary dark:text-text-primary border-b-2 border-primary dark:border-primary focus:outline-none bg-transparent w-full px-2 py-1"
-                autoFocus
-                onClick={(e) => e.stopPropagation()}
-              />
-            ) : (
-              <h2 className="text-xl font-semibold text-text-primary dark:text-text-primary tracking-tight">
-                {section.title}
-              </h2>
-            )}
-            {/* Progress bar under title */}
-            <div className="mt-2 progress-container" style={{ height: '6px', maxWidth: '300px' }}>
-              <div className="progress-fill" style={{ width: `${sectionPercent}%` }} />
-            </div>
-          </div>
-        </div>
-
-        {/* Right side: Admin controls + Progress counter */}
-        <div className="flex items-center gap-3 flex-shrink-0">
-          {isAdminMode && (
-            <div
-              className="flex gap-1.5 p-1.5 bg-bg-secondary dark:bg-bg-secondary rounded-lg shadow-sm"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSectionEdit();
-                }}
-                className="p-2 hover:bg-primary/10 dark:hover:bg-primary/25 rounded-md transition-all duration-150 hover:scale-105 active:scale-95"
-                title="Edit Section"
-              >
-                <Edit2 size={16} className="text-primary dark:text-primary" />
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSectionDelete();
-                }}
-                className="p-2 hover:bg-red-50 dark:hover:bg-red-900/40 rounded-md transition-all duration-150 hover:scale-105 active:scale-95"
-                title="Delete Section"
-              >
-                <Trash2 size={16} className="text-red-600 dark:text-red-400" />
-              </button>
-            </div>
-          )}
-          {/* Fixed-width pill-style progress counter */}
-          <div
-            className="px-4 py-2 bg-bg-surface-2 dark:bg-bg-surface-3 rounded-full shadow-sm flex items-center gap-2"
-            style={{ minWidth: '100px', justifyContent: 'flex-end' }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <span className="text-sm font-bold text-text-primary dark:text-text-primary">
-              {sectionCompleted}/{sectionTotal}
-            </span>
-            <span className="text-xs font-semibold text-primary dark:text-primary-light">
-              {sectionPercent}%
-            </span>
-            {sectionCompleted === sectionTotal && sectionTotal > 0 && (
-              <Check
-                className="text-primary dark:text-primary-light flex-shrink-0"
-                size={14}
-                strokeWidth={3}
-              />
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Section Content */}
       {isExpanded && (
-        <div className="px-6 py-4 space-y-3 bg-bg-secondary dark:bg-bg-secondary rounded-b-xl">
-          {/* Checklist Items */}
-          <div className="space-y-2">
-            {section.items.map((item) => (
-              <ChecklistItem
-                key={item.id}
-                item={item}
-                isChecked={checkedItems[item.id] || false}
-                isEditing={editingItem === item.id}
-                isAdminMode={isAdminMode}
-                onToggle={() => onItemToggle(item.id)}
-                onEdit={() => onItemEdit(item.id)}
-                onDelete={() => onItemDelete(item.id)}
-                onTextChange={(text) => onItemTextChange(item.id, text)}
-                onBlur={onEditingItemBlur}
-                onExamplesChange={onItemExamplesChange}
-                onCodeExamplesChange={onItemCodeExamplesChange}
-                onCodeExampleChange={onItemCodeExampleChange}
-                onExamplesSave={onItemExamplesSave}
-              />
-            ))}
-          </div>
-
-          {/* Add Item Button */}
-          {isAdminMode && (
-            <button onClick={onItemAdd} className="button-primary flex items-center gap-2">
-              <Plus size={18} />
-              Add Item
-            </button>
-          )}
-
-          {/* Examples */}
-          <Examples
-            section={section}
-            isExpanded={showExamples}
-            isAdminMode={isAdminMode}
-            onToggle={onExamplesToggle}
-            onExamplesChange={
-              onExamplesChange ? (examples) => onExamplesChange(section.id, examples) : undefined
-            }
-            onCodeExamplesChange={
-              onCodeExamplesChange
-                ? (codeExamples) => onCodeExamplesChange(section.id, codeExamples)
-                : undefined
-            }
-            onCodeExampleChange={
-              onCodeExampleChange
-                ? (codeExample) => onCodeExampleChange(section.id, codeExample)
-                : undefined
-            }
-            onSave={onExamplesSave ? () => onExamplesSave(section.id) : undefined}
-          />
-        </div>
+        <SectionContent
+          section={section}
+          checkedItems={checkedItems}
+          isAdminMode={isAdminMode}
+          editingItem={editingItem}
+          showExamples={showExamples}
+          onItemToggle={onItemToggle}
+          onItemEdit={onItemEdit}
+          onItemDelete={onItemDelete}
+          onItemTextChange={onItemTextChange}
+          onItemAdd={onItemAdd}
+          onExamplesToggle={onExamplesToggle}
+          onEditingItemBlur={onEditingItemBlur}
+          onExamplesChange={onExamplesChange}
+          onCodeExamplesChange={onCodeExamplesChange}
+          onCodeExampleChange={onCodeExampleChange}
+          onExamplesSave={onExamplesSave}
+          onItemExamplesChange={onItemExamplesChange}
+          onItemCodeExamplesChange={onItemCodeExamplesChange}
+          onItemCodeExampleChange={onItemCodeExampleChange}
+          onItemExamplesSave={onItemExamplesSave}
+        />
       )}
     </div>
   );
