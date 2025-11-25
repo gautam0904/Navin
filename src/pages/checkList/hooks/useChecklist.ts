@@ -1,5 +1,6 @@
+/* eslint-disable max-lines */
 import { useState, useEffect, useCallback } from 'react';
-import { ChecklistSection, ChecklistItem, CodeExamples } from '../../../types/checklist'
+import { ChecklistSection, ChecklistItem, CodeExamples } from '../../../types/checklist';
 import { ChecklistService, ProgressService } from '../../../services';
 import { useProject } from '@contexts/ProjectContext';
 
@@ -13,7 +14,6 @@ export const useChecklist = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load data from database on mount or project change
   useEffect(() => {
     const loadData = async () => {
       if (!currentProject) {
@@ -26,17 +26,17 @@ export const useChecklist = () => {
       try {
         setIsLoading(true);
         setError(null);
-        
+
         const projectId = currentProject.id;
-        
+
         // Load sections from database for current project
         const sections = await ChecklistService.getAllSections(projectId);
         setChecklistData(sections);
-        
+
         // Load checked items from database for current project
         const checkedItemIds = await ProgressService.getCheckedItems(projectId);
         const checkedMap: Record<string, boolean> = {};
-        checkedItemIds.forEach(id => {
+        checkedItemIds.forEach((id) => {
           checkedMap[id] = true;
         });
         setCheckedItems(checkedMap);
@@ -49,49 +49,52 @@ export const useChecklist = () => {
     };
 
     loadData();
-  }, [currentProject?.id]);
+  }, [currentProject]);
 
-  const updateChecklistData = (data: ChecklistSection[]) => {
-    setChecklistData(data);
-    setHasUnsavedChanges(true);
-  };
+  // const updateChecklistData = (data: ChecklistSection[]) => {
+  //   setChecklistData(data);
+  //   setHasUnsavedChanges(true);
+  // };
 
   const toggleSection = useCallback((sectionId: string) => {
-    setExpandedSections(prev => ({
+    setExpandedSections((prev) => ({
       ...prev,
-      [sectionId]: !prev[sectionId]
+      [sectionId]: !prev[sectionId],
     }));
   }, []);
 
-  const toggleItem = useCallback(async (itemId: string) => {
-    if (!currentProject) return;
-    
-    try {
-      const newChecked = await ProgressService.toggleItem(itemId, currentProject.id);
-      setCheckedItems(prev => ({
-        ...prev,
-        [itemId]: newChecked
-      }));
-    } catch (err) {
-      console.error('Failed to toggle item:', err);
-      // Revert on error
-      setCheckedItems(prev => ({
-        ...prev,
-        [itemId]: !prev[itemId]
-      }));
-    }
-  }, [currentProject]);
+  const toggleItem = useCallback(
+    async (itemId: string) => {
+      if (!currentProject) return;
+
+      try {
+        const newChecked = await ProgressService.toggleItem(itemId, currentProject.id);
+        setCheckedItems((prev) => ({
+          ...prev,
+          [itemId]: newChecked,
+        }));
+      } catch (err) {
+        console.error('Failed to toggle item:', err);
+        // Revert on error
+        setCheckedItems((prev) => ({
+          ...prev,
+          [itemId]: !prev[itemId],
+        }));
+      }
+    },
+    [currentProject]
+  );
 
   const toggleExamples = useCallback((sectionId: string) => {
-    setShowExamples(prev => ({
+    setShowExamples((prev) => ({
       ...prev,
-      [sectionId]: !prev[sectionId]
+      [sectionId]: !prev[sectionId],
     }));
   }, []);
 
   const resetProgress = useCallback(async () => {
     if (!currentProject) return;
-    
+
     if (confirm('Are you sure you want to reset all progress?')) {
       try {
         await ProgressService.resetProgress(currentProject.id);
@@ -105,17 +108,17 @@ export const useChecklist = () => {
 
   const addNewSection = useCallback(async () => {
     if (!currentProject) return;
-    
+
     const newSection: ChecklistSection = {
       id: `section-${Date.now()}`,
       title: '📝 New Section',
-      items: []
+      items: [],
     };
-    
+
     try {
       const displayOrder = checklistData.length;
       await ChecklistService.addSection(newSection, displayOrder, currentProject.id);
-      setChecklistData(prev => [...prev, newSection]);
+      setChecklistData((prev) => [...prev, newSection]);
       setHasUnsavedChanges(true);
     } catch (err) {
       console.error('Failed to add section:', err);
@@ -127,7 +130,7 @@ export const useChecklist = () => {
     if (confirm('Are you sure you want to delete this section?')) {
       try {
         await ChecklistService.deleteSection(sectionId);
-        setChecklistData(prev => prev.filter(s => s.id !== sectionId));
+        setChecklistData((prev) => prev.filter((s) => s.id !== sectionId));
         setHasUnsavedChanges(true);
       } catch (err) {
         console.error('Failed to delete section:', err);
@@ -139,8 +142,8 @@ export const useChecklist = () => {
   const updateSectionTitle = useCallback(async (sectionId: string, newTitle: string) => {
     try {
       await ChecklistService.updateSectionTitle(sectionId, newTitle);
-      setChecklistData(prev =>
-        prev.map(s => s.id === sectionId ? { ...s, title: newTitle } : s)
+      setChecklistData((prev) =>
+        prev.map((s) => (s.id === sectionId ? { ...s, title: newTitle } : s))
       );
       setHasUnsavedChanges(true);
     } catch (err) {
@@ -152,17 +155,13 @@ export const useChecklist = () => {
   const addItemToSection = useCallback(async (sectionId: string) => {
     const newItem: ChecklistItem = {
       id: `item-${Date.now()}`,
-      text: 'New checklist item'
+      text: 'New checklist item',
     };
-    
+
     try {
       await ChecklistService.addItem(sectionId, newItem);
-      setChecklistData(prev =>
-        prev.map(s =>
-          s.id === sectionId
-            ? { ...s, items: [...s.items, newItem] }
-            : s
-        )
+      setChecklistData((prev) =>
+        prev.map((s) => (s.id === sectionId ? { ...s, items: [...s.items, newItem] } : s))
       );
       setHasUnsavedChanges(true);
     } catch (err) {
@@ -175,11 +174,9 @@ export const useChecklist = () => {
     if (confirm('Are you sure you want to delete this item?')) {
       try {
         await ChecklistService.deleteItem(itemId);
-        setChecklistData(prev =>
-          prev.map(s =>
-            s.id === sectionId
-              ? { ...s, items: s.items.filter(i => i.id !== itemId) }
-              : s
+        setChecklistData((prev) =>
+          prev.map((s) =>
+            s.id === sectionId ? { ...s, items: s.items.filter((i) => i.id !== itemId) } : s
           )
         );
         setHasUnsavedChanges(true);
@@ -193,10 +190,10 @@ export const useChecklist = () => {
   const updateItemText = useCallback(async (sectionId: string, itemId: string, newText: string) => {
     try {
       await ChecklistService.updateItem(itemId, newText);
-      setChecklistData(prev =>
-        prev.map(s =>
+      setChecklistData((prev) =>
+        prev.map((s) =>
           s.id === sectionId
-            ? { ...s, items: s.items.map(i => i.id === itemId ? { ...i, text: newText } : i) }
+            ? { ...s, items: s.items.map((i) => (i.id === itemId ? { ...i, text: newText } : i)) }
             : s
         )
       );
@@ -209,7 +206,7 @@ export const useChecklist = () => {
 
   const resetToDefault = useCallback(async () => {
     if (!currentProject) return;
-    
+
     try {
       const sections = await ChecklistService.getAllSections(currentProject.id);
       setChecklistData(sections);
@@ -220,127 +217,109 @@ export const useChecklist = () => {
     }
   }, [currentProject]);
 
-  const updateExamples = useCallback((sectionId: string, examples: { good: string[]; bad: string[] }) => {
-    setChecklistData(prev =>
-      prev.map(s =>
-        s.id === sectionId
-          ? { ...s, examples }
-          : s
-      )
-    );
-    setHasUnsavedChanges(true);
-  }, []);
+  const updateExamples = useCallback(
+    (sectionId: string, examples: { good: string[]; bad: string[] }) => {
+      setChecklistData((prev) => prev.map((s) => (s.id === sectionId ? { ...s, examples } : s)));
+      setHasUnsavedChanges(true);
+    },
+    []
+  );
 
   const updateCodeExample = useCallback((sectionId: string, codeExample: string) => {
-    setChecklistData(prev =>
-      prev.map(s =>
-        s.id === sectionId
-          ? { ...s, codeExample }
-          : s
-      )
-    );
+    setChecklistData((prev) => prev.map((s) => (s.id === sectionId ? { ...s, codeExample } : s)));
     setHasUnsavedChanges(true);
   }, []);
 
   const updateCodeExamples = useCallback((sectionId: string, codeExamples: CodeExamples) => {
-    setChecklistData(prev =>
-      prev.map(s =>
-        s.id === sectionId
-          ? { ...s, codeExamples }
-          : s
-      )
-    );
+    setChecklistData((prev) => prev.map((s) => (s.id === sectionId ? { ...s, codeExamples } : s)));
     setHasUnsavedChanges(true);
   }, []);
 
-  const saveExamples = useCallback(async (sectionId: string) => {
-    try {
-      const section = checklistData.find(s => s.id === sectionId);
-      if (!section) return;
+  const saveExamples = useCallback(
+    async (sectionId: string) => {
+      try {
+        const section = checklistData.find((s) => s.id === sectionId);
+        if (!section) return;
 
-      await ChecklistService.updateExamples(sectionId, section.examples);
-      await ChecklistService.updateCodeExamples(sectionId, section.codeExamples);
-      // Legacy support
-      if (section.codeExample) {
-        await ChecklistService.updateCodeExample(sectionId, section.codeExample);
+        await ChecklistService.updateExamples(sectionId, section.examples);
+        await ChecklistService.updateCodeExamples(sectionId, section.codeExamples);
+        // Legacy support
+        if (section.codeExample) {
+          await ChecklistService.updateCodeExample(sectionId, section.codeExample);
+        }
+
+        setHasUnsavedChanges(true);
+      } catch (err) {
+        console.error('Failed to save examples:', err);
+        alert('Failed to save examples. Please try again.');
       }
-      
-      setHasUnsavedChanges(true);
-    } catch (err) {
-      console.error('Failed to save examples:', err);
-      alert('Failed to save examples. Please try again.');
-    }
-  }, [checklistData]);
+    },
+    [checklistData]
+  );
 
-  const updateItemExamples = useCallback((itemId: string, examples: { good: string[]; bad: string[] }) => {
-    setChecklistData(prev =>
-      prev.map(s => ({
-        ...s,
-        items: s.items.map(i =>
-          i.id === itemId
-            ? { ...i, examples }
-            : i
-        )
-      }))
-    );
-    setHasUnsavedChanges(true);
-  }, []);
+  const updateItemExamples = useCallback(
+    (itemId: string, examples: { good: string[]; bad: string[] }) => {
+      setChecklistData((prev) =>
+        prev.map((s) => ({
+          ...s,
+          items: s.items.map((i) => (i.id === itemId ? { ...i, examples } : i)),
+        }))
+      );
+      setHasUnsavedChanges(true);
+    },
+    []
+  );
 
   const updateItemCodeExamples = useCallback((itemId: string, codeExamples: CodeExamples) => {
-    setChecklistData(prev =>
-      prev.map(s => ({
+    setChecklistData((prev) =>
+      prev.map((s) => ({
         ...s,
-        items: s.items.map(i =>
-          i.id === itemId
-            ? { ...i, codeExamples }
-            : i
-        )
+        items: s.items.map((i) => (i.id === itemId ? { ...i, codeExamples } : i)),
       }))
     );
     setHasUnsavedChanges(true);
   }, []);
 
   const updateItemCodeExample = useCallback((itemId: string, codeExample: string) => {
-    setChecklistData(prev =>
-      prev.map(s => ({
+    setChecklistData((prev) =>
+      prev.map((s) => ({
         ...s,
-        items: s.items.map(i =>
-          i.id === itemId
-            ? { ...i, codeExample }
-            : i
-        )
+        items: s.items.map((i) => (i.id === itemId ? { ...i, codeExample } : i)),
       }))
     );
     setHasUnsavedChanges(true);
   }, []);
 
-  const saveItemExamples = useCallback(async (itemId: string) => {
-    try {
-      // Find the item in checklistData
-      let foundItem: ChecklistItem | null = null;
-      for (const section of checklistData) {
-        const item = section.items.find(i => i.id === itemId);
-        if (item) {
-          foundItem = item;
-          break;
+  const saveItemExamples = useCallback(
+    async (itemId: string) => {
+      try {
+        // Find the item in checklistData
+        let foundItem: ChecklistItem | null = null;
+        for (const section of checklistData) {
+          const item = section.items.find((i) => i.id === itemId);
+          if (item) {
+            foundItem = item;
+            break;
+          }
         }
-      }
-      
-      if (!foundItem) return;
 
-      await ChecklistService.updateItemExamples(itemId, foundItem.examples);
-      await ChecklistService.updateItemCodeExamples(itemId, foundItem.codeExamples);
-      // Legacy support
-      if (foundItem.codeExample) {
-        await ChecklistService.updateItemCodeExample(itemId, foundItem.codeExample);
+        if (!foundItem) return;
+
+        await ChecklistService.updateItemExamples(itemId, foundItem.examples);
+        await ChecklistService.updateItemCodeExamples(itemId, foundItem.codeExamples);
+        // Legacy support
+        if (foundItem.codeExample) {
+          await ChecklistService.updateItemCodeExample(itemId, foundItem.codeExample);
+        }
+
+        setHasUnsavedChanges(true);
+      } catch (err) {
+        console.error('Failed to save item examples:', err);
+        alert('Failed to save item examples. Please try again.');
       }
-      
-      setHasUnsavedChanges(true);
-    } catch (err) {
-      console.error('Failed to save item examples:', err);
-      alert('Failed to save item examples. Please try again.');
-    }
-  }, [checklistData]);
+    },
+    [checklistData]
+  );
 
   const copyCodeToClipboard = useCallback(() => {
     const codeSnippet = `const defaultChecklistData: ChecklistSection[] = ${JSON.stringify(checklistData, null, 2)};`;
@@ -381,6 +360,6 @@ export const useChecklist = () => {
     updateItemCodeExample,
     saveItemExamples,
     resetToDefault,
-    copyCodeToClipboard
+    copyCodeToClipboard,
   };
 };

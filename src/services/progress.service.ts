@@ -10,9 +10,9 @@ export class ProgressService {
    */
   static async getCheckedItems(projectId?: string): Promise<string[]> {
     try {
-      return await safeInvoke<string[]>("get_checked_items", { projectId: projectId || null });
+      return await safeInvoke<string[]>('get_checked_items', { projectId: projectId || null });
     } catch (error) {
-      console.error("Failed to get checked items:", error);
+      console.error('Failed to get checked items:', error);
       throw error;
     }
   }
@@ -22,9 +22,12 @@ export class ProgressService {
    */
   static async toggleItem(itemId: string, projectId?: string): Promise<boolean> {
     try {
-      return await safeInvoke<boolean>("toggle_item_checked", { itemId, projectId: projectId || null });
+      return await safeInvoke<boolean>('toggle_item_checked', {
+        itemId,
+        projectId: projectId || null,
+      });
     } catch (error) {
-      console.error("Failed to toggle item:", error);
+      console.error('Failed to toggle item:', error);
       throw error;
     }
   }
@@ -38,9 +41,9 @@ export class ProgressService {
     projectId?: string
   ): Promise<void> {
     try {
-      await safeInvoke("set_item_checked", { itemId, isChecked, projectId: projectId || null });
+      await safeInvoke('set_item_checked', { itemId, isChecked, projectId: projectId || null });
     } catch (error) {
-      console.error("Failed to set item checked:", error);
+      console.error('Failed to set item checked:', error);
       throw error;
     }
   }
@@ -50,9 +53,9 @@ export class ProgressService {
    */
   static async resetProgress(projectId?: string): Promise<void> {
     try {
-      await safeInvoke("reset_progress", { projectId: projectId || null });
+      await safeInvoke('reset_progress', { projectId: projectId || null });
     } catch (error) {
-      console.error("Failed to reset progress:", error);
+      console.error('Failed to reset progress:', error);
       throw error;
     }
   }

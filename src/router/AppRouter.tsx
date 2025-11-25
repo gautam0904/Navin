@@ -1,11 +1,9 @@
 import { Routes, Route } from 'react-router-dom';
 import { ROUTES } from '../constants/routes';
-import { HomePage } from '../pages/HomePage';
-import { ChecklistPage } from '../pages/checkList/ChecklistPage';
-import { ProjectsPage } from '../pages/project/ProjectsPage';
-import { SettingsPage } from '../pages/setting/SettingsPage';
-import { AboutPage } from '../pages/AboutPage';
-import { NotFoundPage } from '../pages/NotFoundPage';
+import { HomePage, AboutPage, NotFoundPage } from '../pages';
+import { ChecklistPage } from '../features/checklist';
+import { ProjectsPage } from '../features/projects';
+import { SettingsPage } from '../features/settings';
 
 export const AppRouter = () => {
   return (
@@ -19,4 +17,3 @@ export const AppRouter = () => {
     </Routes>
   );
 };
-

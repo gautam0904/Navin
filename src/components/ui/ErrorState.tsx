@@ -19,4 +19,3 @@ export const ErrorState = ({ error, onRetry }: ErrorStateProps) => {
     </div>
   );
 };
-

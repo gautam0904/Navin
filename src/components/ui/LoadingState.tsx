@@ -8,4 +8,3 @@ export const LoadingState = () => {
     </div>
   );
 };
-

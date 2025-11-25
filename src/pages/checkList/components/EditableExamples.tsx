@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import React, { useState } from 'react';
 import { Check, X, Plus, Trash2, Edit2, Save, Code2 } from 'lucide-react';
 import { Examples, CodeExamples, CodeExample, LANGUAGES } from '../../../types/checklist';
@@ -23,16 +24,20 @@ export const EditableExamples: React.FC<EditableExamplesProps> = ({
   onCodeExamplesChange,
   onCodeExampleChange,
   onSave,
+  // eslint-disable-next-line complexity
 }) => {
   const [editingGoodIndex, setEditingGoodIndex] = useState<number | null>(null);
   const [editingBadIndex, setEditingBadIndex] = useState<number | null>(null);
   const [editingGoodCodeIndex, setEditingGoodCodeIndex] = useState<number | null>(null);
   const [editingBadCodeIndex, setEditingBadCodeIndex] = useState<number | null>(null);
   const [editingLegacyCode, setEditingLegacyCode] = useState(false);
-  
+
   const [tempGoodText, setTempGoodText] = useState('');
   const [tempBadText, setTempBadText] = useState('');
-  const [tempGoodCode, setTempGoodCode] = useState<CodeExample>({ language: 'typescript', code: '' });
+  const [tempGoodCode, setTempGoodCode] = useState<CodeExample>({
+    language: 'typescript',
+    code: '',
+  });
   const [tempBadCode, setTempBadCode] = useState<CodeExample>({ language: 'typescript', code: '' });
 
   const currentExamples = examples || { good: [], bad: [] };
@@ -269,7 +274,9 @@ export const EditableExamples: React.FC<EditableExamplesProps> = ({
             </div>
           ))}
           {currentExamples.good.length === 0 && (
-            <p className="text-sm text-gray-500 italic">No good examples yet. Click "Add" to add one.</p>
+            <p className="text-sm text-gray-500 italic">
+              No good examples yet. Click &quot;Add&quot; to add one.
+            </p>
           )}
         </div>
       </div>
@@ -348,7 +355,9 @@ export const EditableExamples: React.FC<EditableExamplesProps> = ({
             </div>
           ))}
           {currentExamples.bad.length === 0 && (
-            <p className="text-sm text-gray-500 italic">No bad examples yet. Click "Add" to add one.</p>
+            <p className="text-sm text-gray-500 italic">
+              No bad examples yet. Click &quot;Add&quot; to add one.
+            </p>
           )}
         </div>
       </div>
@@ -359,7 +368,10 @@ export const EditableExamples: React.FC<EditableExamplesProps> = ({
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 rounded-xl border border-blue-200">
               <Code2 size={20} className="text-blue-600" />
-              <Check size={16} className="text-green-600 absolute -top-1 -right-1 bg-white rounded-full p-0.5" />
+              <Check
+                size={16}
+                className="text-green-600 absolute -top-1 -right-1 bg-white rounded-full p-0.5"
+              />
             </div>
             <h4 className="font-bold text-blue-800 text-lg">Good Code Examples</h4>
           </div>
@@ -380,7 +392,9 @@ export const EditableExamples: React.FC<EditableExamplesProps> = ({
                     <label className="text-sm font-medium text-gray-700">Language:</label>
                     <select
                       value={tempGoodCode.language}
-                      onChange={(e) => setTempGoodCode({ ...tempGoodCode, language: e.target.value })}
+                      onChange={(e) =>
+                        setTempGoodCode({ ...tempGoodCode, language: e.target.value })
+                      }
                       className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       {LANGUAGES.map((lang) => (
@@ -450,7 +464,9 @@ export const EditableExamples: React.FC<EditableExamplesProps> = ({
             </div>
           ))}
           {currentCodeExamples.good.length === 0 && (
-            <p className="text-sm text-gray-500 italic">No good code examples yet. Click "Add Code" to add one.</p>
+            <p className="text-sm text-gray-500 italic">
+              No good code examples yet. Click &quot;Add Code&quot; to add one.
+            </p>
           )}
         </div>
       </div>
@@ -461,7 +477,10 @@ export const EditableExamples: React.FC<EditableExamplesProps> = ({
           <div className="flex items-center gap-3">
             <div className="p-2 bg-orange-100 rounded-xl border border-orange-200 relative">
               <Code2 size={20} className="text-orange-600" />
-              <X size={16} className="text-red-600 absolute -top-1 -right-1 bg-white rounded-full p-0.5" />
+              <X
+                size={16}
+                className="text-red-600 absolute -top-1 -right-1 bg-white rounded-full p-0.5"
+              />
             </div>
             <h4 className="font-bold text-orange-800 text-lg">Bad Code Examples</h4>
           </div>
@@ -552,7 +571,9 @@ export const EditableExamples: React.FC<EditableExamplesProps> = ({
             </div>
           ))}
           {currentCodeExamples.bad.length === 0 && (
-            <p className="text-sm text-gray-500 italic">No bad code examples yet. Click "Add Code" to add one.</p>
+            <p className="text-sm text-gray-500 italic">
+              No bad code examples yet. Click &quot;Add Code&quot; to add one.
+            </p>
           )}
         </div>
       </div>

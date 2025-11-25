@@ -1,7 +1,18 @@
 import React from 'react';
-import { Download, RotateCcw, Settings, Save, Copy, XCircle, Plus, FolderOpen, ClipboardList, AlertTriangle } from 'lucide-react';
+import {
+  Download,
+  RotateCcw,
+  Settings,
+  Save,
+  Copy,
+  XCircle,
+  Plus,
+  FolderOpen,
+  ClipboardList,
+  AlertTriangle,
+} from 'lucide-react';
 import { ProgressBar } from '../ui/ProgressBar';
-import { useProject } from '../../contexts/ProjectContext';
+import { useProject } from '../../app/providers/ProjectProvider';
 
 interface HeaderProps {
   progressPercent: number;
@@ -30,7 +41,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSave,
   onCopyCode,
   onExitAdmin,
-  onAddSection
+  onAddSection,
 }) => {
   const { currentProject } = useProject();
 
@@ -45,23 +56,28 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center gap-3 mb-3">
             <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-gradient-to-r from-primary to-primary-dark dark:from-primary dark:to-primary-dark text-text-inverse dark:text-text-inverse rounded-lg shadow-sm">
               <ClipboardList className="w-5 h-5" />
-              <span className="text-sm font-bold text-text-inverse dark:text-text-inverse tracking-wide">PRE-COMMIT CHECKLIST</span>
+              <span className="text-sm font-bold text-text-inverse dark:text-text-inverse tracking-wide">
+                PRE-COMMIT CHECKLIST
+              </span>
             </div>
             {currentProject && (
               <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/10 dark:bg-primary/15 rounded-lg shadow-sm">
                 <FolderOpen className="w-4 h-4 text-primary dark:text-primary" />
-                <span className="text-sm font-semibold text-primary dark:text-primary">{currentProject.name}</span>
+                <span className="text-sm font-semibold text-primary dark:text-primary">
+                  {currentProject.name}
+                </span>
               </div>
             )}
           </div>
           <h1 className="text-3xl font-bold text-text-primary dark:text-text-primary mb-3 tracking-tight leading-tight">
-            {currentProject ? `${currentProject.name} Checklist` : 'Frontend Implementation Checklist'}
+            {currentProject
+              ? `${currentProject.name} Checklist`
+              : 'Frontend Implementation Checklist'}
           </h1>
           <p className="text-base text-text-secondary dark:text-text-secondary leading-relaxed max-w-2xl mb-1">
             {currentProject
               ? `Project-specific criteria for ${currentProject.name}. Each project has its own checklist.`
-              : 'Follow every item before committing your code'
-            }
+              : 'Follow every item before committing your code'}
           </p>
         </div>
 
@@ -142,7 +158,9 @@ export const Header: React.FC<HeaderProps> = ({
             {hasUnsavedChanges && (
               <div className="flex items-center gap-2 px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg text-sm shadow-sm">
                 <AlertTriangle className="w-4 h-4 text-yellow-700 dark:text-yellow-400 flex-shrink-0" />
-                <span className="text-yellow-700 dark:text-yellow-400 font-medium">Click "Copy Code" to save permanently</span>
+                <span className="text-yellow-700 dark:text-yellow-400 font-medium">
+                  Click &quot;Copy Code&quot; to save permanently
+                </span>
               </div>
             )}
           </div>
@@ -151,4 +169,3 @@ export const Header: React.FC<HeaderProps> = ({
     </div>
   );
 };
-

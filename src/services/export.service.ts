@@ -1,6 +1,6 @@
-import { ChecklistSection } from "../types/checklist";
-import { invoke } from "@tauri-apps/api/core";
-import { defaultChecklistData } from "../data/defaultChecklist";
+import { ChecklistSection } from '../types/checklist';
+import { invoke } from '@tauri-apps/api/core';
+import { defaultChecklistData } from '../data/defaultChecklist';
 
 export interface ExportData {
   version: string;
@@ -15,7 +15,7 @@ export interface ExportData {
  * Allows users to save/load checklist data across devices
  */
 export class ExportService {
-  private static readonly VERSION = "1.0.0";
+  private static readonly VERSION = '1.0.0';
 
   /**
    * Export checklist data and progress to JSON file
@@ -36,18 +36,18 @@ export class ExportService {
       const jsonString = JSON.stringify(exportData, null, 2);
 
       // Use Tauri command to save file
-      await invoke("save_export_file", {
+      await invoke('save_export_file', {
         content: jsonString,
-        filename: `navin-export-${new Date().toISOString().split("T")[0]}.json`,
+        filename: `navin-export-${new Date().toISOString().split('T')[0]}.json`,
       });
     } catch (error) {
-      console.error("Failed to export data:", error);
+      console.error('Failed to export data:', error);
       // Fallback to clipboard
       try {
         await this.exportToClipboard(checklistData, checkedItems);
-        alert("Failed to save file, but data has been copied to clipboard!");
-      } catch (clipboardError) {
-        throw new Error("Failed to save file. Please try copying manually.");
+        alert('Failed to save file, but data has been copied to clipboard!');
+      } catch {
+        throw new Error('Failed to save file. Please try copying manually.');
       }
     }
   }
@@ -69,27 +69,27 @@ export class ExportService {
   static async importFromJSON(): Promise<ExportData | null> {
     try {
       // Use Tauri command to open file (now async with dialog)
-      const content = await invoke<string>("open_import_file");
+      const content = await invoke<string>('open_import_file');
 
-      if (!content || content === "No file selected") {
+      if (!content || content === 'No file selected') {
         return null; // User cancelled
       }
 
       const importData: ExportData = JSON.parse(content);
 
       // Validate data structure
-      if (
-        !importData.checklistData ||
-        !Array.isArray(importData.checklistData)
-      ) {
-        throw new Error("Invalid export file format");
+      if (!importData.checklistData || !Array.isArray(importData.checklistData)) {
+        throw new Error('Invalid export file format');
       }
 
       return importData;
     } catch (error) {
-      console.error("Failed to import data:", error);
-      const errorMessage = error instanceof Error ? error.message : "Failed to import data. Please check the file format.";
-      if (errorMessage.includes("No file selected")) {
+      console.error('Failed to import data:', error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to import data. Please check the file format.';
+      if (errorMessage.includes('No file selected')) {
         return null; // User cancelled, not an error
       }
       throw new Error(errorMessage);
@@ -120,18 +120,13 @@ export class ExportService {
     try {
       const importData: ExportData = JSON.parse(jsonString);
 
-      if (
-        !importData.checklistData ||
-        !Array.isArray(importData.checklistData)
-      ) {
-        throw new Error("Invalid export format");
+      if (!importData.checklistData || !Array.isArray(importData.checklistData)) {
+        throw new Error('Invalid export format');
       }
 
       return importData;
     } catch (error) {
-      throw new Error(
-        error instanceof Error ? error.message : "Invalid JSON format"
-      );
+      throw new Error(error instanceof Error ? error.message : 'Invalid JSON format');
     }
   }
 
@@ -143,8 +138,8 @@ export class ExportService {
       const jsonString = await navigator.clipboard.readText();
       return this.importFromJSONString(jsonString);
     } catch (error) {
-      console.error("Failed to import from clipboard:", error);
-      throw new Error("Failed to read from clipboard. Please make sure the JSON data is copied.");
+      console.error('Failed to import from clipboard:', error);
+      throw new Error('Failed to read from clipboard. Please make sure the JSON data is copied.');
     }
   }
 
@@ -157,16 +152,16 @@ export class ExportService {
     projectId?: string
   ): Promise<void> {
     try {
-      const checkedItemIds = Object.keys(checkedItems).filter(id => checkedItems[id]);
-      await invoke("import_checklist_data", {
+      const checkedItemIds = Object.keys(checkedItems).filter((id) => checkedItems[id]);
+      await invoke('import_checklist_data', {
         sections: checklistData,
         checkedItems: checkedItemIds,
         projectId: projectId || null,
       });
     } catch (error) {
-      console.error("Failed to import data into database:", error);
+      console.error('Failed to import data into database:', error);
       throw new Error(
-        error instanceof Error ? error.message : "Failed to import data into database."
+        error instanceof Error ? error.message : 'Failed to import data into database.'
       );
     }
   }

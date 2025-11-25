@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
-import { useAppContext } from '../contexts/AppContext';
-import { useChecklist } from '../pages/checkList/hooks/useChecklist';
-import { exportProgress } from '../utils/exportProgress';
+import { useAppContext } from '../app/providers/AppProvider';
+import { useChecklist } from '../features/checklist/hooks/useChecklist';
+import { exportProgress } from '@/utils/exportProgress';
 
 /**
  * Custom hook for app-level event handlers
@@ -9,7 +9,6 @@ import { exportProgress } from '../utils/exportProgress';
  */
 export const useAppHandlers = () => {
   const {
-    isAdminMode,
     setIsAdminMode,
     setShowPasswordModal,
     setShowSaveModal,
@@ -18,13 +17,8 @@ export const useAppHandlers = () => {
     setEditingItem,
   } = useAppContext();
 
-  const {
-    checklistData,
-    checkedItems,
-    hasUnsavedChanges,
-    copyCodeToClipboard,
-    resetToDefault,
-  } = useChecklist();
+  const { checklistData, checkedItems, hasUnsavedChanges, copyCodeToClipboard, resetToDefault } =
+    useChecklist();
 
   const handlePasswordSuccess = useCallback(() => {
     setIsAdminMode(true);
@@ -72,4 +66,3 @@ export const useAppHandlers = () => {
     handleAdminClick,
   };
 };
-

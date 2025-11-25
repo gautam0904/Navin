@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { X, Wifi, WifiOff, Share2, QrCode, Copy, Check, AlertCircle } from 'lucide-react';
 import { ShareService, ShareProgress } from '../../services';
 
@@ -7,12 +7,8 @@ interface ShareModalProps {
   onClose: () => void;
   onShareComplete?: () => void;
 }
-
-export const ShareModal: React.FC<ShareModalProps> = ({
-  isOpen,
-  onClose,
-  onShareComplete,
-}) => {
+/* eslint-disable complexity */
+const ShareModalContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [mode, setMode] = useState<'select' | 'send' | 'receive'>('select');
   const [shareCode, setShareCode] = useState<string>('');
   const [connectionCode, setConnectionCode] = useState<string>('');
@@ -22,19 +18,23 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    if (!isOpen) {
-      // Reset state when modal closes
-      setMode('select');
-      setShareCode('');
-      setConnectionCode('');
-      setIsHosting(false);
-      setIsConnecting(false);
-      setProgress(null);
-      setError(null);
-      ShareService.stopSharing();
-    }
-  }, [isOpen]);
+  const resetState = () => {
+    setMode('select');
+    setShareCode('');
+    setConnectionCode('');
+    setIsHosting(false);
+    setIsConnecting(false);
+    setProgress(null);
+    setError(null);
+    ShareService.stopSharing();
+  };
+
+  const handleClose = () => {
+    resetState();
+    onClose();
+  };
+
+  // No effect needed; this component unmounts when modal closes.
 
   const handleStartHosting = async () => {
     try {
@@ -90,8 +90,6 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     }
   };
 
-  if (!isOpen) return null;
-
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl border border-gray-200 max-h-[90vh] overflow-y-auto">
@@ -103,7 +101,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             <h2 className="text-2xl font-bold text-gray-800">Share Data</h2>
           </div>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
             <X className="w-5 h-5 text-gray-500" />
@@ -143,7 +141,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             </div>
             <div className="pt-4 border-t border-gray-200">
               <p className="text-xs text-gray-500 text-center">
-                Note: Offline P2P sharing is under active development. For now, please use Export/Import feature in Settings.
+                Note: Offline P2P sharing is under active development. For now, please use
+                Export/Import feature in Settings.
               </p>
             </div>
           </div>
@@ -161,7 +160,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               {!isHosting ? (
                 <>
                   <p className="text-gray-600">
-                    Start sharing to generate a connection code that other devices can use to receive your data.
+                    Start sharing to generate a connection code that other devices can use to
+                    receive your data.
                   </p>
                   <button
                     onClick={handleStartHosting}
@@ -177,7 +177,9 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     <p className="text-2xl font-bold text-gray-900 mb-2 font-mono tracking-wider">
                       {shareCode}
                     </p>
-                    <p className="text-sm text-gray-600 mb-4">Share this code with the receiving device</p>
+                    <p className="text-sm text-gray-600 mb-4">
+                      Share this code with the receiving device
+                    </p>
                     <button
                       onClick={handleCopyCode}
                       className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
@@ -272,3 +274,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   );
 };
 
+export const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+  return <ShareModalContent onClose={onClose} />;
+};

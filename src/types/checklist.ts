@@ -55,4 +55,3 @@ export const LANGUAGES = [
   'shell',
   'plaintext',
 ];
-

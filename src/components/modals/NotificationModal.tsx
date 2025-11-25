@@ -7,10 +7,7 @@ interface NotificationModalProps {
   onClose: () => void;
 }
 
-export const NotificationModal: React.FC<NotificationModalProps> = ({
-  isOpen,
-  type,
-}) => {
+export const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, type }) => {
   if (!isOpen) return null;
 
   const isSave = type === 'save';
@@ -20,13 +17,13 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
   const textColor = isSave ? 'text-green-50' : 'text-blue-50';
 
   return (
-    <div className={`fixed top-6 right-6 z-50 ${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl max-w-md animate-slide-in border`}>
+    <div
+      className={`fixed top-6 right-6 z-50 ${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl max-w-md animate-slide-in border`}
+    >
       <div className="flex items-start gap-3">
         <CheckCircle size={24} className="flex-shrink-0 mt-1" />
         <div>
-          <p className="font-semibold text-lg mb-1">
-            {isSave ? 'Ready to save!' : 'Code copied!'}
-          </p>
+          <p className="font-semibold text-lg mb-1">{isSave ? 'Ready to save!' : 'Code copied!'}</p>
           <p className={`text-sm ${textColor}`}>
             {isSave
               ? 'Click "Copy Code" then paste it into App.tsx to replace the defaultChecklistData array'
@@ -37,4 +34,3 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
     </div>
   );
 };
-

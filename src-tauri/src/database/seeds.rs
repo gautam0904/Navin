@@ -4,20 +4,24 @@ use rusqlite::{Connection, Result};
 
 /// Seed the database with default checklist data
 pub fn seed_default_data(conn: &mut Connection) -> Result<()> {
-    // Check if data already exists
+    // Check if default project data already exists
+    let default_project_id = "default-project";
     let count: i32 = conn
-        .query_row("SELECT COUNT(*) FROM checklist_sections", [], |row| row.get(0))
+        .query_row(
+            "SELECT COUNT(*) FROM checklist_sections WHERE project_id = ?1",
+            rusqlite::params![default_project_id],
+            |row| row.get(0)
+        )
         .unwrap_or(0);
 
     if count > 0 {
-        println!("👉 Database already seeded, skipping...");
+        println!("👉 Default project data already seeded, skipping...");
         return Ok(());
     }
 
     println!("👉 Seeding database with default checklist data...");
 
     // Ensure default project exists
-    let default_project_id = "default-project";
     let project_exists: i32 = conn
         .query_row(
             "SELECT COUNT(*) FROM projects WHERE id = ?1",
@@ -45,7 +49,7 @@ pub fn seed_default_data(conn: &mut Connection) -> Result<()> {
 }
 
 /// Get the default checklist data (hardcoded)
-fn get_default_checklist_data() -> Vec<ChecklistSection> {
+pub fn get_default_checklist_data() -> Vec<ChecklistSection> {
     vec![
         ChecklistSection {
             id: "branch".to_string(),

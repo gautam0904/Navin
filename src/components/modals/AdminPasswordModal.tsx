@@ -11,7 +11,7 @@ interface AdminPasswordModalProps {
 export const AdminPasswordModal: React.FC<AdminPasswordModalProps> = ({
   isOpen,
   onClose,
-  onSuccess
+  onSuccess,
 }) => {
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -46,9 +46,7 @@ export const AdminPasswordModal: React.FC<AdminPasswordModalProps> = ({
         </div>
         <form onSubmit={handleSubmit}>
           <div className="mb-6">
-            <label className="block text-sm font-semibold text-gray-700 mb-3">
-              Enter Password
-            </label>
+            <label className="block text-sm font-semibold text-gray-700 mb-3">Enter Password</label>
             <input
               type="password"
               value={password}
@@ -81,4 +79,3 @@ export const AdminPasswordModal: React.FC<AdminPasswordModalProps> = ({
     </div>
   );
 };
-

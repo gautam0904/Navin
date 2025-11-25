@@ -10,12 +10,12 @@ export const exportProgress = (
 
   let report = `Frontend Implementation Checklist Report\n`;
   report += `Date: ${date}\n`;
-  report += `Progress: ${completed}/${total} items (${Math.round(completed / total * 100)}%)\n\n`;
+  report += `Progress: ${completed}/${total} items (${Math.round((completed / total) * 100)}%)\n\n`;
 
-  checklistData.forEach(section => {
+  checklistData.forEach((section) => {
     report += `\n${section.title}\n`;
     report += '='.repeat(section.title.length) + '\n';
-    section.items.forEach(item => {
+    section.items.forEach((item) => {
       const checked = checkedItems[item.id] ? '✓' : '☐';
       report += `${checked} ${item.text}\n`;
     });
@@ -28,4 +28,3 @@ export const exportProgress = (
   a.download = `checklist-report-${date}.txt`;
   a.click();
 };
-

@@ -11,7 +11,9 @@ export class ChecklistService {
    */
   static async getAllSections(projectId?: string): Promise<ChecklistSection[]> {
     try {
-      return await safeInvoke<ChecklistSection[]>('get_all_sections', { projectId: projectId || null });
+      return await safeInvoke<ChecklistSection[]>('get_all_sections', {
+        projectId: projectId || null,
+      });
     } catch (error) {
       console.error('Failed to get sections:', error);
       throw error;
@@ -21,7 +23,11 @@ export class ChecklistService {
   /**
    * Add a new section
    */
-  static async addSection(section: ChecklistSection, displayOrder: number, projectId?: string): Promise<void> {
+  static async addSection(
+    section: ChecklistSection,
+    displayOrder: number,
+    projectId?: string
+  ): Promise<void> {
     try {
       await safeInvoke('add_section', { section, displayOrder, projectId: projectId || null });
     } catch (error) {
@@ -93,7 +99,10 @@ export class ChecklistService {
   /**
    * Update examples for a section
    */
-  static async updateExamples(sectionId: string, examples?: { good: string[]; bad: string[] }): Promise<void> {
+  static async updateExamples(
+    sectionId: string,
+    examples?: { good: string[]; bad: string[] }
+  ): Promise<void> {
     try {
       await safeInvoke('update_section_examples', { sectionId, examples: examples || null });
     } catch (error) {
@@ -107,7 +116,10 @@ export class ChecklistService {
    */
   static async updateCodeExamples(sectionId: string, codeExamples?: CodeExamples): Promise<void> {
     try {
-      await safeInvoke('update_section_code_examples', { sectionId, codeExamples: codeExamples || null });
+      await safeInvoke('update_section_code_examples', {
+        sectionId,
+        codeExamples: codeExamples || null,
+      });
     } catch (error) {
       console.error('Failed to update code examples:', error);
       throw error;
@@ -119,7 +131,10 @@ export class ChecklistService {
    */
   static async updateCodeExample(sectionId: string, codeExample?: string): Promise<void> {
     try {
-      await safeInvoke('update_section_code_example', { sectionId, codeExample: codeExample || null });
+      await safeInvoke('update_section_code_example', {
+        sectionId,
+        codeExample: codeExample || null,
+      });
     } catch (error) {
       console.error('Failed to update code example:', error);
       throw error;
@@ -129,7 +144,10 @@ export class ChecklistService {
   /**
    * Update examples for an item
    */
-  static async updateItemExamples(itemId: string, examples?: { good: string[]; bad: string[] }): Promise<void> {
+  static async updateItemExamples(
+    itemId: string,
+    examples?: { good: string[]; bad: string[] }
+  ): Promise<void> {
     try {
       await safeInvoke('update_item_examples', { itemId, examples: examples || null });
     } catch (error) {
@@ -162,4 +180,3 @@ export class ChecklistService {
     }
   }
 }
-

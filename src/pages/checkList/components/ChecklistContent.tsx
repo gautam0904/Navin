@@ -1,16 +1,26 @@
-import { useAppContext } from '@contexts/AppContext';
+/* eslint-disable max-lines */
+import { useAppContext } from '@/app/providers/AppProvider';
 import { useChecklist } from '../hooks/useChecklist';
 import { ChecklistSection } from './ChecklistSection';
 import { useAppHandlers } from '@hooks/useAppHandlers';
 import { useProject } from '@contexts/ProjectContext';
-import { Download, RotateCcw, Settings, Save, Copy, XCircle, Plus, FolderOpen, ClipboardList, TrendingUp, AlertTriangle } from 'lucide-react';
+import {
+  Download,
+  RotateCcw,
+  Settings,
+  Save,
+  Copy,
+  XCircle,
+  Plus,
+  FolderOpen,
+  ClipboardList,
+  TrendingUp,
+  AlertTriangle,
+} from 'lucide-react';
 
+// eslint-disable-next-line complexity
 export const ChecklistContent = () => {
-  const {
-    isAdminMode,
-    editingSection,
-    editingItem,
-  } = useAppContext();
+  const { isAdminMode, editingSection, editingItem } = useAppContext();
 
   const {
     expandedSections,
@@ -41,13 +51,8 @@ export const ChecklistContent = () => {
     saveItemExamples,
   } = useChecklist();
 
-  const {
-    exitAdminMode,
-    handleExport,
-    handleSave,
-    handleCopyCode,
-    handleAdminClick,
-  } = useAppHandlers();
+  const { exitAdminMode, handleExport, handleSave, handleCopyCode, handleAdminClick } =
+    useAppHandlers();
 
   const { setEditingSection, setEditingItem } = useAppContext();
   const { currentProject } = useProject();
@@ -60,12 +65,16 @@ export const ChecklistContent = () => {
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-primary dark:bg-primary text-white dark:text-white rounded-lg shadow-md">
               <ClipboardList className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
-              <span className="text-xs sm:text-sm font-bold tracking-wide">PRE-COMMIT CHECKLIST</span>
+              <span className="text-xs sm:text-sm font-bold tracking-wide">
+                PRE-COMMIT CHECKLIST
+              </span>
             </div>
             {currentProject && (
               <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-primary/10 dark:bg-primary/15 rounded-lg border border-primary/30 dark:border-primary/30 shadow-sm">
                 <FolderOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary dark:text-primary shrink-0" />
-                <span className="text-xs sm:text-sm font-semibold text-primary dark:text-primary truncate max-w-[150px] sm:max-w-none">{currentProject.name}</span>
+                <span className="text-xs sm:text-sm font-semibold text-primary dark:text-primary truncate max-w-[150px] sm:max-w-none">
+                  {currentProject.name}
+                </span>
               </div>
             )}
           </div>
@@ -78,7 +87,9 @@ export const ChecklistContent = () => {
                   disabled={!hasUnsavedChanges}
                 >
                   <Save className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                  <span className="hidden sm:inline">{hasUnsavedChanges ? 'Ready to Save' : 'No Changes'}</span>
+                  <span className="hidden sm:inline">
+                    {hasUnsavedChanges ? 'Ready to Save' : 'No Changes'}
+                  </span>
                   <span className="sm:hidden">{hasUnsavedChanges ? 'Save' : 'None'}</span>
                 </button>
                 <button
@@ -125,7 +136,9 @@ export const ChecklistContent = () => {
         </div>
         <div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-text-primary dark:text-text-primary mb-2 tracking-tight leading-tight">
-            {currentProject ? `${currentProject.name} Checklist` : 'Frontend Implementation Checklist'}
+            {currentProject
+              ? `${currentProject.name} Checklist`
+              : 'Frontend Implementation Checklist'}
           </h1>
           <p className="text-sm sm:text-base md:text-lg text-text-secondary dark:text-text-secondary leading-relaxed font-medium">
             {currentProject
@@ -146,7 +159,9 @@ export const ChecklistContent = () => {
             <div className="flex items-center gap-2 sm:gap-3">
               <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-sm sm:text-base font-semibold text-text-primary dark:text-text-primary " />
               <div>
-                <h2 className="text-sm sm:text-base font-semibold text-text-primary dark:text-text-primary mb-0.5">Overall Progress</h2>
+                <h2 className="text-sm sm:text-base font-semibold text-text-primary dark:text-text-primary mb-0.5">
+                  Overall Progress
+                </h2>
                 <p className="text-xs sm:text-sm text-text-secondary dark:text-text-secondary">
                   {completedItems} of {totalItems} items completed
                 </p>
@@ -158,22 +173,32 @@ export const ChecklistContent = () => {
                 <div className="text-2xl sm:text-3xl font-bold text-primary dark:text-primary leading-none">
                   {progressPercent}%
                 </div>
-                <div className="text-xs font-medium text-text-tertiary dark:text-text-tertiary mt-0.5">Complete</div>
+                <div className="text-xs font-medium text-text-tertiary dark:text-text-tertiary mt-0.5">
+                  Complete
+                </div>
               </div>
               <div className="hidden sm:block w-px h-10 bg-border-light dark:border-border-medium"></div>
               <div
                 className="px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-bg-secondary dark:bg-bg-surface-3 rounded-lg shadow-sm"
                 style={{ minWidth: '60px' }}
               >
-                <div className="text-lg sm:text-xl font-bold text-text-primary dark:text-text-primary">{completedItems}</div>
-                <div className="text-xs font-medium text-text-tertiary dark:text-text-tertiary">Completed</div>
+                <div className="text-lg sm:text-xl font-bold text-text-primary dark:text-text-primary">
+                  {completedItems}
+                </div>
+                <div className="text-xs font-medium text-text-tertiary dark:text-text-tertiary">
+                  Completed
+                </div>
               </div>
               <div
                 className="px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-bg-secondary dark:bg-bg-surface-3 rounded-lg shadow-sm"
                 style={{ minWidth: '60px' }}
               >
-                <div className="text-lg sm:text-xl font-bold text-text-primary dark:text-text-primary">{totalItems}</div>
-                <div className="text-xs font-medium text-text-tertiary dark:text-text-tertiary">Total</div>
+                <div className="text-lg sm:text-xl font-bold text-text-primary dark:text-text-primary">
+                  {totalItems}
+                </div>
+                <div className="text-xs font-medium text-text-tertiary dark:text-text-tertiary">
+                  Total
+                </div>
               </div>
             </div>
           </div>
@@ -181,10 +206,7 @@ export const ChecklistContent = () => {
           {/* Progress Bar - Inside Unified Container */}
           <div className="mt-4">
             <div className="progress-container relative" style={{ height: '10px' }}>
-              <div
-                className="progress-fill"
-                style={{ width: `${progressPercent}%` }}
-              />
+              <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
               {progressPercent > 10 && (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className="text-xs font-bold text-white drop-shadow-lg z-10">
@@ -223,8 +245,10 @@ export const ChecklistContent = () => {
                   <div className="flex items-center gap-2 px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg text-xs sm:text-sm shadow-sm w-full sm:w-auto justify-center sm:justify-start">
                     <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellow-700 dark:text-yellow-400 flex-shrink-0" />
                     <span className="text-yellow-700 dark:text-yellow-400 font-medium text-center sm:text-left">
-                      <span className="hidden sm:inline">Click "Copy Code" to save permanently</span>
-                      <span className="sm:hidden">Click "Copy Code" to save</span>
+                      <span className="hidden sm:inline">
+                        Click &quot;Copy Code&quot; to save permanently
+                      </span>
+                      <span className="sm:hidden">Click &quot;Copy Code&quot; to save</span>
                     </span>
                   </div>
                 )}
@@ -272,7 +296,9 @@ export const ChecklistContent = () => {
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 dark:bg-primary/15 flex items-center justify-center">
                 <ClipboardList className="w-8 h-8 text-primary dark:text-primary" />
               </div>
-              <h3 className="text-xl font-bold text-text-primary dark:text-text-primary mb-2">No Checklist Items Yet</h3>
+              <h3 className="text-xl font-bold text-text-primary dark:text-text-primary mb-2">
+                No Checklist Items Yet
+              </h3>
               <p className="text-text-secondary dark:text-text-secondary mb-6">
                 {isAdminMode
                   ? 'Click "Add New Section" to create your first checklist section.'

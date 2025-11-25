@@ -1,17 +1,23 @@
-@import "./theme/colors.css";
-@import "./theme/base.css";
-@import "./theme/design-system.css";
-@import "tailwindcss";
+@import './theme/colors.css';
+@import './theme/base.css';
+@import './theme/design-system.css';
+@import 'tailwindcss';
 
 /* index.css - ensure Tailwind base/utilities are included elsewhere already */
 
 /* scrollbar for sidebar (optional) */
-.sidebar-scroll::-webkit-scrollbar { width: 8px; }
-.sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 4px; }
+.sidebar-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+}
 
 /* small visual handle when hovering the separator */
-[data-theme="dark"] .hover\:bg-border-light:hover { background-color: rgba(255,255,255,0.06); }
-
+[data-theme='dark'] .hover\:bg-border-light:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
 
 /* Responsive Design Utilities */
 .container-responsive {
@@ -26,7 +32,6 @@
 .sidebar-resize-line:hover {
   background: rgba(255, 255, 255, 0.08);
 }
-
 
 @media (min-width: 640px) {
   .container-responsive {

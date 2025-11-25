@@ -11,8 +11,18 @@ export interface Project {
   is_default: boolean;
 }
 
+// Backend project structure from Rust
+interface BackendProject {
+  id: string;
+  name: string;
+  description?: string | null;
+  created_at: string;
+  updated_at: string;
+  is_default: boolean;
+}
+
 // Helper to map backend ProjectRow to frontend Project
-const mapProject = (project: any): Project => ({
+const mapProject = (project: BackendProject): Project => ({
   id: project.id,
   name: project.name,
   description: project.description,
@@ -31,7 +41,7 @@ export class ProjectService {
    */
   static async getAllProjects(): Promise<Project[]> {
     try {
-      const projects = await safeInvoke<any[]>('get_all_projects');
+      const projects = await safeInvoke<BackendProject[]>('get_all_projects');
       return projects.map(mapProject);
     } catch (error) {
       console.error('Failed to get projects:', error);
@@ -44,7 +54,7 @@ export class ProjectService {
    */
   static async getCurrentProject(): Promise<Project | null> {
     try {
-      const project = await safeInvoke<any | null>('get_current_project');
+      const project = await safeInvoke<BackendProject | null>('get_current_project');
       return project ? mapProject(project) : null;
     } catch (error) {
       console.error('Failed to get current project:', error);
@@ -57,7 +67,7 @@ export class ProjectService {
    */
   static async createProject(name: string, description?: string): Promise<Project> {
     try {
-      const project = await safeInvoke<any>('create_project', { name, description });
+      const project = await safeInvoke<BackendProject>('create_project', { name, description });
       return mapProject(project);
     } catch (error) {
       console.error('Failed to create project:', error);
@@ -113,4 +123,3 @@ export class ProjectService {
     }
   }
 }
-

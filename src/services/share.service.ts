@@ -8,7 +8,7 @@ export interface ShareConnection {
   id: string;
   peerId: string;
   isHost: boolean;
-  status: "disconnected" | "connecting" | "connected" | "error";
+  status: 'disconnected' | 'connecting' | 'connected' | 'error';
   error?: string;
 }
 
@@ -16,7 +16,7 @@ export interface ShareProgress {
   bytesTransferred: number;
   totalBytes: number;
   percentage: number;
-  stage: "discovering" | "connecting" | "transferring" | "complete";
+  stage: 'discovering' | 'connecting' | 'transferring' | 'complete';
 }
 
 /**
@@ -44,28 +44,29 @@ export class ShareService {
         iceServers: [
           // For offline/local network, we'll use mDNS (Multicast DNS)
           // But fallback to STUN servers if available
-          { urls: "stun:stun.l.google.com:19302" },
+          { urls: 'stun:stun.l.google.com:19302' },
         ],
       });
 
       // Create data channel for sending data
-      this.dataChannel = this.connection.createDataChannel("navin-share", {
+      this.dataChannel = this.connection.createDataChannel('navin-share', {
         ordered: true,
       });
 
       this.dataChannel.onopen = () => {
-        console.log("Data channel opened");
+        console.log('Data channel opened');
+        onDeviceFound({ name: 'Connected Peer', id: 'peer' });
       };
 
       this.dataChannel.onerror = (error) => {
-        console.error("Data channel error:", error);
-        onError("Data channel error");
+        console.error('Data channel error:', error);
+        onError('Data channel error');
       };
 
       // Listen for ICE candidates (for NAT traversal)
       this.connection.onicecandidate = (event) => {
         if (event.candidate) {
-          console.log("ICE candidate:", event.candidate);
+          console.log('ICE candidate:', event.candidate);
         }
       };
 
@@ -74,43 +75,40 @@ export class ShareService {
       await this.connection.setLocalDescription(offer);
 
       // Return offer SDP for sharing (as QR code or code)
-      return offer.sdp || "";
+      return offer.sdp || '';
     } catch (error) {
-      console.error("Failed to start hosting:", error);
+      console.error('Failed to start hosting:', error);
       this.isHosting = false;
-      throw new Error("Failed to start sharing. Please try again.");
+      throw new Error('Failed to start sharing. Please try again.');
     }
   }
 
   /**
    * Join another device's share session
    */
-  static async joinShare(
-    offerSdp: string,
-    onError: (error: string) => void
-  ): Promise<string> {
+  static async joinShare(offerSdp: string, onError: (error: string) => void): Promise<string> {
     try {
       this.isHosting = false;
       this.connection = new RTCPeerConnection({
-        iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
       });
 
       // Listen for data channel from host
       this.connection.ondatachannel = (event) => {
         this.dataChannel = event.channel;
         this.dataChannel.onopen = () => {
-          console.log("Joined data channel");
+          console.log('Joined data channel');
         };
         this.dataChannel.onerror = (error) => {
-          console.error("Data channel error:", error);
-          onError("Data channel error");
+          console.error('Data channel error:', error);
+          onError('Data channel error');
         };
       };
 
       // Set remote description from offer
       await this.connection.setRemoteDescription(
         new RTCSessionDescription({
-          type: "offer",
+          type: 'offer',
           sdp: offerSdp,
         })
       );
@@ -120,21 +118,19 @@ export class ShareService {
       await this.connection.setLocalDescription(answer);
 
       // Return answer SDP
-      return answer.sdp || "";
+      return answer.sdp || '';
     } catch (error) {
-      console.error("Failed to join share:", error);
-      throw new Error(
-        "Failed to join share. Please check the connection code."
-      );
+      console.error('Failed to join share:', error);
+      throw new Error('Failed to join share. Please check the connection code.');
     }
   }
 
   /**
    * Send data to connected peer
    */
-  static async sendData(data: any): Promise<void> {
-    if (!this.dataChannel || this.dataChannel.readyState !== "open") {
-      throw new Error("Data channel is not open");
+  static async sendData(data: unknown): Promise<void> {
+    if (!this.dataChannel || this.dataChannel.readyState !== 'open') {
+      throw new Error('Data channel is not open');
     }
 
     try {
@@ -157,16 +153,16 @@ export class ShareService {
             bytesTransferred: offset,
             totalBytes: dataBuffer.length,
             percentage: Math.round((offset / dataBuffer.length) * 100),
-            stage: "transferring",
+            stage: 'transferring',
           });
         }
       }
 
       // Send completion marker
-      this.dataChannel.send(JSON.stringify({ type: "complete" }));
+      this.dataChannel.send(JSON.stringify({ type: 'complete' }));
     } catch (error) {
-      console.error("Failed to send data:", error);
-      throw new Error("Failed to send data");
+      console.error('Failed to send data:', error);
+      throw new Error('Failed to send data');
     }
   }
 
@@ -174,74 +170,67 @@ export class ShareService {
    * Receive data from connected peer
    */
   static async receiveData(
-    onData: (data: any) => void,
+    onData: (data: unknown) => void,
     onProgress?: (progress: ShareProgress) => void
   ): Promise<void> {
     if (!this.dataChannel) {
-      throw new Error("Data channel not initialized");
+      throw new Error('Data channel not initialized');
     }
 
     this.onProgress = onProgress || null;
 
     let receivedBuffer: Uint8Array[] = [];
 
-    this.dataChannel.onmessage = (event) => {
+    this.dataChannel.onmessage = (event: MessageEvent<ArrayBuffer | Uint8Array | string>) => {
       try {
-        // Check if it's completion marker
-        if (typeof event.data === "string") {
-          try {
-            const message = JSON.parse(event.data);
-            if (message.type === "complete") {
-              // Reconstruct full data from chunks
-              const totalLength = receivedBuffer.reduce(
-                (sum, chunk) => sum + chunk.length,
-                0
-              );
-              const combined = new Uint8Array(totalLength);
-              let offset = 0;
+        const data = event.data;
 
-              for (const chunk of receivedBuffer) {
-                combined.set(chunk, offset);
-                offset += chunk.length;
-              }
-
-              const decoder = new TextDecoder();
-              const jsonString = decoder.decode(combined);
-              const data = JSON.parse(jsonString);
-
-              onData(data);
-              receivedBuffer = [];
-              return;
-            }
-          } catch {
-            // Not JSON, treat as text
+        // 1. Handle string messages
+        if (typeof data === 'string') {
+          const parsed = safeJsonParse<{ type?: string }>(data);
+          if (parsed?.type === 'complete') {
+            const fullData = ShareService.reconstructChunks(receivedBuffer);
+            receivedBuffer = [];
+            onData(fullData);
           }
+          return;
         }
 
-        // Collect chunks
-        if (event.data instanceof ArrayBuffer) {
-          receivedBuffer.push(new Uint8Array(event.data));
-        } else if (event.data instanceof Uint8Array) {
-          receivedBuffer.push(event.data);
+        // 2. Handle binary chunks
+        if (data instanceof ArrayBuffer) {
+          receivedBuffer.push(new Uint8Array(data));
+        } else if (data instanceof Uint8Array) {
+          receivedBuffer.push(data);
+        } else {
+          return;
         }
 
-        // Report progress
+        // 3. Progress callback
         if (this.onProgress) {
-          const bytesReceived = receivedBuffer.reduce(
-            (sum, chunk) => sum + chunk.length,
-            0
-          );
+          const bytesReceived = calculateBytes(receivedBuffer);
           this.onProgress({
             bytesTransferred: bytesReceived,
-            totalBytes: 0, // Unknown until complete
+            totalBytes: 0,
             percentage: 0,
-            stage: "transferring",
+            stage: 'transferring',
           });
         }
-      } catch (error) {
-        console.error("Failed to process received data:", error);
+      } catch (err) {
+        console.error('Failed to process received data:', err);
       }
     };
+
+    function safeJsonParse<T>(value: string): T | null {
+      try {
+        return JSON.parse(value) as T;
+      } catch {
+        return null;
+      }
+    }
+
+    function calculateBytes(chunks: Uint8Array[]): number {
+      return chunks.reduce((sum, chunk) => sum + chunk.length, 0);
+    }
   }
 
   /**
@@ -262,7 +251,7 @@ export class ShareService {
       this.isHosting = false;
       this.onProgress = null;
     } catch (error) {
-      console.error("Error stopping share:", error);
+      console.error('Error stopping share:', error);
     }
   }
 
@@ -271,8 +260,8 @@ export class ShareService {
    */
   static generateShareCode(): string {
     // Generate a 6-character code
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // Removed confusing characters
-    let code = "";
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Removed confusing characters
+    let code = '';
     for (let i = 0; i < 6; i++) {
       code += chars.charAt(Math.floor(Math.random() * chars.length));
     }
@@ -288,11 +277,25 @@ export class ShareService {
     }
 
     return {
-      id: "current",
-      peerId: "",
+      id: 'current',
+      peerId: '',
       isHost: this.isHosting,
-      status:
-        this.dataChannel?.readyState === "open" ? "connected" : "connecting",
+      status: this.dataChannel?.readyState === 'open' ? 'connected' : 'connecting',
     };
+  }
+
+  private static reconstructChunks(chunks: Uint8Array[]): unknown {
+    const totalLength = chunks.reduce((sum, c) => sum + c.length, 0);
+    const combined = new Uint8Array(totalLength);
+
+    let offset = 0;
+    for (const chunk of chunks) {
+      combined.set(chunk, offset);
+      offset += chunk.length;
+    }
+
+    const decoder = new TextDecoder();
+    const jsonStr = decoder.decode(combined);
+    return JSON.parse(jsonStr);
   }
 }

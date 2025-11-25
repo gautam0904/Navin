@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useAppContext } from '../../contexts/AppContext';
+import { useState, useEffect } from 'react';
+import { useAppContext } from '../../app/providers/AppProvider';
 import { AdminPasswordModal } from './AdminPasswordModal';
 import { NotificationModal } from './NotificationModal';
 import { ShareModal } from './ShareModal';
@@ -20,9 +20,10 @@ export const Modals = () => {
 
   // Expose share modal globally via window for Settings page
   useEffect(() => {
-    (window as any).openShareModal = () => setShowShareModal(true);
+    (window as Window & { openShareModal?: () => void }).openShareModal = () =>
+      setShowShareModal(true);
     return () => {
-      delete (window as any).openShareModal;
+      delete (window as Window & { openShareModal?: () => void }).openShareModal;
     };
   }, []);
 
@@ -46,11 +47,7 @@ export const Modals = () => {
         onClose={() => setShowCopiedNotification(false)}
       />
 
-      <ShareModal
-        isOpen={showShareModal}
-        onClose={() => setShowShareModal(false)}
-      />
+      <ShareModal isOpen={showShareModal} onClose={() => setShowShareModal(false)} />
     </>
   );
 };
-

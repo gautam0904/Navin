@@ -1,8 +1,6 @@
 import { BrowserRouter } from 'react-router-dom';
-import { ThemeProvider } from './contexts/ThemeContext';
-import { AppProvider } from './contexts/AppContext';
-import { ProjectProvider } from './contexts/ProjectContext';
-import { Layout } from './components/layout/Layout';
+import { ThemeProvider, AppProvider, ProjectProvider } from './app/providers';
+import { Layout } from './layouts/MainLayout/Layout';
 import { Modals } from './components/modals/Modals';
 import { AppRouter } from './router/AppRouter';
 

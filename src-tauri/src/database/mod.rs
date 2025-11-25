@@ -5,6 +5,7 @@ use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 
 pub use seeds::seed_default_data;
+pub use seeds::get_default_checklist_data;
 
 /// Get the database path based on environment (dev or production)
 pub fn get_db_path(app: &AppHandle) -> PathBuf {

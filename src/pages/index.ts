@@ -1,6 +1,3 @@
-export { HomePage } from './HomePage';
-export { ChecklistPage } from './ChecklistPage';
-export { SettingsPage } from './setting/SettingsPage';
-export { AboutPage } from './AboutPage';
-export { NotFoundPage } from './NotFoundPage';
-
+export { HomePage } from './HomePage/HomePage';
+export { AboutPage } from './AboutPage/AboutPage';
+export { NotFoundPage } from './NotFoundPage/NotFoundPage';
