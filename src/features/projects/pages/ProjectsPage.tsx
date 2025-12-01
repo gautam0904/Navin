@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { FolderOpen, Plus } from 'lucide-react';
 import { useProject } from '../../../app/providers/ProjectProvider';
 import { LoadingState } from '@components/ui/LoadingState';
@@ -16,6 +17,7 @@ interface ProjectStats {
 }
 
 export const ProjectsPage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const {
     projects,
     currentProject,
@@ -35,6 +37,13 @@ export const ProjectsPage = () => {
   const [newDescription, setNewDescription] = useState('');
   const [projectStats, setProjectStats] = useState<Record<string, ProjectStats>>({});
   const [loadingStats, setLoadingStats] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    if (searchParams.get('action') === 'new') {
+      setShowCreateForm(true);
+      setSearchParams({});
+    }
+  }, [searchParams, setSearchParams]);
 
   const handleStartEdit = (project: (typeof projects)[0]) => {
     setEditingId(project.id);

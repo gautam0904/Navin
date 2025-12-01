@@ -1,11 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
-import { ClipboardList, Settings, Info, Home, FolderOpen } from 'lucide-react';
+import { ClipboardList, Settings, Info, Home, FolderOpen, GitBranch } from 'lucide-react';
 import { ROUTES } from '../../constants/routes';
 import { useChecklist } from '../../features/checklist/hooks/useChecklist';
 import React from 'react';
 
 const navItems = [
   { path: ROUTES.HOME, label: 'Home', icon: Home },
+  { path: ROUTES.GIT, label: 'Git', icon: GitBranch },
   { path: ROUTES.CHECKLIST, label: 'Checklist', icon: ClipboardList },
   { path: ROUTES.PROJECTS, label: 'Projects', icon: FolderOpen },
   { path: ROUTES.SETTINGS, label: 'Settings', icon: Settings },

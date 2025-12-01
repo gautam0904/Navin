@@ -4,6 +4,7 @@ import { HomePage, AboutPage, NotFoundPage } from '../pages';
 import { ChecklistPage } from '../features/checklist';
 import { ProjectsPage } from '../features/projects';
 import { SettingsPage } from '../features/settings';
+import { GitLayout } from '../layouts/GitLayout';
 
 export const AppRouter = () => {
   return (
@@ -13,6 +14,7 @@ export const AppRouter = () => {
       <Route path={ROUTES.PROJECTS} element={<ProjectsPage />} />
       <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
       <Route path={ROUTES.ABOUT} element={<AboutPage />} />
+      <Route path="/git" element={<GitLayout />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

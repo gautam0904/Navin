@@ -1,11 +1,13 @@
 #![warn(clippy::all)]
 #![allow(clippy::too_many_arguments)]
 
-mod commands;
-mod core;
-mod database;
-mod models;
-mod repositories;
+pub mod commands;
+pub mod core;
+pub mod database;
+pub mod menu;
+pub mod models;
+pub mod repositories;
+pub mod file_system;
 
 use commands::*;
 use database::{create_pool, get_db_path, init_db};
@@ -16,7 +18,6 @@ use tauri::Manager;
 // -------------------------------------------------------
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    // Initialize logging first
     core::logging::init();
 
     tauri::Builder::default()
@@ -52,12 +53,28 @@ pub fn run() {
             update_project,
             delete_project,
             switch_project,
-            get_project_checklist
+            get_project_checklist,
+            file_system::read_dir,
+            // Git commands
+            open_repository,
+            discover_repository,
+            get_repository_status,
+            get_branches,
+            stage_file,
+            stage_all,
+            unstage_file,
+            unstage_all,
+            create_commit,
+            checkout_branch,
+            create_branch,
+            delete_branch,
+            get_current_repository,
+            get_git_config
         ])
+        .manage(git_commands::GitState::new())
         .setup(|app| {
             let db_path = get_db_path(&app.handle());
-            
-            // Initialize database schema
+
             match init_db(&app.handle()) {
                 Ok(_) => {
                     tracing::info!("✅ Database initialized successfully");
@@ -65,7 +82,7 @@ pub fn run() {
                 Err(e) => {
                     let error_msg = format!("Failed to initialize database: {}", e);
                     tracing::error!("{}", error_msg);
-                    
+
                     // Try to show error dialog if possible
                     if let Some(window) = app.get_webview_window("main") {
                         let _ = window.eval(&format!(
@@ -73,29 +90,43 @@ pub fn run() {
                             e
                         ));
                     }
-                    
+
                     tracing::error!("Setup failed: {}", error_msg);
-                    // Continue anyway - pool creation might still work
                 }
             }
-            
-            // Create connection pool
+
             match create_pool(db_path) {
                 Ok(pool) => {
                     tracing::info!("✅ Connection pool created successfully");
                     app.manage(pool);
-                    Ok(())
                 }
                 Err(e) => {
                     let error_msg = format!("Failed to create connection pool: {}", e);
                     tracing::error!("{}", error_msg);
-                    Err(Box::from(error_msg))
+                    return Err(Box::from(error_msg));
                 }
             }
+
+            match menu::create_menu(&app.handle()) {
+                Ok(menu) => {
+                    if let Err(e) = app.set_menu(menu) {
+                        tracing::error!("Failed to set menu: {}", e);
+                    } else {
+                        tracing::info!("✅ Application menu created successfully");
+                    }
+                }
+                Err(e) => {
+                    tracing::error!("Failed to create menu: {}", e);
+                }
+            }
+
+            Ok(())
+        })
+        .on_menu_event(|app, event| {
+            menu::handle_menu_event(&app, event);
         })
         .on_window_event(|_window, event| {
             if let tauri::WindowEvent::CloseRequested { .. } = event {
-                // Allow window to close gracefully
             }
         })
         .run(tauri::generate_context!())

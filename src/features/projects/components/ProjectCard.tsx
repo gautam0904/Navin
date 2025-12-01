@@ -209,7 +209,7 @@ const ProjectActions: React.FC<{
         <Link
           to={ROUTES.CHECKLIST}
           onClick={() => onSwitch(project.id)}
-          className="flex-1 px-3 py-2 bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/50 text-green-600 dark:text-green-400 rounded-lg transition-colors text-sm font-medium text-center border border-green-200 dark:border-green-800"
+          className="flex-1 px-3 py-2 bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 text-primary dark:text-accent rounded-lg transition-colors text-sm font-medium text-center border border-primary/30 dark:border-primary/40"
         >
           <Eye className="w-4 h-4 inline mr-1" />
           View Criteria
@@ -253,10 +253,11 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 }) => {
   return (
     <div
-      className={`bg-bg-secondary dark:bg-bg-secondary rounded-xl shadow-sm p-6 border transition-all ${isCurrent
+      className={`bg-bg-secondary dark:bg-bg-secondary rounded-xl shadow-sm p-6 border transition-all ${
+        isCurrent
           ? 'border-primary dark:border-accent ring-2 ring-primary/20 dark:ring-accent/20 shadow-md'
           : 'border-border-light dark:border-border-medium hover:border-primary/30 dark:hover:border-accent/30 hover:shadow-md'
-        }`}
+      }`}
     >
       {isEditing ? (
         <ProjectEditingForm

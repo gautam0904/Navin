@@ -29,3 +29,20 @@ r2d2_sqlite = "0.24"
 thiserror = "1.0"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Git operations
+git2 = "0.19"
+
+# Security and OAuth
+keyring = "3.6"
+oauth2 = "4.4"
+
+# HTTP client for API calls
+reqwest = { version = "0.12", features = ["json", "rustls-tls"] }
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# Utilities
+chrono = { version = "0.4", features = ["serde"] }
+url = "2.5"

@@ -1,47 +1,68 @@
 /* Professional Color System */
 :root {
   /* Primary Colors - Modern Blue */
-  --color-primary: #3b82f6; /* Modern blue */
+  --color-primary: #3b82f6;
+  /* Modern blue */
   --color-primary-dark: #2563eb;
   --color-primary-light: #60a5fa;
   --color-primary-hover: #1d4ed8;
 
   /* Secondary Colors - Indigo for accents */
-  --color-secondary: #6366f1; /* Indigo */
+  --color-secondary: #6366f1;
+  /* Indigo */
   --color-secondary-dark: #4f46e5;
   --color-secondary-light: #818cf8;
 
   /* Functional Colors */
-  --color-success: #10b981; /* Green */
-  --color-warning: #f59e0b; /* Amber */
-  --color-error: #ef4444; /* Red */
-  --color-info: #06b6d4; /* Cyan */
+  --color-success: #10b981;
+  /* Green */
+  --color-warning: #f59e0b;
+  /* Amber */
+  --color-error: #ef4444;
+  /* Red */
+  --color-info: #06b6d4;
+  /* Cyan */
 
   /* Light Theme Backgrounds - Clean white with soft off-white */
-  --color-bg-primary: #f8fafc; /* Clean soft off-white background */
-  --color-bg-secondary: #ffffff; /* Pure white for cards */
-  --color-bg-surface-2: #f1f5f9; /* Light gray for hover */
-  --color-bg-surface-3: #e2e8f0; /* Medium gray for active */
+  --color-bg-primary: #f8fafc;
+  /* Clean soft off-white background */
+  --color-bg-secondary: #ffffff;
+  /* Pure white for cards */
+  --color-bg-surface-2: #f1f5f9;
+  /* Light gray for hover */
+  --color-bg-surface-3: #e2e8f0;
+  /* Medium gray for active */
 
   /* Light Theme Text - Maximum readability */
-  --color-text-primary: #1f2937; /* Dark gray - primary text */
-  --color-text-secondary: #6b7280; /* Medium gray - secondary text */
-  --color-text-tertiary: #9ca3af; /* Light gray - disabled/muted text */
-  --color-text-inverse: #ffffff; /* White for buttons on colored backgrounds */
+  --color-text-primary: #1f2937;
+  /* Dark gray - primary text */
+  --color-text-secondary: #6b7280;
+  /* Medium gray - secondary text */
+  --color-text-tertiary: #9ca3af;
+  /* Light gray - disabled/muted text */
+  --color-text-inverse: #ffffff;
+  /* White for buttons on colored backgrounds */
 
   /* Light Theme Borders - Subtle and clean */
-  --color-border-light: #e5e7eb; /* Light gray - subtle borders */
-  --color-border-medium: #d1d5db; /* Medium gray - visible borders */
-  --color-border-dark: #9ca3af; /* Darker gray - strong borders */
+  --color-border-light: #e5e7eb;
+  /* Light gray - subtle borders */
+  --color-border-medium: #d1d5db;
+  /* Medium gray - visible borders */
+  --color-border-dark: #9ca3af;
+  /* Darker gray - strong borders */
 
   /* Legacy support - map to new system */
   --color-downriver: #3b82f6;
-  --color-accent: #6366f1; /* Map to secondary indigo */
+  --color-accent: #6366f1;
+  /* Map to secondary indigo */
   --color-accent-light: #818cf8;
   --color-accent-dark: #4f46e5;
-  --color-loblolly: #6b7280; /* Updated to match text-secondary */
-  --color-pickled-bluewood: #1f2937; /* Updated to match text-primary */
-  --color-regent-gray: #9ca3af; /* Updated to match text-tertiary */
+  --color-loblolly: #6b7280;
+  /* Updated to match text-secondary */
+  --color-pickled-bluewood: #1f2937;
+  /* Updated to match text-primary */
+  --color-regent-gray: #9ca3af;
+  /* Updated to match text-tertiary */
   --color-text-muted: #9ca3af;
   --color-text-muted-enhanced: #6b7280;
   --color-text-secondary-enhanced: #1f2937;
@@ -54,42 +75,56 @@
 
 /* Dark Theme - Professional Dark Mode */
 .dark {
-  /* Dark Theme Backgrounds - Navy-based, not pure black */
-  --color-bg-primary: #0a0e1a; /* Very dark navy */
-  --color-bg-secondary: #151b2e; /* Surface 1 - cards */
-  --color-bg-surface-2: #1e2841; /* Hover states */
-  --color-bg-surface-3: #2a3551; /* Active states */
+  /* Dark Theme Backgrounds - Deep Midnight Blue */
+  --color-bg-primary: #0f111a;
+  /* Darker, richer navy */
+  --color-bg-secondary: #1a1d2d;
+  /* Lighter navy for cards */
+  --color-bg-surface-2: #24283b;
+  /* Hover states */
+  --color-bg-surface-3: #2f344f;
+  /* Active states */
 
   /* Dark Theme Text */
-  --color-text-primary: #f8fafc; /* Almost white */
-  --color-text-secondary: #cbd5e1; /* Light gray */
-  --color-text-tertiary: #64748b; /* Muted gray */
-  --color-text-inverse: #0f172a; /* Dark for contrast */
+  --color-text-primary: #e2e8f0;
+  /* Slate-200 - softer white */
+  --color-text-secondary: #94a3b8;
+  /* Slate-400 */
+  --color-text-tertiary: #64748b;
+  /* Slate-500 */
+  --color-text-inverse: #0f172a;
+  /* Dark for contrast */
 
   /* Dark Theme Borders */
   --color-border-light: #1e293b;
+  /* Slate-800 */
   --color-border-medium: #334155;
+  /* Slate-700 */
   --color-border-dark: #475569;
+  /* Slate-600 */
 
-  /* Accent Colors - Brighter for dark mode */
-  --color-primary: #60a5fa;
-  --color-primary-dark: #3b82f6;
-  --color-primary-light: #93c5fd;
+  /* Accent Colors - Vibrant Blue */
+  --color-primary: #3b82f6;
+  /* Blue-500 - Vibrant */
+  --color-primary-dark: #2563eb;
+  /* Blue-600 */
+  --color-primary-light: #60a5fa;
+  /* Blue-400 */
   --color-primary-hover: #2563eb;
 
   /* Legacy support */
-  --color-accent: #60a5fa;
-  --color-accent-light: #93c5fd;
-  --color-accent-dark: #3b82f6;
-  --color-loblolly: #cbd5e1;
-  --color-pickled-bluewood: #1e2841;
+  --color-accent: #3b82f6;
+  --color-accent-light: #60a5fa;
+  --color-accent-dark: #2563eb;
+  --color-loblolly: #94a3b8;
+  --color-pickled-bluewood: #1a1d2d;
   --color-regent-gray: #64748b;
   --color-text-muted: #64748b;
   --color-text-muted-enhanced: #94a3b8;
-  --color-text-secondary-enhanced: #cbd5e1;
+  --color-text-secondary-enhanced: #e2e8f0;
 
   /* Progress colors for dark mode */
-  --color-progress: #60a5fa;
+  --color-progress: #3b82f6;
   --color-link: #60a5fa;
   --color-link-hover: #93c5fd;
 }

@@ -192,7 +192,7 @@ export const SettingsPage = () => {
               <button
                 onClick={handleImport}
                 disabled={isImporting}
-                className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/50 text-green-600 dark:text-green-400 rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed border border-green-200 dark:border-green-800 shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-[0.99]"
+                className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 text-primary dark:text-accent rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed border border-primary/30 dark:border-primary/40 shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-[0.99]"
               >
                 <Upload className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
                 <span className="font-semibold text-sm sm:text-base">
@@ -203,7 +203,7 @@ export const SettingsPage = () => {
             <button
               onClick={handleImportFromClipboard}
               disabled={isImporting}
-              className="w-full flex items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/50 text-green-600 dark:text-green-400 rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed border border-green-200 dark:border-green-800 shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-[0.99]"
+              className="w-full flex items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 text-primary dark:text-accent rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed border border-primary/30 dark:border-primary/40 shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-[0.99]"
             >
               <Clipboard className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
               <span className="font-semibold text-sm sm:text-base">
