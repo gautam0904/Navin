@@ -25,7 +25,9 @@ interface ProjectStats {
 interface Project {
   id: string;
   name: string;
-  description?: string;
+  description?: string | null;
+  created_at: string;
+  updated_at: string;
   is_default: boolean;
 }
 
@@ -251,11 +253,10 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 }) => {
   return (
     <div
-      className={`bg-bg-secondary dark:bg-bg-secondary rounded-xl shadow-sm p-6 border transition-all ${
-        isCurrent
+      className={`bg-bg-secondary dark:bg-bg-secondary rounded-xl shadow-sm p-6 border transition-all ${isCurrent
           ? 'border-primary dark:border-accent ring-2 ring-primary/20 dark:ring-accent/20 shadow-md'
           : 'border-border-light dark:border-border-medium hover:border-primary/30 dark:hover:border-accent/30 hover:shadow-md'
-      }`}
+        }`}
     >
       {isEditing ? (
         <ProjectEditingForm

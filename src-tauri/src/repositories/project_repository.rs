@@ -17,7 +17,7 @@ impl ProjectRepository {
     pub fn get_all_projects(conn: &Connection) -> Result<Vec<ProjectRow>> {
         let mut stmt = conn.prepare(
             "SELECT id, name, description, is_default, created_at, updated_at 
-             FROM projects ORDER BY is_default DESC, created_at ASC"
+             FROM projects ORDER BY is_default DESC, created_at ASC",
         )?;
 
         let projects: Vec<ProjectRow> = stmt
@@ -40,7 +40,7 @@ impl ProjectRepository {
     pub fn get_current_project(conn: &Connection) -> Result<Option<ProjectRow>> {
         let mut stmt = conn.prepare(
             "SELECT id, name, description, is_default, created_at, updated_at 
-             FROM projects WHERE is_default = 1 LIMIT 1"
+             FROM projects WHERE is_default = 1 LIMIT 1",
         )?;
 
         let result = stmt.query_row([], |row| {
@@ -104,12 +104,11 @@ impl ProjectRepository {
     /// Delete project
     pub fn delete_project(conn: &Connection, project_id: &str) -> Result<()> {
         // Don't allow deleting the default project
-        let is_default: i32 = conn
-            .query_row(
-                "SELECT is_default FROM projects WHERE id = ?1",
-                params![project_id],
-                |row| row.get(0),
-            )?;
+        let is_default: i32 = conn.query_row(
+            "SELECT is_default FROM projects WHERE id = ?1",
+            params![project_id],
+            |row| row.get(0),
+        )?;
 
         if is_default == 1 {
             return Err(rusqlite::Error::SqliteFailure(
@@ -143,7 +142,7 @@ impl ProjectRepository {
     pub fn get_project_by_id(conn: &Connection, project_id: &str) -> Result<Option<ProjectRow>> {
         let mut stmt = conn.prepare(
             "SELECT id, name, description, is_default, created_at, updated_at 
-             FROM projects WHERE id = ?1"
+             FROM projects WHERE id = ?1",
         )?;
 
         let result = stmt.query_row(params![project_id], |row| {
@@ -164,4 +163,3 @@ impl ProjectRepository {
         }
     }
 }
-

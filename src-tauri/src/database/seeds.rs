@@ -10,7 +10,7 @@ pub fn seed_default_data(conn: &mut Connection) -> Result<()> {
         .query_row(
             "SELECT COUNT(*) FROM checklist_sections WHERE project_id = ?1",
             rusqlite::params![default_project_id],
-            |row| row.get(0)
+            |row| row.get(0),
         )
         .unwrap_or(0);
 
@@ -57,7 +57,9 @@ pub fn get_default_checklist_data() -> Vec<ChecklistSection> {
             items: vec![
                 ChecklistItem {
                     id: "branch-1".to_string(),
-                    text: "Format: feature/<notionId>-<short-title> or bug/<notionId>-<short-title>".to_string(),
+                    text:
+                        "Format: feature/<notionId>-<short-title> or bug/<notionId>-<short-title>"
+                            .to_string(),
                     is_checked: None,
                     examples: None,
                     code_examples: None,
@@ -101,7 +103,9 @@ pub fn get_default_checklist_data() -> Vec<ChecklistSection> {
             items: vec![
                 ChecklistItem {
                     id: "api-1".to_string(),
-                    text: "Created contract (mock API or TypeScript interface) if backend not ready".to_string(),
+                    text:
+                        "Created contract (mock API or TypeScript interface) if backend not ready"
+                            .to_string(),
                     is_checked: None,
                     examples: None,
                     code_examples: None,
@@ -159,7 +163,7 @@ export const mockPatientData: PatientResponse[] = [
     lastVisit: '2024-01-15'
   }
 ];"#
-                    .to_string(),
+                .to_string(),
             ),
         },
         ChecklistSection {
@@ -176,7 +180,8 @@ export const mockPatientData: PatientResponse[] = [
                 },
                 ChecklistItem {
                     id: "code-2".to_string(),
-                    text: "React Query best practices followed (query keys, loading/error states)".to_string(),
+                    text: "React Query best practices followed (query keys, loading/error states)"
+                        .to_string(),
                     is_checked: None,
                     examples: None,
                     code_examples: None,
@@ -232,7 +237,7 @@ export const PatientCard = ({ patient, onSelect }: PatientCardProps) => {
     </div>
   );
 };"#
-                    .to_string(),
+                .to_string(),
             ),
         },
         ChecklistSection {
@@ -285,7 +290,7 @@ export const Dashboard = () => (
     <PatientChart />
   </Suspense>
 );"#
-                    .to_string(),
+                .to_string(),
             ),
         },
         ChecklistSection {
@@ -294,7 +299,8 @@ export const Dashboard = () => (
             items: vec![
                 ChecklistItem {
                     id: "stab-1".to_string(),
-                    text: "Existing features not broken — tested related pages/components".to_string(),
+                    text: "Existing features not broken — tested related pages/components"
+                        .to_string(),
                     is_checked: None,
                     examples: None,
                     code_examples: None,
@@ -568,4 +574,3 @@ export const Dashboard = () => (
         },
     ]
 }
-

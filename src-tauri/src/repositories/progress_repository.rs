@@ -6,7 +6,7 @@ impl ProgressRepository {
     /// Get all checked items for a project
     pub fn get_all_checked_items(conn: &Connection, project_id: &str) -> Result<Vec<String>> {
         let mut stmt = conn.prepare(
-            "SELECT item_id FROM user_progress WHERE project_id = ?1 AND is_checked = 1"
+            "SELECT item_id FROM user_progress WHERE project_id = ?1 AND is_checked = 1",
         )?;
 
         let items: Vec<String> = stmt
@@ -49,9 +49,14 @@ impl ProgressRepository {
     }
 
     /// Set item checked status for a project
-    pub fn set_item_checked(conn: &Connection, item_id: &str, project_id: &str, is_checked: bool) -> Result<()> {
+    pub fn set_item_checked(
+        conn: &Connection,
+        item_id: &str,
+        project_id: &str,
+        is_checked: bool,
+    ) -> Result<()> {
         let checked = if is_checked { 1 } else { 0 };
-        
+
         conn.execute(
             "INSERT OR REPLACE INTO user_progress (item_id, project_id, is_checked, checked_at) 
              VALUES (?1, ?2, ?3, datetime('now'))",
@@ -62,8 +67,10 @@ impl ProgressRepository {
 
     /// Reset all progress for a project
     pub fn reset_all(conn: &Connection, project_id: &str) -> Result<()> {
-        conn.execute("DELETE FROM user_progress WHERE project_id = ?1", params![project_id])?;
+        conn.execute(
+            "DELETE FROM user_progress WHERE project_id = ?1",
+            params![project_id],
+        )?;
         Ok(())
     }
 }
-

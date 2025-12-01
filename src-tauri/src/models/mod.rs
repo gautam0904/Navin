@@ -79,4 +79,3 @@ pub struct ProgressRow {
     pub item_id: String,
     pub is_checked: bool,
 }
-

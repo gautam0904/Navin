@@ -13,7 +13,10 @@
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\"",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "lint:rust": "cd src-tauri && cargo clippy -- -D warnings",
+    "fmt:rust": "cd src-tauri && cargo fmt",
+    "fmt:rust:check": "cd src-tauri && cargo fmt -- --check"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",

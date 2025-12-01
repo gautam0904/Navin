@@ -1,3 +1,6 @@
+#![warn(clippy::all)]
+#![allow(clippy::too_many_arguments)]
+
 mod commands;
 mod core;
 mod database;
@@ -5,7 +8,7 @@ mod models;
 mod repositories;
 
 use commands::*;
-use database::init_db;
+use database::{create_pool, get_db_path, init_db};
 use tauri::Manager;
 
 // -------------------------------------------------------
@@ -13,6 +16,9 @@ use tauri::Manager;
 // -------------------------------------------------------
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // Initialize logging first
+    core::logging::init();
+
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
@@ -49,15 +55,16 @@ pub fn run() {
             get_project_checklist
         ])
         .setup(|app| {
-            // Initialize database with better error handling
+            let db_path = get_db_path(&app.handle());
+            
+            // Initialize database schema
             match init_db(&app.handle()) {
                 Ok(_) => {
-                    println!("✅ Database initialized successfully");
-                    Ok(())
+                    tracing::info!("✅ Database initialized successfully");
                 }
                 Err(e) => {
                     let error_msg = format!("Failed to initialize database: {}", e);
-                    eprintln!("❌ {}", error_msg);
+                    tracing::error!("{}", error_msg);
                     
                     // Try to show error dialog if possible
                     if let Some(window) = app.get_webview_window("main") {
@@ -67,17 +74,28 @@ pub fn run() {
                         ));
                     }
                     
-                    // Return error but don't use SetupError (not in Tauri v2)
-                    eprintln!("Setup failed: {}", error_msg);
-                    // Continue anyway - app might still work
+                    tracing::error!("Setup failed: {}", error_msg);
+                    // Continue anyway - pool creation might still work
+                }
+            }
+            
+            // Create connection pool
+            match create_pool(db_path) {
+                Ok(pool) => {
+                    tracing::info!("✅ Connection pool created successfully");
+                    app.manage(pool);
                     Ok(())
+                }
+                Err(e) => {
+                    let error_msg = format!("Failed to create connection pool: {}", e);
+                    tracing::error!("{}", error_msg);
+                    Err(Box::from(error_msg))
                 }
             }
         })
         .on_window_event(|_window, event| {
             if let tauri::WindowEvent::CloseRequested { .. } = event {
-                // Allow window to close gracefully - prevent_close() would prevent closing
-                // We want to allow normal closing behavior
+                // Allow window to close gracefully
             }
         })
         .run(tauri::generate_context!())
