@@ -3,10 +3,13 @@ use chrono::{TimeZone, Utc};
 use git2::{
     BranchType, Commit as Git2Commit, Repository as Git2Repository, StatusOptions,
 };
+use serde::Serialize;
 use std::path::{Path, PathBuf};
 use thiserror::Error;
+use tracing::{debug, error, info, instrument, warn};
 
-#[derive(Error, Debug)]
+#[derive(Error, Debug, Serialize)]
+#[serde(tag = "type", content = "message")]
 pub enum GitError {
     #[error("Repository error: {0}")]
     RepositoryError(String),
@@ -20,26 +23,60 @@ pub enum GitError {
     #[error("Not a git repository: {0}")]
     NotARepository(String),
 
-    #[error("Git2 error: {0}")]
+    #[error("Branch '{0}' not found")]
+    BranchNotFound(String),
+
+    #[error("File '{0}' not found in repository")]
+    FileNotFound(String),
+
+    #[error("Cannot checkout branch: uncommitted changes in {0}")]
+    UncommittedChanges(String),
+
+    #[error("No staged changes to commit")]
+    NoStagedChanges,
+
+    #[error("Invalid commit message: {0}")]
+    InvalidCommitMessage(String),
+
+    #[error("Merge conflict in {0}")]
+    MergeConflict(String),
+
+    #[error("Git2 library error: {0}")]
+    #[serde(serialize_with = "serialize_git2_error")]
     Git2Error(#[from] git2::Error),
 
     #[error("IO error: {0}")]
+    #[serde(serialize_with = "serialize_io_error")]
     IoError(#[from] std::io::Error),
+}
+
+fn serialize_git2_error<S>(error: &git2::Error, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    serializer.serialize_str(&error.to_string())
+}
+
+fn serialize_io_error<S>(error: &std::io::Error, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    serializer.serialize_str(&error.to_string())
 }
 
 pub type GitResult<T> = Result<T, GitError>;
 
-/// Git engine - wrapper around libgit2
 pub struct GitEngine {
     repo: Git2Repository,
     repo_path: PathBuf,
 }
 
 impl GitEngine {
-    /// Open an existing repository
+    #[instrument(skip(path), fields(path = %path.as_ref().display()))]
     pub fn open<P: AsRef<Path>>(path: P) -> GitResult<Self> {
         let path = path.as_ref();
         let repo = Git2Repository::open(path).map_err(|e| {
+            error!("Failed to open repository: {}", e);
             GitError::NotARepository(format!("{}: {}", path.display(), e))
         })?;
 
@@ -49,11 +86,14 @@ impl GitEngine {
         })
     }
 
-    /// Discover repository from current directory upwards
+    #[instrument(skip(path), fields(path = %path.as_ref().display()))]
     pub fn discover<P: AsRef<Path>>(path: P) -> GitResult<Self> {
         let path = path.as_ref();
         let repo = Git2Repository::discover(path)
-            .map_err(|e| GitError::NotARepository(format!("{}: {}", path.display(), e)))?;
+            .map_err(|e| {
+                error!("Failed to discover repository: {}", e);
+                GitError::NotARepository(format!("{}: {}", path.display(), e))
+            })?;
         
         let repo_path = repo.workdir().unwrap_or(repo.path()).to_path_buf();
 
@@ -63,7 +103,7 @@ impl GitEngine {
         })
     }
 
-    /// Get repository information
+    #[instrument(skip(self), fields(repo_path = %self.repo_path.display()))]
     pub fn get_info(&self) -> GitResult<RepositoryInfo> {
         let name = self
             .repo_path
@@ -84,18 +124,20 @@ impl GitEngine {
             .filter_map(|r| r.map(String::from))
             .collect();
 
-        Ok(RepositoryInfo {
+        let info = RepositoryInfo {
             path: self.repo_path.to_string_lossy().to_string(),
             name,
-            current_branch,
+            current_branch: current_branch.clone(),
             is_bare,
             is_empty,
             head_detached,
             remotes,
-        })
+        };
+        
+        debug!(?current_branch, is_bare, is_empty, head_detached, "Repository info retrieved");
+        Ok(info)
     }
 
-    /// Get current branch name
     fn get_current_branch_name(&self) -> GitResult<Option<String>> {
         if self.repo.head_detached()? {
             return Ok(None);
@@ -109,7 +151,7 @@ impl GitEngine {
         Ok(head.shorthand().map(String::from))
     }
 
-    /// Get repository status
+    #[instrument(skip(self), fields(repo_path = %self.repo_path.display()))]
     pub fn get_status(&self) -> GitResult<RepositoryStatus> {
         let mut opts = StatusOptions::new();
         opts.include_untracked(true);
@@ -200,24 +242,25 @@ impl GitEngine {
         })
     }
 
-    /// Get git configuration (user.name, user.email)
+    #[instrument(skip(self))]
     pub fn get_config(&self) -> GitResult<(String, String)> {
+        debug!("Fetching git configuration");
         let config = self.repo.config()?;
         let name = config.get_string("user.name").unwrap_or_default();
         let email = config.get_string("user.email").unwrap_or_default();
+        debug!(user_name = %name, user_email = %email, "Git configuration retrieved");
         Ok((name, email))
     }
 
-    /// Get all branches
+    #[instrument(skip(self), fields(repo_path = %self.repo_path.display()))]
     pub fn get_branches(&self) -> GitResult<Vec<Branch>> {
+        debug!("Fetching all branches");
         let mut branches = Vec::new();
         let mut has_branches = false;
 
-        // Local branches
         if let Ok(local_branches) = self.repo.branches(Some(BranchType::Local)) {
             for branch_result in local_branches {
                 if let Ok((branch, _)) = branch_result {
-                    // Ignore errors for individual branches, just skip them
                     if let Ok(Some(branch_info)) = self.get_branch_info(&branch, false) {
                         branches.push(branch_info);
                         has_branches = true;
@@ -226,11 +269,9 @@ impl GitEngine {
             }
         }
 
-        // Remote branches
         if let Ok(remote_branches) = self.repo.branches(Some(BranchType::Remote)) {
             for branch_result in remote_branches {
                 if let Ok((branch, _)) = branch_result {
-                    // Ignore errors for individual branches, just skip them
                     if let Ok(Some(branch_info)) = self.get_branch_info(&branch, true) {
                         branches.push(branch_info);
                         has_branches = true;
@@ -239,11 +280,9 @@ impl GitEngine {
             }
         }
 
-        // Fallback: If no branches found (e.g. initial commit or error), try to get HEAD
         if !has_branches {
             if let Ok(head) = self.repo.head() {
                 if let Some(name) = head.shorthand() {
-                     // Create a minimal branch info for HEAD
                      let is_head = true;
                      let last_commit = if let Ok(commit) = head.peel_to_commit() {
                         self.commit_to_summary(&commit).ok()
@@ -264,10 +303,10 @@ impl GitEngine {
             }
         }
 
+        info!(branch_count = branches.len(), "Branches retrieved");
         Ok(branches)
     }
 
-    /// Get branch information
     fn get_branch_info(
         &self,
         branch: &git2::Branch,
@@ -309,7 +348,6 @@ impl GitEngine {
         }))
     }
 
-    /// Get ahead/behind counts between two branches
     fn get_ahead_behind(&self, local: &str, upstream: &str) -> GitResult<(usize, usize)> {
         let local_oid = self.repo.revparse_single(local)?.id();
         let upstream_oid = self.repo.revparse_single(upstream)?.id();
@@ -319,7 +357,6 @@ impl GitEngine {
         Ok((ahead, behind))
     }
 
-    /// Convert git2::Commit to CommitSummary
     fn commit_to_summary(&self, commit: &Git2Commit) -> GitResult<CommitSummary> {
         let sha = commit.id().to_string();
         let short_sha = sha.chars().take(7).collect();
@@ -334,7 +371,6 @@ impl GitEngine {
         let author = commit.author();
         let author_name = author.name().unwrap_or("Unknown").to_string();
 
-        // Safe timestamp conversion
         let timestamp = Utc
             .timestamp_opt(commit.time().seconds(), 0)
             .single()
@@ -349,8 +385,9 @@ impl GitEngine {
         })
     }
 
-    /// Stage a file
+    #[instrument(skip(self, path), fields(repo_path = %self.repo_path.display(), file = %path.as_ref().display()))]
     pub fn stage_file<P: AsRef<Path>>(&self, path: P) -> GitResult<()> {
+        info!("Staging file");
         let mut index = self.repo.index()?;
         let path_ref = path.as_ref();
         
@@ -375,73 +412,72 @@ impl GitEngine {
     }
 
     /// Stage all changes
+    #[instrument(skip(self), fields(repo_path = %self.repo_path.display()))]
     pub fn stage_all(&self) -> GitResult<()> {
+        info!("Staging all changes");
         let mut index = self.repo.index()?;
         
         // Add all changes (modified, deleted, new)
         index.add_all(["*"].iter(), git2::IndexAddOption::DEFAULT, None)?;
         
         index.write()?;
+        info!("File staged successfully");
         Ok(())
     }
 
     /// Unstage a file
+    #[instrument(skip(self, path), fields(repo_path = %self.repo_path.display(), file = %path.as_ref().display()))]
     pub fn unstage_file<P: AsRef<Path>>(&self, path: P) -> GitResult<()> {
-        let mut index = self.repo.index()?;
+        info!("Unstaging file");
         let path_ref = path.as_ref();
-        
-        // Ensure path uses forward slashes for git
         let path_str = path_ref.to_string_lossy().replace('\\', "/");
 
-        // Check if HEAD exists (it might not if this is the initial commit)
-        match self.repo.head() {
-            Ok(head) => {
-                let head_tree = head.peel_to_tree()?;
-                // Reset the file in index to HEAD state
-                
-                // Try both normalized and original path
-                // git2 pathspecs match against the index (which uses /), but passing the original path might help if git2 handles it
-                let path_lossy = path_ref.to_string_lossy();
-                let path_spec = vec![path_str.as_str(), path_lossy.as_ref()];
-                
-                self.repo.reset_default(Some(&head_tree.into_object()), path_spec)?;
-                
-                // NOTE: reset_default updates the index on disk, so we SHOULD NOT call index.write() here
-            }
-            Err(_) => {
-                // No HEAD (initial commit), so just remove from index
-                let path_path = Path::new(&path_str);
-                index.remove_path(path_path)?;
-                // For remove_path, we DO need to write the index
-                index.write()?;
-            }
+        // Get the HEAD OID directly
+        let head_oid = self.repo.refname_to_id("HEAD")?;
+        
+        // Get the commit object
+        let commit = self.repo.find_commit(head_oid)?;
+        
+        // Reset specific file to HEAD commit
+        let path_spec = vec![path_str.as_str()];
+        
+        // Try reset first
+        if let Err(e) = self.repo.reset_default(Some(&commit.into_object()), path_spec) {
+            warn!("Reset default failed for {}: {}, falling back to index removal", path_str, e);
+            // Fallback: manually remove from index (for new files not in HEAD)
+            let mut index = self.repo.index()?;
+            let path_path = Path::new(&path_str);
+            // remove_path works for files in the index
+            index.remove_path(path_path)?;
+            index.write()?;
         }
         
+        info!("File unstaged successfully");
         Ok(())
     }
 
     /// Unstage all changes
+    #[instrument(skip(self), fields(repo_path = %self.repo_path.display()))]
     pub fn unstage_all(&self) -> GitResult<()> {
-        let mut index = self.repo.index()?;
+        info!("Unstaging all changes");
         
-        match self.repo.head() {
-            Ok(head) => {
-                let head_tree = head.peel_to_tree()?;
-                // Reset all files in index to HEAD state
-                self.repo.reset_default(Some(&head_tree.into_object()), ["*"].iter())?;
-            }
-            Err(_) => {
-                // No HEAD (initial commit), remove everything from index
-                index.clear()?;
-                index.write()?;
-            }
-        }
+        // Get the HEAD OID directly
+        let head_oid = self.repo.refname_to_id("HEAD")?;
+        
+        // Get the commit object
+        let commit = self.repo.find_commit(head_oid)?;
+        
+        // Reset index to HEAD commit - this only affects staged files
+        self.repo.reset_default(Some(&commit.into_object()), ["*"].iter())?;
 
+        info!("All changes unstaged successfully");
         Ok(())
     }
 
     /// Create a commit
+    #[instrument(skip(self, message, author_name, author_email), fields(repo_path = %self.repo_path.display(), message_len = message.len()))]
     pub fn create_commit(&self, message: &str, author_name: &str, author_email: &str) -> GitResult<String> {
+        info!("Creating commit");
         let signature = self.repo.signature().or_else(|_| {
             git2::Signature::now(author_name, author_email)
         })?;
@@ -470,19 +506,26 @@ impl GitEngine {
             &parents,
         )?;
 
-        Ok(oid.to_string())
+        let commit_hash = oid.to_string();
+        info!(commit_hash = %commit_hash, "Commit created successfully");
+        Ok(commit_hash)
     }
 
     /// Checkout a branch
+    #[instrument(skip(self), fields(repo_path = %self.repo_path.display(), branch = %branch_name))]
     pub fn checkout_branch(&self, branch_name: &str) -> GitResult<()> {
+        info!("Checking out branch");
         let obj = self.repo.revparse_single(&format!("refs/heads/{}", branch_name))?;
         self.repo.checkout_tree(&obj, None)?;
         self.repo.set_head(&format!("refs/heads/{}", branch_name))?;
+        info!("Branch checked out successfully");
         Ok(())
     }
 
     /// Create a new branch
+    #[instrument(skip(self, from), fields(repo_path = %self.repo_path.display(), branch = %name, from = ?from))]
     pub fn create_branch(&self, name: &str, from: Option<&str>) -> GitResult<()> {
+        info!("Creating new branch");
         let commit = if let Some(from_ref) = from {
             self.repo.revparse_single(from_ref)?.peel_to_commit()?
         } else {
@@ -490,11 +533,14 @@ impl GitEngine {
         };
 
         self.repo.branch(name, &commit, false)?;
+        info!("Branch created successfully");
         Ok(())
     }
 
     /// Delete a branch
+    #[instrument(skip(self), fields(repo_path = %self.repo_path.display(), branch = %name, force = %force))]
     pub fn delete_branch(&self, name: &str, force: bool) -> GitResult<()> {
+        info!("Deleting branch");
         let mut branch = self.repo.find_branch(name, BranchType::Local)?;
         
         if !force && !branch.is_head() {
@@ -503,6 +549,7 @@ impl GitEngine {
         }
         
         branch.delete()?;
+        info!("Branch deleted successfully");
         Ok(())
     }
 }

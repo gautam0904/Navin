@@ -27,7 +27,7 @@ rusqlite = { version = "0.31", features = ["bundled"] }
 r2d2 = "0.8"
 r2d2_sqlite = "0.24"
 thiserror = "1.0"
-tracing = "0.1"
+tracing = { version = "0.1", features = ["attributes"] }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
 # Git operations

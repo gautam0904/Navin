@@ -29,27 +29,6 @@ export function GitProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const openRepository = useCallback(
-    async (path: string) => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const repo = await GitService.openRepository(path);
-        setRepository(repo);
-
-        // Auto-refresh status and branches
-        await Promise.all([refreshStatus(), refreshBranches()]);
-      } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        setError(message);
-        console.error('Failed to open repository:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [refreshStatus, refreshBranches]
-  );
-
   const refreshStatus = useCallback(async () => {
     if (!repository) return;
 
@@ -74,13 +53,38 @@ export function GitProvider({ children }: { children: React.ReactNode }) {
     }
   }, [repository]);
 
-  const stageFile = useCallback(
+  const openRepository = useCallback(
     async (path: string) => {
       setIsLoading(true);
+      setError(null);
       try {
+        const repo = await GitService.openRepository(path);
+        setRepository(repo);
+
+        // Auto-refresh status and branches
+        await Promise.all([refreshStatus(), refreshBranches()]);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        setError(message);
+        console.error('Failed to open repository:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [refreshStatus, refreshBranches]
+  );
+
+  const stageFile = useCallback(
+    async (path: string) => {
+      console.log('[GitContext] stageFile called with path:', path);
+      setIsLoading(true);
+      try {
+        console.log('[GitContext] Invoking GitService.stageFile...');
         await GitService.stageFile(path);
+        console.log('[GitContext] GitService.stageFile success');
         await refreshStatus();
       } catch (err) {
+        console.error('[GitContext] stageFile error:', err);
         const message = err instanceof Error ? err.message : String(err);
         setError(message);
       } finally {

@@ -9,6 +9,7 @@ pub struct FileEntry {
     pub name: String,
     pub path: String,
     pub is_dir: bool,
+    pub extension: Option<String>,
     pub children: Option<Vec<FileEntry>>,
 }
 
@@ -41,6 +42,7 @@ pub fn read_dir(path: String) -> AppResult<Vec<FileEntry>> {
                         name,
                         path: path.to_string_lossy().to_string(),
                         is_dir,
+                        extension: path.extension().map(|e| e.to_string_lossy().to_string()),
                         children: None, // Lazy load children
                     });
                 }

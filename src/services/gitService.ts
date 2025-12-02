@@ -34,7 +34,7 @@ export class GitService {
    * Stage a file
    */
   static async stageFile(filePath: string): Promise<void> {
-    return invoke('stage_file', { file_path: filePath, filePath });
+    return invoke('stage_file', { file_path: filePath });
   }
 
   /**
@@ -48,7 +48,7 @@ export class GitService {
    * Unstage a file
    */
   static async unstageFile(filePath: string): Promise<void> {
-    return invoke('unstage_file', { file_path: filePath, filePath });
+    return invoke('unstage_file', { file_path: filePath });
   }
 
   /**
@@ -69,9 +69,7 @@ export class GitService {
     return invoke<string>('create_commit', {
       message,
       author_name: authorName,
-      authorName,
       author_email: authorEmail,
-      authorEmail,
     });
   }
 
@@ -79,7 +77,7 @@ export class GitService {
    * Checkout a branch
    */
   static async checkoutBranch(branchName: string): Promise<void> {
-    return invoke('checkout_branch', { branch_name: branchName, branchName });
+    return invoke('checkout_branch', { branch_name: branchName });
   }
 
   /**

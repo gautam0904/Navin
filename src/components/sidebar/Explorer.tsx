@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useFileExplorer, FileEntry } from '../../contexts/FileExplorerContext';
-import { ChevronRight, ChevronDown, File, Folder, FolderOpen } from 'lucide-react';
+import { ChevronRight, ChevronDown } from 'lucide-react';
+import { getIconPath } from '../../utils/iconResolver';
 
 const FileTreeNode: React.FC<{ entry: FileEntry; depth: number }> = ({ entry, depth }) => {
   const { expandFolder } = useFileExplorer();
@@ -17,6 +18,8 @@ const FileTreeNode: React.FC<{ entry: FileEntry; depth: number }> = ({ entry, de
       setIsExpanded(!isExpanded);
     }
   };
+
+  const iconPath = getIconPath(entry, isExpanded);
 
   return (
     <div>
@@ -36,16 +39,16 @@ const FileTreeNode: React.FC<{ entry: FileEntry; depth: number }> = ({ entry, de
             <span className="w-4 h-4 block" />
           )}
         </span>
-        <span className="mr-2 shrink-0 text-primary/80">
-          {entry.is_dir ? (
-            isExpanded ? (
-              <FolderOpen className="w-4 h-4" />
-            ) : (
-              <Folder className="w-4 h-4" />
-            )
-          ) : (
-            <File className="w-4 h-4" />
-          )}
+        <span className="mr-2 shrink-0 flex items-center">
+          <img
+            src={iconPath}
+            alt={entry.name}
+            className="w-4 h-4"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = entry.is_dir ? '/icons/folder.svg' : '/icons/file.svg';
+            }}
+          />
         </span>
         <span className="truncate">{entry.name}</span>
       </div>
