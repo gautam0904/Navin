@@ -190,7 +190,7 @@ function ConflictedFilesSection({ files }: ConflictedFilesSectionProps) {
           <FileItem
             key={file.path}
             file={file}
-            onAction={() => { }}
+            onAction={() => {}}
             actionLabel="Resolve"
             actionIcon={<FileIcon className="w-3 h-3" />}
             isLoading={false}

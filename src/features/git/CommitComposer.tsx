@@ -251,9 +251,7 @@ function useCommitHandler(
 
 // Helper to get display author info
 function getDisplayAuthorInfo(config: ReturnType<typeof useGitConfig>) {
-  const displayName = config.isGlobalMode
-    ? config.editName
-    : config.localName || config.globalName;
+  const displayName = config.isGlobalMode ? config.editName : config.localName || config.globalName;
   const displayEmail = config.isGlobalMode
     ? config.editEmail
     : config.localEmail || config.globalEmail;
@@ -278,10 +276,7 @@ export function CommitComposer() {
 
   const stagedCount = status?.staged.length || 0;
   const canCommit = Boolean(
-    stagedCount > 0 &&
-      commitHandler.message.trim().length > 0 &&
-      effectiveName &&
-      effectiveEmail
+    stagedCount > 0 && commitHandler.message.trim().length > 0 && effectiveName && effectiveEmail
   );
 
   return (
