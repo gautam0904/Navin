@@ -1,3 +1,4 @@
+mod checklist_data;
 pub mod migrations;
 pub mod pool;
 pub mod queries;
@@ -8,8 +9,9 @@ use rusqlite::{Connection, Result};
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 
+pub use checklist_data::get_default_checklist_data;
 pub use pool::{create_pool, DbPool};
-pub use seeds::{get_default_checklist_data, seed_default_data};
+pub use seeds::seed_default_data;
 
 /// Get the database path based on environment (dev or production)
 pub fn get_db_path(app: &AppHandle) -> PathBuf {

@@ -34,7 +34,7 @@ export class GitService {
    * Stage a file
    */
   static async stageFile(filePath: string): Promise<void> {
-    return invoke('stage_file', { file_path: filePath });
+    return invoke('stage_file', { filePath });
   }
 
   /**
@@ -48,7 +48,7 @@ export class GitService {
    * Unstage a file
    */
   static async unstageFile(filePath: string): Promise<void> {
-    return invoke('unstage_file', { file_path: filePath });
+    return invoke('unstage_file', { filePath });
   }
 
   /**
@@ -68,8 +68,8 @@ export class GitService {
   ): Promise<string> {
     return invoke<string>('create_commit', {
       message,
-      author_name: authorName,
-      author_email: authorEmail,
+      authorName,
+      authorEmail,
     });
   }
 
@@ -77,7 +77,7 @@ export class GitService {
    * Checkout a branch
    */
   static async checkoutBranch(branchName: string): Promise<void> {
-    return invoke('checkout_branch', { branch_name: branchName });
+    return invoke('checkout_branch', { branchName });
   }
 
   /**
@@ -106,5 +106,12 @@ export class GitService {
    */
   static async getConfig(): Promise<[string, string]> {
     return invoke<[string, string]>('get_git_config');
+  }
+
+  /**
+   * Set git configuration
+   */
+  static async setConfig(name: string, email: string): Promise<void> {
+    return invoke('set_git_config', { name, email });
   }
 }

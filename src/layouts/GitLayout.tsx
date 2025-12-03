@@ -20,13 +20,13 @@ export function GitLayout() {
 
       {/* Main Content - Changes */}
       <div className="flex-1 flex flex-col">
+        {/* Commit Composer - Now at the top */}
+        <CommitComposer />
+
         {/* Changes Panel */}
         <div className="flex-1 overflow-hidden">
           <ChangesPanel />
         </div>
-
-        {/* Commit Composer */}
-        <CommitComposer />
       </div>
     </div>
   );

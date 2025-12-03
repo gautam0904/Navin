@@ -1,40 +1,67 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Send, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Send, Pencil, Check, User } from 'lucide-react';
 import { useGit } from '../../contexts/GitContext';
-
-function EmptyCommitState() {
-  return (
-    <div className="p-4 bg-gray-800 border-t border-gray-700 text-gray-500 text-center">
-      <AlertCircle className="w-5 h-5 mx-auto mb-2" />
-      <p className="text-sm">Stage some changes to commit</p>
-    </div>
-  );
-}
 
 interface AuthorInfoProps {
   authorName: string;
   authorEmail: string;
   onNameChange: (name: string) => void;
   onEmailChange: (email: string) => void;
+  onSave: () => void;
 }
 
-function AuthorInfo({ authorName, authorEmail, onNameChange, onEmailChange }: AuthorInfoProps) {
+function AuthorInfo({ authorName, authorEmail, onNameChange, onEmailChange, onSave }: AuthorInfoProps) {
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleSave = () => {
+    setIsEditing(false);
+    onSave();
+  };
+
+  if (isEditing) {
+    return (
+      <div className="flex gap-2 items-start">
+        <div className="grid grid-cols-2 gap-2 flex-1">
+          <input
+            type="text"
+            value={authorName}
+            onChange={(e) => onNameChange(e.target.value)}
+            placeholder="Your name"
+            className="px-3 py-1.5 bg-[#3c3c3c] border border-[#3c3c3c] rounded text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#007fd4] focus:border-[#007fd4]"
+          />
+          <input
+            type="email"
+            value={authorEmail}
+            onChange={(e) => onEmailChange(e.target.value)}
+            placeholder="your@email.com"
+            className="px-3 py-1.5 bg-[#3c3c3c] border border-[#3c3c3c] rounded text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#007fd4] focus:border-[#007fd4]"
+          />
+        </div>
+        <button
+          onClick={handleSave}
+          className="p-1.5 hover:bg-[#3c3c3c] rounded text-gray-400 hover:text-white transition-colors"
+          title="Save Config"
+        >
+          <Check className="w-4 h-4" />
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="grid grid-cols-2 gap-2">
-      <input
-        type="text"
-        value={authorName}
-        onChange={(e) => onNameChange(e.target.value)}
-        placeholder="Your name"
-        className="px-3 py-1 bg-gray-900 border border-gray-700 rounded text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      <input
-        type="email"
-        value={authorEmail}
-        onChange={(e) => onEmailChange(e.target.value)}
-        placeholder="your@email.com"
-        className="px-3 py-1 bg-gray-900 border border-gray-700 rounded text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
+    <div className="flex items-center justify-between px-2 py-1 rounded hover:bg-[#2a2d2e] group transition-colors">
+      <div className="flex items-center gap-2 text-sm text-gray-300">
+        <User className="w-3.5 h-3.5 text-gray-500" />
+        <span className="font-medium">{authorName || 'Anonymous'}</span>
+        <span className="text-gray-500 text-xs">&lt;{authorEmail || 'no email'}&gt;</span>
+      </div>
+      <button
+        onClick={() => setIsEditing(true)}
+        className="p-1 hover:bg-[#3c3c3c] rounded text-gray-500 hover:text-white opacity-0 group-hover:opacity-100 transition-all"
+        title="Edit Author"
+      >
+        <Pencil className="w-3.5 h-3.5" />
+      </button>
     </div>
   );
 }
@@ -54,7 +81,7 @@ function CommitMessage({ message, onMessageChange, onKeyDown }: CommitMessagePro
         onKeyDown={onKeyDown}
         placeholder="Commit message (Ctrl+Enter to commit)"
         rows={3}
-        className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+        className="w-full px-3 py-2 bg-[#3c3c3c] border border-[#3c3c3c] rounded text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#007fd4] focus:border-[#007fd4] resize-none"
       />
       <p className="text-xs text-gray-500 mt-1">{message.length}/72 characters (first line)</p>
     </div>
@@ -90,22 +117,41 @@ export function CommitComposer() {
   const [authorEmail, setAuthorEmail] = useState(localStorage.getItem('git.author.email') || '');
   const [error, setError] = useState('');
 
-  const loadGitConfig = useCallback(async () => {
-    if (authorName && authorEmail) return;
+  // Load git config only once on mount
+  useEffect(() => {
+    const loadGitConfig = async () => {
+      // If we already have values from localStorage, don't overwrite them immediately
+      // unless we want to sync with git config. But for now let's respect localStorage
+      // or just load if empty.
+      if (authorName && authorEmail) return;
 
+      try {
+        const { GitService } = await import('../../services/gitService');
+        const [name, email] = await GitService.getConfig();
+        if (!authorName && name) setAuthorName(name);
+        if (!authorEmail && email) setAuthorEmail(email);
+      } catch (err) {
+        console.error('Failed to load git config:', err);
+      }
+    };
+
+    loadGitConfig();
+  }, []); // Empty dependency array ensures it runs only once
+
+  const handleSaveConfig = async () => {
     try {
       const { GitService } = await import('../../services/gitService');
-      const [name, email] = await GitService.getConfig();
-      if (!authorName && name) setAuthorName(name);
-      if (!authorEmail && email) setAuthorEmail(email);
+      // We'll implement setConfig in GitService next
+      if (GitService.setConfig) {
+        await GitService.setConfig(authorName, authorEmail);
+      }
+      localStorage.setItem('git.author.name', authorName);
+      localStorage.setItem('git.author.email', authorEmail);
     } catch (err) {
-      console.error('Failed to load git config:', err);
+      console.error('Failed to save git config:', err);
+      setError('Failed to save git config');
     }
-  }, [authorName, authorEmail]);
-
-  useEffect(() => {
-    loadGitConfig();
-  }, [loadGitConfig]);
+  };
 
   const stagedCount = status?.staged.length || 0;
   const canCommit = Boolean(
@@ -132,18 +178,20 @@ export function CommitComposer() {
     }
   };
 
-  if (stagedCount === 0) {
-    return <EmptyCommitState />;
-  }
+  // Always show the composer so user can edit author info
+  // if (stagedCount === 0) {
+  //   return <EmptyCommitState />;
+  // }
 
   return (
-    <div className="bg-gray-800 border-t border-gray-700 p-4">
+    <div className="bg-[#252526] border-b border-[#333] p-4">
       <div className="space-y-3">
         <AuthorInfo
           authorName={authorName}
           authorEmail={authorEmail}
           onNameChange={setAuthorName}
           onEmailChange={setAuthorEmail}
+          onSave={handleSaveConfig}
         />
         <CommitMessage message={message} onMessageChange={setMessage} onKeyDown={handleKeyDown} />
         {error && (

@@ -4,10 +4,10 @@
 pub mod commands;
 pub mod core;
 pub mod database;
+pub mod file_system;
 pub mod menu;
 pub mod models;
 pub mod repositories;
-pub mod file_system;
 
 use commands::*;
 use database::{create_pool, get_db_path, init_db};
@@ -69,9 +69,10 @@ pub fn run() {
             create_branch,
             delete_branch,
             get_current_repository,
-            get_git_config
+            get_git_config,
+            set_git_config
         ])
-        .manage(git_commands::GitState::new())
+        .manage(GitState::new())
         .setup(|app| {
             let db_path = get_db_path(&app.handle());
 

@@ -18,6 +18,8 @@ interface GitContextType {
   commit: (message: string, author: string, email: string) => Promise<void>;
   checkoutBranch: (name: string) => Promise<void>;
   createBranch: (name: string, from?: string) => Promise<void>;
+  deleteBranch: (name: string, force?: boolean) => Promise<void>;
+  closeRepository: () => void;
 }
 
 const GitContext = createContext<GitContextType | undefined>(undefined);
@@ -41,13 +43,15 @@ export function GitProvider({ children }: { children: React.ReactNode }) {
   }, [repository]);
 
   const refreshBranches = useCallback(async () => {
-    if (!repository) return;
+    if (!repository) {
+      return;
+    }
 
     try {
       const newBranches = await GitService.getBranches();
       setBranches(newBranches);
     } catch (err) {
-      console.error('Failed to refresh branches:', err);
+      console.error('[GitContext] Failed to refresh branches:', err);
       // If we fail to load branches, set to empty array so UI doesn't hang on loading
       setBranches([]);
     }
@@ -60,28 +64,30 @@ export function GitProvider({ children }: { children: React.ReactNode }) {
       try {
         const repo = await GitService.openRepository(path);
         setRepository(repo);
-
-        // Auto-refresh status and branches
-        await Promise.all([refreshStatus(), refreshBranches()]);
+        // Don't call refreshStatus/refreshBranches here - let useEffect handle it
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
         setError(message);
-        console.error('Failed to open repository:', err);
+        console.error('[GitContext] Failed to open repository:', err);
       } finally {
         setIsLoading(false);
       }
     },
-    [refreshStatus, refreshBranches]
+    []
   );
+
+  const closeRepository = useCallback(() => {
+    setRepository(null);
+    setStatus(null);
+    setBranches(null);
+    setError(null);
+  }, []);
 
   const stageFile = useCallback(
     async (path: string) => {
-      console.log('[GitContext] stageFile called with path:', path);
       setIsLoading(true);
       try {
-        console.log('[GitContext] Invoking GitService.stageFile...');
         await GitService.stageFile(path);
-        console.log('[GitContext] GitService.stageFile success');
         await refreshStatus();
       } catch (err) {
         console.error('[GitContext] stageFile error:', err);
@@ -184,6 +190,32 @@ export function GitProvider({ children }: { children: React.ReactNode }) {
     [refreshBranches]
   );
 
+  const deleteBranch = useCallback(
+    async (name: string, force: boolean = false) => {
+      setIsLoading(true);
+      try {
+        await GitService.deleteBranch(name, force);
+        await refreshBranches();
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        setError(message);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [refreshBranches]
+  );
+
+  // Initial load of status and branches when repository changes
+  useEffect(() => {
+    if (!repository) return;
+
+    console.log('[GitContext] Repository changed, loading initial data...');
+    Promise.all([refreshStatus(), refreshBranches()]).catch(err => {
+      console.error('[GitContext] Failed to load initial data:', err);
+    });
+  }, [repository, refreshStatus, refreshBranches]);
+
   // Auto-refresh status every 3 seconds when repository is open
   useEffect(() => {
     if (!repository) return;
@@ -199,6 +231,7 @@ export function GitProvider({ children }: { children: React.ReactNode }) {
     isLoading,
     error,
     openRepository,
+    closeRepository,
     refreshStatus,
     refreshBranches,
     stageFile,
@@ -208,6 +241,7 @@ export function GitProvider({ children }: { children: React.ReactNode }) {
     commit,
     checkoutBranch,
     createBranch,
+    deleteBranch,
   };
 
   return <GitContext.Provider value={value}>{children}</GitContext.Provider>;

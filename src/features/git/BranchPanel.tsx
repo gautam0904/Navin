@@ -1,11 +1,12 @@
 import React from 'react';
-import { GitBranch, Check, GitMerge, Plus } from 'lucide-react';
+import { GitBranch, GitMerge, Plus, Trash2, AlertCircle, ArrowLeft } from 'lucide-react';
 import { useGit } from '../../contexts/GitContext';
 
 export function BranchPanel() {
-  const { branches, checkoutBranch, createBranch, isLoading } = useGit();
+  const { branches, checkoutBranch, createBranch, deleteBranch, closeRepository, isLoading } = useGit();
   const [showCreateForm, setShowCreateForm] = React.useState(false);
   const [newBranchName, setNewBranchName] = React.useState('');
+  const [deleteConfirm, setDeleteConfirm] = React.useState<string | null>(null);
 
   if (!branches) {
     return (
@@ -30,17 +31,35 @@ export function BranchPanel() {
     }
   };
 
+  const handleDeleteBranch = async (name: string) => {
+    try {
+      await deleteBranch(name);
+      setDeleteConfirm(null);
+    } catch (err) {
+      console.error('Failed to delete branch:', err);
+    }
+  };
+
   return (
-    <div className="flex flex-col h-full bg-gray-900 text-white">
+    <div className="flex flex-col h-full bg-[#1e1e1e] text-gray-300 select-none">
       {/* Header */}
-      <div className="p-4 border-b border-gray-700 flex items-center justify-between">
-        <h2 className="text-lg font-semibold flex items-center gap-2">
-          <GitBranch className="w-5 h-5" />
-          Branches
-        </h2>
+      <div className="px-4 py-3 border-b border-[#333] flex items-center justify-between bg-[#252526]">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={closeRepository}
+            className="p-1 -ml-1 hover:bg-[#3c3c3c] rounded text-gray-400 hover:text-white transition-colors"
+            title="Close Repository"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </button>
+          <h2 className="text-xs font-bold uppercase tracking-wider text-gray-500">
+            Branches
+          </h2>
+        </div>
         <button
           onClick={() => setShowCreateForm(!showCreateForm)}
-          className="p-1 hover:bg-gray-800 rounded transition-colors"
+          className="p-1 hover:bg-[#3c3c3c] rounded text-gray-400 hover:text-white transition-colors"
+          title="Create Branch"
         >
           <Plus className="w-4 h-4" />
         </button>
@@ -48,7 +67,7 @@ export function BranchPanel() {
 
       {/* Create branch form */}
       {showCreateForm && (
-        <div className="p-4 bg-gray-800 border-b border-gray-700">
+        <div className="p-3 bg-[#252526] border-b border-[#333]">
           <div className="flex gap-2">
             <input
               type="text"
@@ -56,13 +75,13 @@ export function BranchPanel() {
               onChange={(e) => setNewBranchName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleCreateBranch()}
               placeholder="New branch name"
-              className="flex-1 px-3 py-2 bg-gray-900 border border-gray-700 rounded text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-2 py-1 bg-[#3c3c3c] border border-[#3c3c3c] rounded text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#007fd4] focus:border-[#007fd4]"
               autoFocus
             />
             <button
               onClick={handleCreateBranch}
               disabled={!newBranchName.trim() || isLoading}
-              className="px-3 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 rounded text-sm"
+              className="px-3 py-1 bg-[#007fd4] hover:bg-[#0069b4] disabled:bg-[#3c3c3c] disabled:text-gray-500 rounded text-sm text-white transition-colors"
             >
               Create
             </button>
@@ -70,44 +89,81 @@ export function BranchPanel() {
         </div>
       )}
 
-      {/* Branch list */}
-      <div className="flex-1 overflow-y-auto">
-        {/* Local branches */}
-        <div className="border-b border-gray-800">
-          <div className="p-3 bg-gray-800/50">
-            <h3 className="text-sm font-semibold text-gray-300">Local ({localBranches.length})</h3>
+      {/* Delete Confirmation Dialog */}
+      {deleteConfirm && (
+        <div className="p-3 bg-[#3c3c3c] border-b border-[#333] animate-in fade-in slide-in-from-top-2">
+          <div className="flex items-start gap-2 text-sm">
+            <AlertCircle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
+            <div className="flex-1">
+              <p className="text-white mb-2">Delete branch <span className="font-mono text-xs bg-[#2d2d2d] px-1 rounded">{deleteConfirm}</span>?</p>
+              <div className="flex gap-2 justify-end">
+                <button
+                  onClick={() => setDeleteConfirm(null)}
+                  className="px-2 py-1 hover:bg-[#4d4d4d] rounded text-xs text-gray-300"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleDeleteBranch(deleteConfirm)}
+                  className="px-2 py-1 bg-red-600 hover:bg-red-700 rounded text-xs text-white"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
           </div>
-          <div className="divide-y divide-gray-800">
+        </div>
+      )}
+
+      {/* Branch list */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar">
+        {/* Local branches */}
+        <div>
+          <div className="px-4 py-2 flex items-center gap-2 group">
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider group-hover:text-gray-400 transition-colors">Local</h3>
+            <span className="text-xs text-gray-600 bg-[#2d2d2d] px-1.5 rounded-full">{localBranches.length}</span>
+          </div>
+
+          <div className="flex flex-col">
             {localBranches.map((branch) => (
               <div
                 key={branch.name}
-                className={`p-3 hover:bg-gray-800/50 cursor-pointer transition-colors ${
-                  branch.is_head ? 'bg-blue-900/20' : ''
-                }`}
+                className={`group flex items-center justify-between px-4 py-1.5 hover:bg-[#2a2d2e] cursor-pointer transition-colors ${branch.is_head ? 'bg-[#37373d] text-white' : 'text-gray-400 hover:text-gray-300'
+                  }`}
                 onClick={() => !branch.is_head && checkoutBranch(branch.name)}
               >
-                <div className="flex items-center gap-2">
-                  {branch.is_head && <Check className="w-4 h-4 text-green-500" />}
-                  <GitBranch className="w-4 h-4 text-gray-400" />
-                  <span className={`text-sm ${branch.is_head ? 'font-semibold' : ''}`}>
-                    {branch.name}
-                  </span>
+                <div className="flex items-center gap-2 min-w-0 overflow-hidden">
+                  <GitBranch className={`w-3.5 h-3.5 shrink-0 ${branch.is_head ? 'text-white' : 'text-gray-500'}`} />
+                  <div className="flex flex-col min-w-0">
+                    <span className={`text-sm truncate ${branch.is_head ? 'font-medium' : ''}`}>
+                      {branch.name}
+                    </span>
+                    {branch.upstream && (
+                      <div className="flex items-center gap-1 text-[10px] text-gray-500">
+                        <GitMerge className="w-3 h-3" />
+                        <span className="truncate">{branch.upstream}</span>
+                        {branch.ahead > 0 && <span className="text-green-400 ml-1">↑{branch.ahead}</span>}
+                        {branch.behind > 0 && <span className="text-red-400 ml-1">↓{branch.behind}</span>}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                {branch.upstream && (
-                  <div className="mt-1 flex items-center gap-2 text-xs text-gray-400">
-                    <GitMerge className="w-3 h-3" />
-                    <span>{branch.upstream}</span>
-                    {branch.ahead > 0 && <span className="text-green-400">↑{branch.ahead}</span>}
-                    {branch.behind > 0 && <span className="text-red-400">↓{branch.behind}</span>}
-                  </div>
-                )}
-
-                {branch.last_commit && (
-                  <p className="mt-1 text-xs text-gray-500 truncate">
-                    {branch.last_commit.message}
-                  </p>
-                )}
+                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {branch.is_head && <span className="text-[10px] text-gray-500 italic mr-1">Current</span>}
+                  {!branch.is_head && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeleteConfirm(branch.name);
+                      }}
+                      className="p-1 hover:bg-[#3c3c3c] rounded text-gray-500 hover:text-red-400 transition-colors"
+                      title="Delete Branch"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -115,24 +171,16 @@ export function BranchPanel() {
 
         {/* Remote branches */}
         {remoteBranches.length > 0 && (
-          <div>
-            <div className="p-3 bg-gray-800/50">
-              <h3 className="text-sm font-semibold text-gray-300">
-                Remote ({remoteBranches.length})
-              </h3>
+          <div className="mt-2">
+            <div className="px-4 py-2 flex items-center gap-2 group">
+              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider group-hover:text-gray-400 transition-colors">Remote</h3>
+              <span className="text-xs text-gray-600 bg-[#2d2d2d] px-1.5 rounded-full">{remoteBranches.length}</span>
             </div>
-            <div className="divide-y divide-gray-800">
+            <div className="flex flex-col">
               {remoteBranches.map((branch) => (
-                <div key={branch.name} className="p-3 hover:bg-gray-800/50 transition-colors">
-                  <div className="flex items-center gap-2">
-                    <GitBranch className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm text-gray-300">{branch.name}</span>
-                  </div>
-                  {branch.last_commit && (
-                    <p className="mt-1 text-xs text-gray-500 truncate">
-                      {branch.last_commit.message}
-                    </p>
-                  )}
+                <div key={branch.name} className="flex items-center gap-2 px-4 py-1.5 hover:bg-[#2a2d2e] text-gray-400 hover:text-gray-300 transition-colors">
+                  <GitBranch className="w-3.5 h-3.5 shrink-0 text-gray-600" />
+                  <span className="text-sm truncate">{branch.name}</span>
                 </div>
               ))}
             </div>
