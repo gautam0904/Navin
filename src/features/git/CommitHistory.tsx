@@ -50,10 +50,11 @@ export function CommitHistory({ onSelectCommit, selectedSha }: CommitHistoryProp
             <div
               key={commit.sha}
               onClick={() => onSelectCommit(commit.sha)}
-              className={`group p-3 cursor-pointer hover:bg-[#2a2d2e] transition-colors ${selectedSha === commit.sha
+              className={`group p-3 cursor-pointer hover:bg-[#2a2d2e] transition-colors ${
+                selectedSha === commit.sha
                   ? 'bg-[#2a2d2e] border-l-2 border-[#007fd4]'
                   : 'border-l-2 border-transparent'
-                }`}
+              }`}
             >
               <div className="flex items-start gap-3">
                 <div className="mt-1">
