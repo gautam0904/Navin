@@ -10,7 +10,13 @@ interface AuthorInfoProps {
   onSave: () => void;
 }
 
-function AuthorInfo({ authorName, authorEmail, onNameChange, onEmailChange, onSave }: AuthorInfoProps) {
+function AuthorInfo({
+  authorName,
+  authorEmail,
+  onNameChange,
+  onEmailChange,
+  onSave,
+}: AuthorInfoProps) {
   const [isEditing, setIsEditing] = useState(false);
 
   const handleSave = () => {

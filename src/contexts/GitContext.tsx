@@ -57,24 +57,21 @@ export function GitProvider({ children }: { children: React.ReactNode }) {
     }
   }, [repository]);
 
-  const openRepository = useCallback(
-    async (path: string) => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const repo = await GitService.openRepository(path);
-        setRepository(repo);
-        // Don't call refreshStatus/refreshBranches here - let useEffect handle it
-      } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        setError(message);
-        console.error('[GitContext] Failed to open repository:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    []
-  );
+  const openRepository = useCallback(async (path: string) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const repo = await GitService.openRepository(path);
+      setRepository(repo);
+      // Don't call refreshStatus/refreshBranches here - let useEffect handle it
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      setError(message);
+      console.error('[GitContext] Failed to open repository:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   const closeRepository = useCallback(() => {
     setRepository(null);
@@ -211,7 +208,7 @@ export function GitProvider({ children }: { children: React.ReactNode }) {
     if (!repository) return;
 
     console.log('[GitContext] Repository changed, loading initial data...');
-    Promise.all([refreshStatus(), refreshBranches()]).catch(err => {
+    Promise.all([refreshStatus(), refreshBranches()]).catch((err) => {
       console.error('[GitContext] Failed to load initial data:', err);
     });
   }, [repository, refreshStatus, refreshBranches]);

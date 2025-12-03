@@ -3,7 +3,8 @@ import { GitBranch, GitMerge, Plus, Trash2, AlertCircle, ArrowLeft } from 'lucid
 import { useGit } from '../../contexts/GitContext';
 
 export function BranchPanel() {
-  const { branches, checkoutBranch, createBranch, deleteBranch, closeRepository, isLoading } = useGit();
+  const { branches, checkoutBranch, createBranch, deleteBranch, closeRepository, isLoading } =
+    useGit();
   const [showCreateForm, setShowCreateForm] = React.useState(false);
   const [newBranchName, setNewBranchName] = React.useState('');
   const [deleteConfirm, setDeleteConfirm] = React.useState<string | null>(null);
@@ -52,9 +53,7 @@ export function BranchPanel() {
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
-          <h2 className="text-xs font-bold uppercase tracking-wider text-gray-500">
-            Branches
-          </h2>
+          <h2 className="text-xs font-bold uppercase tracking-wider text-gray-500">Branches</h2>
         </div>
         <button
           onClick={() => setShowCreateForm(!showCreateForm)}
@@ -95,7 +94,11 @@ export function BranchPanel() {
           <div className="flex items-start gap-2 text-sm">
             <AlertCircle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
             <div className="flex-1">
-              <p className="text-white mb-2">Delete branch <span className="font-mono text-xs bg-[#2d2d2d] px-1 rounded">{deleteConfirm}</span>?</p>
+              <p className="text-white mb-2">
+                Delete branch{' '}
+                <span className="font-mono text-xs bg-[#2d2d2d] px-1 rounded">{deleteConfirm}</span>
+                ?
+              </p>
               <div className="flex gap-2 justify-end">
                 <button
                   onClick={() => setDeleteConfirm(null)}
@@ -120,20 +123,27 @@ export function BranchPanel() {
         {/* Local branches */}
         <div>
           <div className="px-4 py-2 flex items-center gap-2 group">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider group-hover:text-gray-400 transition-colors">Local</h3>
-            <span className="text-xs text-gray-600 bg-[#2d2d2d] px-1.5 rounded-full">{localBranches.length}</span>
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider group-hover:text-gray-400 transition-colors">
+              Local
+            </h3>
+            <span className="text-xs text-gray-600 bg-[#2d2d2d] px-1.5 rounded-full">
+              {localBranches.length}
+            </span>
           </div>
 
           <div className="flex flex-col">
             {localBranches.map((branch) => (
               <div
                 key={branch.name}
-                className={`group flex items-center justify-between px-4 py-1.5 hover:bg-[#2a2d2e] cursor-pointer transition-colors ${branch.is_head ? 'bg-[#37373d] text-white' : 'text-gray-400 hover:text-gray-300'
-                  }`}
+                className={`group flex items-center justify-between px-4 py-1.5 hover:bg-[#2a2d2e] cursor-pointer transition-colors ${
+                  branch.is_head ? 'bg-[#37373d] text-white' : 'text-gray-400 hover:text-gray-300'
+                }`}
                 onClick={() => !branch.is_head && checkoutBranch(branch.name)}
               >
                 <div className="flex items-center gap-2 min-w-0 overflow-hidden">
-                  <GitBranch className={`w-3.5 h-3.5 shrink-0 ${branch.is_head ? 'text-white' : 'text-gray-500'}`} />
+                  <GitBranch
+                    className={`w-3.5 h-3.5 shrink-0 ${branch.is_head ? 'text-white' : 'text-gray-500'}`}
+                  />
                   <div className="flex flex-col min-w-0">
                     <span className={`text-sm truncate ${branch.is_head ? 'font-medium' : ''}`}>
                       {branch.name}
@@ -142,15 +152,21 @@ export function BranchPanel() {
                       <div className="flex items-center gap-1 text-[10px] text-gray-500">
                         <GitMerge className="w-3 h-3" />
                         <span className="truncate">{branch.upstream}</span>
-                        {branch.ahead > 0 && <span className="text-green-400 ml-1">↑{branch.ahead}</span>}
-                        {branch.behind > 0 && <span className="text-red-400 ml-1">↓{branch.behind}</span>}
+                        {branch.ahead > 0 && (
+                          <span className="text-green-400 ml-1">↑{branch.ahead}</span>
+                        )}
+                        {branch.behind > 0 && (
+                          <span className="text-red-400 ml-1">↓{branch.behind}</span>
+                        )}
                       </div>
                     )}
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {branch.is_head && <span className="text-[10px] text-gray-500 italic mr-1">Current</span>}
+                  {branch.is_head && (
+                    <span className="text-[10px] text-gray-500 italic mr-1">Current</span>
+                  )}
                   {!branch.is_head && (
                     <button
                       onClick={(e) => {
@@ -173,12 +189,19 @@ export function BranchPanel() {
         {remoteBranches.length > 0 && (
           <div className="mt-2">
             <div className="px-4 py-2 flex items-center gap-2 group">
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider group-hover:text-gray-400 transition-colors">Remote</h3>
-              <span className="text-xs text-gray-600 bg-[#2d2d2d] px-1.5 rounded-full">{remoteBranches.length}</span>
+              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider group-hover:text-gray-400 transition-colors">
+                Remote
+              </h3>
+              <span className="text-xs text-gray-600 bg-[#2d2d2d] px-1.5 rounded-full">
+                {remoteBranches.length}
+              </span>
             </div>
             <div className="flex flex-col">
               {remoteBranches.map((branch) => (
-                <div key={branch.name} className="flex items-center gap-2 px-4 py-1.5 hover:bg-[#2a2d2e] text-gray-400 hover:text-gray-300 transition-colors">
+                <div
+                  key={branch.name}
+                  className="flex items-center gap-2 px-4 py-1.5 hover:bg-[#2a2d2e] text-gray-400 hover:text-gray-300 transition-colors"
+                >
                   <GitBranch className="w-3.5 h-3.5 shrink-0 text-gray-600" />
                   <span className="text-sm truncate">{branch.name}</span>
                 </div>
