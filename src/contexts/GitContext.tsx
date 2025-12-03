@@ -1,6 +1,17 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import type { RepositoryInfo, RepositoryStatus, Branch, CommitSummary, Remote, Stash } from '../types/git';
+import type {
+  RepositoryInfo,
+  RepositoryStatus,
+  Branch,
+  CommitSummary,
+  Remote,
+  Stash,
+} from '../types/git';
 import { GitService } from '../services/gitService';
+import { useStashOperations } from './useStashOperations';
+import { useRemoteOperations } from './useRemoteOperations';
+import { useBranchOperations } from './useBranchOperations';
+import { useStagingOperations } from './useStagingOperations';
 
 interface GitContextType {
   repository: RepositoryInfo | null;
@@ -85,16 +96,19 @@ export function GitProvider({ children }: { children: React.ReactNode }) {
     }
   }, [repository]);
 
-  const refreshHistory = useCallback(async (limit = 50, offset = 0) => {
-    if (!repository) return;
-    try {
-      const commits = await GitService.getCommits(limit, offset);
-      setHistory(commits);
-    } catch (err) {
-      console.error('[GitContext] Failed to refresh history:', err);
-      setHistory([]);
-    }
-  }, [repository]);
+  const refreshHistory = useCallback(
+    async (limit = 50, offset = 0) => {
+      if (!repository) return;
+      try {
+        const commits = await GitService.getCommits(limit, offset);
+        setHistory(commits);
+      } catch (err) {
+        console.error('[GitContext] Failed to refresh history:', err);
+        setHistory([]);
+      }
+    },
+    [repository]
+  );
 
   const refreshRemotes = useCallback(async () => {
     if (!repository) return;
@@ -107,18 +121,12 @@ export function GitProvider({ children }: { children: React.ReactNode }) {
     }
   }, [repository]);
 
+  const stashOps = useStashOperations();
+
   const refreshStashes = useCallback(async () => {
-    // Stash support not fully implemented in service yet, placeholder
-    // if (!repository) return;
-    // try {
-    //   const stashList = await GitService.listStashes();
-    //   setStashes(stashList);
-    // } catch (err) {
-    //   console.error('[GitContext] Failed to refresh stashes:', err);
-    //   setStashes([]);
-    // }
-    setStashes([]);
-  }, [repository]);
+    const stashList = await stashOps.refreshStashes();
+    setStashes(stashList);
+  }, [stashOps]);
 
   const openRepository = useCallback(async (path: string) => {
     setIsLoading(true);
@@ -145,208 +153,69 @@ export function GitProvider({ children }: { children: React.ReactNode }) {
     setError(null);
   }, []);
 
-  const stageFile = useCallback(async (path: string) => {
-    setIsLoading(true);
-    try {
-      await GitService.stageFile(path);
-      await refreshStatus();
-    } catch (err) {
-      console.error('[GitContext] stageFile error:', err);
-      const message = err instanceof Error ? err.message : String(err);
-      setError(message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [refreshStatus]);
+  const stagingOps = useStagingOperations(setIsLoading, setError, refreshStatus);
+  const stageFile = stagingOps.stageFile;
+  const stageAll = stagingOps.stageAll;
+  const unstageFile = stagingOps.unstageFile;
+  const unstageAll = stagingOps.unstageAll;
 
-  const stageAll = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      await GitService.stageAll();
-      await refreshStatus();
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      setError(message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [refreshStatus]);
+  const commit = useCallback(
+    async (message: string, author: string, email: string) => {
+      setIsLoading(true);
+      try {
+        await GitService.createCommit(message, author, email);
+        await refreshStatus();
+        await refreshHistory(); // Refresh history after commit
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        setError(message);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [refreshStatus, refreshHistory]
+  );
 
-  const unstageFile = useCallback(async (path: string) => {
-    setIsLoading(true);
-    try {
-      await GitService.unstageFile(path);
-      await refreshStatus();
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      setError(message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [refreshStatus]);
+  const branchOps = useBranchOperations(
+    setIsLoading,
+    setError,
+    refreshStatus,
+    refreshBranches,
+    refreshHistory
+  );
+  const checkoutBranch = branchOps.checkoutBranch;
+  const createBranch = branchOps.createBranch;
+  const deleteBranch = branchOps.deleteBranch;
 
-  const unstageAll = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      await GitService.unstageAll();
-      await refreshStatus();
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      setError(message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [refreshStatus]);
+  const remoteOps = useRemoteOperations(
+    setIsLoading,
+    setError,
+    refreshRemotes,
+    refreshStatus,
+    refreshHistory
+  );
+  const addRemote = remoteOps.addRemote;
+  const removeRemote = remoteOps.removeRemote;
+  const fetchRemote = remoteOps.fetchRemote;
+  const pushToRemote = remoteOps.pushToRemote;
+  const pullFromRemote = remoteOps.pullFromRemote;
 
-  const commit = useCallback(async (message: string, author: string, email: string) => {
-    setIsLoading(true);
-    try {
-      await GitService.createCommit(message, author, email);
-      await refreshStatus();
-      await refreshHistory(); // Refresh history after commit
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      setError(message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [refreshStatus, refreshHistory]);
-
-  const checkoutBranch = useCallback(async (name: string) => {
-    setIsLoading(true);
-    try {
-      await GitService.checkoutBranch(name);
-      await Promise.all([refreshStatus(), refreshBranches(), refreshHistory()]);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      setError(message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [refreshStatus, refreshBranches, refreshHistory]);
-
-  const createBranch = useCallback(async (name: string, from?: string) => {
-    setIsLoading(true);
-    try {
-      await GitService.createBranch(name, from);
-      await refreshBranches();
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      setError(message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [refreshBranches]);
-
-  const deleteBranch = useCallback(async (name: string, force: boolean = false) => {
-    setIsLoading(true);
-    try {
-      await GitService.deleteBranch(name, force);
-      await refreshBranches();
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      setError(message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [refreshBranches]);
-
-  // Remote operations
-  const addRemote = useCallback(async (name: string, url: string) => {
-    setIsLoading(true);
-    try {
-      await GitService.addRemote(name, url);
-      await refreshRemotes();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [refreshRemotes]);
-
-  const removeRemote = useCallback(async (name: string) => {
-    setIsLoading(true);
-    try {
-      await GitService.removeRemote(name);
-      await refreshRemotes();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [refreshRemotes]);
-
-  const fetchRemote = useCallback(async (name: string) => {
-    setIsLoading(true);
-    try {
-      await GitService.fetchRemote(name);
-      await Promise.all([refreshStatus(), refreshHistory()]);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [refreshStatus, refreshHistory]);
-
-  const pushToRemote = useCallback(async (remote: string, branch: string, force?: boolean) => {
-    setIsLoading(true);
-    try {
-      await GitService.pushToRemote(remote, branch, force);
-      await refreshStatus();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [refreshStatus]);
-
-  const pullFromRemote = useCallback(async (remote: string, branch: string) => {
-    setIsLoading(true);
-    try {
-      await GitService.pullFromRemote(remote, branch);
-      await Promise.all([refreshStatus(), refreshHistory()]);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [refreshStatus, refreshHistory]);
-
-  // Stash operations (placeholders for now)
-  const createStash = useCallback(async (message?: string) => {
-    // await GitService.createStash(message);
-    // await refreshStashes();
-  }, []);
-
-  const applyStash = useCallback(async (index: number) => {
-    // await GitService.applyStash(index);
-    // await refreshStatus();
-  }, []);
-
-  const popStash = useCallback(async (index: number) => {
-    // await GitService.popStash(index);
-    // await refreshStatus();
-    // await refreshStashes();
-  }, []);
-
-  const dropStash = useCallback(async (index: number) => {
-    // await GitService.dropStash(index);
-    // await refreshStashes();
-  }, []);
+  // Stash operations delegated to hook
+  const createStash = stashOps.createStash;
+  const applyStash = stashOps.applyStash;
+  const popStash = stashOps.popStash;
+  const dropStash = stashOps.dropStash;
 
   // Initial load
   useEffect(() => {
     if (!repository) return;
 
     console.log('[GitContext] Repository changed, loading initial data...');
-    Promise.all([
-      refreshStatus(),
-      refreshBranches(),
-      refreshHistory(),
-      refreshRemotes()
-    ]).catch((err) => {
-      console.error('[GitContext] Failed to load initial data:', err);
-    });
+    Promise.all([refreshStatus(), refreshBranches(), refreshHistory(), refreshRemotes()]).catch(
+      (err) => {
+        console.error('[GitContext] Failed to load initial data:', err);
+      }
+    );
   }, [repository, refreshStatus, refreshBranches, refreshHistory, refreshRemotes]);
 
   // Auto-refresh status

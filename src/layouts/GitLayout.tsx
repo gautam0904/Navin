@@ -2,6 +2,7 @@ import { RepositoryPicker } from '../features/git';
 import { ChangesPanel } from '../features/git';
 import { CommitComposer } from '../features/git';
 import { BranchPanel } from '../features/git';
+import { GitPanel } from '../features/git/GitPanel';
 import { useGit } from '../contexts/GitContext';
 
 export function GitLayout() {
@@ -19,7 +20,7 @@ export function GitLayout() {
       </div>
 
       {/* Main Content - Changes */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Commit Composer - Now at the top */}
         <CommitComposer />
 
@@ -27,6 +28,11 @@ export function GitLayout() {
         <div className="flex-1 overflow-hidden">
           <ChangesPanel />
         </div>
+      </div>
+
+      {/* Right Sidebar - History & Stashes */}
+      <div className="w-80 border-l border-gray-700 flex flex-col">
+        <GitPanel />
       </div>
     </div>
   );

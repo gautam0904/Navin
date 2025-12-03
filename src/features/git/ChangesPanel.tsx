@@ -190,7 +190,7 @@ function ConflictedFilesSection({ files }: ConflictedFilesSectionProps) {
           <FileItem
             key={file.path}
             file={file}
-            onAction={() => {}}
+            onAction={() => { }}
             actionLabel="Resolve"
             actionIcon={<FileIcon className="w-3 h-3" />}
             isLoading={false}
@@ -280,7 +280,7 @@ function FileItem({
   statusLabel,
 }: FileItemProps) {
   return (
-    <div className="group flex items-center gap-3 px-3 py-2 hover:bg-var(--color-bg-surface-2) transition-colors">
+    <div className="group flex items-center gap-3 px-3 py-2.5 hover:bg-[var(--color-bg-surface-2)] transition-colors border-l-2 border-transparent hover:border-[var(--color-primary)]">
       <div className="shrink-0 opacity-80">{statusIcon}</div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
@@ -288,12 +288,11 @@ function FileItem({
             {file.path}
           </p>
           <span
-            className={`text-[10px] px-1.5 py-0.5 rounded-full bg-opacity-10 bg-current ${statusColor} font-medium`}
+            className={`text-[10px] px-1.5 py-0.5 rounded-md bg-opacity-10 bg-current ${statusColor} font-semibold tracking-wide uppercase`}
           >
             {statusLabel}
           </span>
         </div>
-        {/* Optional: Add path directory hint if needed */}
       </div>
       <button
         onClick={(e) => {
@@ -301,7 +300,7 @@ function FileItem({
           onAction();
         }}
         disabled={isLoading}
-        className="flex items-center gap-1.5 px-2 py-1 text-[10px] font-medium rounded opacity-0 group-hover:opacity-100 transition-all duration-200 bg-[var(--color-bg-surface-3)] hover:bg-[var(--color-primary)] hover:text-white text-[var(--color-text-secondary)]"
+        className="flex items-center gap-1.5 px-2 py-1 text-[10px] font-medium rounded opacity-0 group-hover:opacity-100 transition-all duration-200 bg-[var(--color-bg-surface-3)] hover:bg-[var(--color-primary)] hover:text-white text-[var(--color-text-secondary)] shadow-sm"
         title={actionLabel}
       >
         {actionIcon}

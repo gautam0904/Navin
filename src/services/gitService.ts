@@ -1,7 +1,12 @@
 import { invoke } from '@tauri-apps/api/core';
 import type {
-  RepositoryInfo, RepositoryStatus, Branch, Commit, CommitSummary,
-  FileDiff, Remote
+  RepositoryInfo,
+  RepositoryStatus,
+  Branch,
+  Commit,
+  CommitSummary,
+  FileDiff,
+  Remote,
 } from '../types/git';
 
 export class GitService {

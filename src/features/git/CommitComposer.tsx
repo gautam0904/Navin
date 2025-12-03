@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Send, Pencil, Check, User, Globe, Laptop } from 'lucide-react';
 import { useGit } from '../../contexts/GitContext';
 
@@ -38,16 +38,18 @@ function AuthorInfo({
           <div className="flex bg-[#3c3c3c] rounded p-0.5 ml-auto">
             <button
               onClick={() => onScopeChange(false)}
-              className={`px-2 py-0.5 text-xs rounded flex items-center gap-1 ${!isGlobal ? 'bg-[#007fd4] text-white' : 'text-gray-400 hover:text-white'
-                }`}
+              className={`px-2 py-0.5 text-xs rounded flex items-center gap-1 ${
+                !isGlobal ? 'bg-[#007fd4] text-white' : 'text-gray-400 hover:text-white'
+              }`}
               title="Local Repository Config"
             >
               <Laptop className="w-3 h-3" /> Local
             </button>
             <button
               onClick={() => onScopeChange(true)}
-              className={`px-2 py-0.5 text-xs rounded flex items-center gap-1 ${isGlobal ? 'bg-[#007fd4] text-white' : 'text-gray-400 hover:text-white'
-                }`}
+              className={`px-2 py-0.5 text-xs rounded flex items-center gap-1 ${
+                isGlobal ? 'bg-[#007fd4] text-white' : 'text-gray-400 hover:text-white'
+              }`}
               title="Global User Config"
             >
               <Globe className="w-3 h-3" /> Global
@@ -89,7 +91,9 @@ function AuthorInfo({
         <User className="w-3.5 h-3.5 text-gray-500 shrink-0" />
         <div className="flex flex-col truncate">
           <span className="font-medium truncate">{authorName || 'Anonymous'}</span>
-          <span className="text-gray-500 text-xs truncate">&lt;{authorEmail || 'no email'}&gt;</span>
+          <span className="text-gray-500 text-xs truncate">
+            &lt;{authorEmail || 'no email'}&gt;
+          </span>
         </div>
       </div>
       <button
@@ -147,89 +151,83 @@ function CommitButton({ stagedCount, canCommit, isLoading, onClick }: CommitButt
   );
 }
 
-export function CommitComposer() {
-  const { commit, status, isLoading } = useGit();
-  const [message, setMessage] = useState('');
-
-  // State for config values
+// Custom hook to manage git config state
+function useGitConfig() {
   const [globalName, setGlobalName] = useState('');
   const [globalEmail, setGlobalEmail] = useState('');
   const [localName, setLocalName] = useState('');
   const [localEmail, setLocalEmail] = useState('');
-
-  // Editing state
   const [isGlobalMode, setIsGlobalMode] = useState(false);
   const [editName, setEditName] = useState('');
   const [editEmail, setEditEmail] = useState('');
-
   const [error, setError] = useState('');
 
-  // Load git config on mount
-  useEffect(() => {
-    loadGitConfig();
-  }, []);
-
-  // Update edit fields when mode changes or data loads
-  useEffect(() => {
-    if (isGlobalMode) {
-      setEditName(globalName);
-      setEditEmail(globalEmail);
-    } else {
-      // For local mode, default to global if local is empty (inheritance)
-      setEditName(localName || globalName);
-      setEditEmail(localEmail || globalEmail);
-    }
-  }, [isGlobalMode, globalName, globalEmail, localName, localEmail]);
-
-  const loadGitConfig = async () => {
+  const loadConfig = useCallback(async () => {
     try {
       const { GitService } = await import('../../services/gitService');
       const [gName, gEmail, lName, lEmail] = await GitService.getConfigDetailed();
-
       setGlobalName(gName);
       setGlobalEmail(gEmail);
       setLocalName(lName);
       setLocalEmail(lEmail);
-
-      // Default to local values for display, falling back to global
       setEditName(lName || gName);
       setEditEmail(lEmail || gEmail);
     } catch (err) {
       console.error('Failed to load git config:', err);
     }
-  };
+  }, []);
 
-  const handleSaveConfig = async () => {
+  useEffect(() => {
+    loadConfig();
+  }, [loadConfig]);
+
+  useEffect(() => {
+    const name = isGlobalMode ? globalName : localName || globalName;
+    const email = isGlobalMode ? globalEmail : localEmail || globalEmail;
+    setEditName(name);
+    setEditEmail(email);
+  }, [isGlobalMode, globalName, globalEmail, localName, localEmail]);
+
+  const saveConfig = useCallback(async () => {
     try {
       const { GitService } = await import('../../services/gitService');
-
       await GitService.setConfig(editName, editEmail, isGlobalMode);
-
-      // Reload config to confirm changes
-      await loadGitConfig();
-
-      // Clear localStorage legacy keys to avoid confusion
+      await loadConfig();
       localStorage.removeItem('git.author.name');
       localStorage.removeItem('git.author.email');
     } catch (err) {
       console.error('Failed to save git config:', err);
       setError('Failed to save git config');
     }
+  }, [editName, editEmail, isGlobalMode, loadConfig]);
+
+  return {
+    globalName,
+    globalEmail,
+    localName,
+    localEmail,
+    isGlobalMode,
+    setIsGlobalMode,
+    editName,
+    setEditName,
+    editEmail,
+    setEditEmail,
+    error,
+    setError,
+    saveConfig,
   };
+}
 
-  const stagedCount = status?.staged.length || 0;
+// Hook to manage commit logic
+function useCommitHandler(
+  commit: (message: string, author: string, email: string) => Promise<void>,
+  effectiveName: string,
+  effectiveEmail: string,
+  setError: (error: string) => void
+) {
+  const [message, setMessage] = useState('');
 
-  // Effective author is what will be used for the commit
-  const effectiveName = localName || globalName;
-  const effectiveEmail = localEmail || globalEmail;
-
-  const canCommit = Boolean(
-    stagedCount > 0 && message.trim().length > 0 && effectiveName && effectiveEmail
-  );
-
-  const handleCommit = async () => {
-    if (!canCommit) return;
-
+  const handleCommit = useCallback(async () => {
     setError('');
     try {
       await commit(message, effectiveName, effectiveEmail);
@@ -237,37 +235,82 @@ export function CommitComposer() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to commit');
     }
-  };
+  }, [commit, message, effectiveName, effectiveEmail, setError]);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.ctrlKey && e.key === 'Enter') {
-      handleCommit();
-    }
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.ctrlKey && e.key === 'Enter') {
+        handleCommit();
+      }
+    },
+    [handleCommit]
+  );
+
+  return { message, setMessage, handleCommit, handleKeyDown };
+}
+
+// Helper to get display author info
+function getDisplayAuthorInfo(config: ReturnType<typeof useGitConfig>) {
+  const displayName = config.isGlobalMode
+    ? config.editName
+    : config.localName || config.globalName;
+  const displayEmail = config.isGlobalMode
+    ? config.editEmail
+    : config.localEmail || config.globalEmail;
+  return { displayName, displayEmail };
+}
+
+// Helper to calculate effective author info
+function getEffectiveAuthor(config: ReturnType<typeof useGitConfig>) {
+  return {
+    effectiveName: config.localName || config.globalName,
+    effectiveEmail: config.localEmail || config.globalEmail,
   };
+}
+
+export function CommitComposer() {
+  const { commit, status, isLoading } = useGit();
+  const config = useGitConfig();
+
+  const { effectiveName, effectiveEmail } = getEffectiveAuthor(config);
+  const commitHandler = useCommitHandler(commit, effectiveName, effectiveEmail, config.setError);
+  const { displayName, displayEmail } = getDisplayAuthorInfo(config);
+
+  const stagedCount = status?.staged.length || 0;
+  const canCommit = Boolean(
+    stagedCount > 0 &&
+      commitHandler.message.trim().length > 0 &&
+      effectiveName &&
+      effectiveEmail
+  );
 
   return (
     <div className="bg-[#252526] border-b border-[#333] p-4">
       <div className="space-y-3">
         <AuthorInfo
-          authorName={isGlobalMode ? editName : (localName || globalName)}
-          authorEmail={isGlobalMode ? editEmail : (localEmail || globalEmail)}
-          isGlobal={isGlobalMode}
-          onNameChange={setEditName}
-          onEmailChange={setEditEmail}
-          onScopeChange={setIsGlobalMode}
-          onSave={handleSaveConfig}
+          authorName={displayName}
+          authorEmail={displayEmail}
+          isGlobal={config.isGlobalMode}
+          onNameChange={config.setEditName}
+          onEmailChange={config.setEditEmail}
+          onScopeChange={config.setIsGlobalMode}
+          onSave={config.saveConfig}
         />
-        <CommitMessage message={message} onMessageChange={setMessage} onKeyDown={handleKeyDown} />
-        {error && (
+        <CommitMessage
+          message={commitHandler.message}
+          onMessageChange={commitHandler.setMessage}
+          onKeyDown={commitHandler.handleKeyDown}
+        />
+        {config.error && (
           <div className="p-2 bg-red-900/50 border border-red-700 rounded text-red-200 text-sm">
-            {error}
+            {config.error}
           </div>
         )}
         <CommitButton
           stagedCount={stagedCount}
           canCommit={canCommit}
           isLoading={isLoading}
-          onClick={handleCommit}
+          onClick={commitHandler.handleCommit}
         />
       </div>
     </div>
