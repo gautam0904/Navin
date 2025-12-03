@@ -136,12 +136,39 @@ pub async fn get_git_config(state: State<'_, GitState>) -> Result<(String, Strin
     Ok(config)
 }
 
-/// Set git configuration
+#[tauri::command]
+#[instrument(skip(state))]
+pub async fn get_git_config_detailed(
+    state: State<'_, GitState>,
+) -> Result<(String, String, String, String), String> {
+    info!("Getting detailed git configuration");
+
+    let current = state.current_repo.lock().unwrap();
+    let path = current.as_ref().ok_or_else(|| {
+        warn!("No repository is currently open");
+        "No repository is currently open".to_string()
+    })?;
+
+    let engine = GitEngine::open(path).map_err(|e| {
+        error!("Failed to open repository: {:?}", e);
+        format!("Could not access repository: {}", e)
+    })?;
+
+    let config = engine.get_config_detailed().map_err(|e| {
+        error!("Failed to get detailed config: {:?}", e);
+        format!("Could not read detailed git configuration: {}", e)
+    })?;
+
+    info!("Detailed git configuration retrieved successfully");
+    Ok(config)
+}
+
 #[tauri::command]
 #[instrument(skip(state))]
 pub async fn set_git_config(
     name: String,
     email: String,
+    global: Option<bool>,
     state: State<'_, GitState>,
 ) -> Result<(), String> {
     info!("Setting git configuration");
@@ -157,10 +184,12 @@ pub async fn set_git_config(
         format!("Could not access repository: {}", e)
     })?;
 
-    engine.set_config(&name, &email).map_err(|e| {
-        error!("Failed to set config: {:?}", e);
-        format!("Could not update git configuration: {}", e)
-    })?;
+    engine
+        .set_config(&name, &email, global.unwrap_or(false))
+        .map_err(|e| {
+            error!("Failed to set config: {:?}", e);
+            format!("Could not update git configuration: {}", e)
+        })?;
 
     info!("Git configuration updated successfully");
     Ok(())

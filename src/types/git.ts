@@ -117,6 +117,7 @@ export interface Stash {
   message: string;
   commit_sha: string;
   timestamp: string;
+  branch: string | null;
 }
 
 export interface Remote {

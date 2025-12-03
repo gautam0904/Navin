@@ -5,9 +5,13 @@ pub mod validation;
 
 // Git engine modules
 pub mod git_branch_ops;
+pub mod git_diff_operations;
 pub mod git_engine;
 pub mod git_error;
+pub mod git_history_operations;
 pub mod git_operations;
+pub mod git_remote_operations;
+pub mod git_stash_operations;
 
 // Re-export commonly used types
 pub use git_engine::GitEngine;

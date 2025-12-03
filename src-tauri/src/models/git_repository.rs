@@ -104,10 +104,10 @@ pub struct FileDiff {
 /// Diff hunk
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DiffHunk {
-    pub old_start: u32,
-    pub old_lines: u32,
-    pub new_start: u32,
-    pub new_lines: u32,
+    pub old_start: usize,
+    pub old_lines: usize,
+    pub new_start: usize,
+    pub new_lines: usize,
     pub header: String,
     pub lines: Vec<DiffLine>,
 }
@@ -117,8 +117,8 @@ pub struct DiffHunk {
 pub struct DiffLine {
     pub origin: DiffLineType,
     pub content: String,
-    pub old_lineno: Option<u32>,
-    pub new_lineno: Option<u32>,
+    pub old_lineno: Option<usize>,
+    pub new_lineno: Option<usize>,
 }
 
 /// Diff line type
@@ -149,6 +149,7 @@ pub struct Stash {
     pub message: String,
     pub commit_sha: String,
     pub timestamp: DateTime<Utc>,
+    pub branch: Option<String>,
 }
 
 /// Remote information

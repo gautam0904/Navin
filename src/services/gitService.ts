@@ -1,5 +1,8 @@
 import { invoke } from '@tauri-apps/api/core';
-import type { RepositoryInfo, RepositoryStatus, Branch } from '../types/git';
+import type {
+  RepositoryInfo, RepositoryStatus, Branch, Commit, CommitSummary,
+  FileDiff, Remote
+} from '../types/git';
 
 export class GitService {
   /**
@@ -109,9 +112,115 @@ export class GitService {
   }
 
   /**
-   * Set git configuration
+   * Get detailed git configuration (global and local)
+   * Returns: [globalName, globalEmail, localName, localEmail]
    */
-  static async setConfig(name: string, email: string): Promise<void> {
-    return invoke('set_git_config', { name, email });
+  static async getConfigDetailed(): Promise<[string, string, string, string]> {
+    return invoke<[string, string, string, string]>('get_git_config_detailed');
+  }
+
+  /**
+   * Set git configuration
+   * @param global - true for global config, false for local (default: false)
+   */
+  static async setConfig(name: string, email: string, global?: boolean): Promise<void> {
+    return invoke('set_git_config', { name, email, global });
+  }
+
+  // ===== Phase 2: History Operations =====
+
+  /**
+   * Get paginated commit history
+   */
+  static async getCommits(limit: number, offset: number): Promise<CommitSummary[]> {
+    return invoke<CommitSummary[]>('get_commits', { limit, offset });
+  }
+
+  /**
+   * Get detailed commit information
+   */
+  static async getCommitDetails(sha: string): Promise<Commit> {
+    return invoke<Commit>('get_commit_details', { sha });
+  }
+
+  /**
+   * Get file changes for a specific commit
+   */
+  static async getCommitDiff(sha: string): Promise<FileDiff[]> {
+    return invoke<FileDiff[]>('get_commit_diff', { sha });
+  }
+
+  /**
+   * Get commit history for a specific file
+   */
+  static async getFileHistory(filePath: string, limit: number): Promise<CommitSummary[]> {
+    return invoke<CommitSummary[]>('get_file_history', { filePath, limit });
+  }
+
+  // ===== Phase 2: Diff Operations =====
+
+  /**
+   * Get unstaged diff for a file
+   */
+  static async getFileDiffUnstaged(filePath: string): Promise<FileDiff> {
+    return invoke<FileDiff>('get_file_diff_unstaged', { filePath });
+  }
+
+  /**
+   * Get staged diff for a file
+   */
+  static async getFileDiffStaged(filePath: string): Promise<FileDiff> {
+    return invoke<FileDiff>('get_file_diff_staged', { filePath });
+  }
+
+  /**
+   * Get diff between two commits
+   */
+  static async getDiffBetweenCommits(commit1: string, commit2: string): Promise<FileDiff[]> {
+    return invoke<FileDiff[]>('get_diff_between_commits', { commit1, commit2 });
+  }
+
+  // ===== Phase 2: Remote Operations =====
+
+  /**
+   * List all remotes
+   */
+  static async listRemotes(): Promise<Remote[]> {
+    return invoke<Remote[]>('list_remotes');
+  }
+
+  /**
+   * Add a new remote
+   */
+  static async addRemote(name: string, url: string): Promise<void> {
+    return invoke('add_remote', { name, url });
+  }
+
+  /**
+   * Remove a remote
+   */
+  static async removeRemote(name: string): Promise<void> {
+    return invoke('remove_remote', { name });
+  }
+
+  /**
+   * Fetch from remote
+   */
+  static async fetchRemote(name: string): Promise<void> {
+    return invoke('fetch_remote', { name });
+  }
+
+  /**
+   * Push to remote
+   */
+  static async pushToRemote(remote: string, branch: string, force?: boolean): Promise<void> {
+    return invoke('push_to_remote', { remote, branch, force });
+  }
+
+  /**
+   * Pull from remote
+   */
+  static async pullFromRemote(remote: string, branch: string): Promise<void> {
+    return invoke('pull_from_remote', { remote, branch });
   }
 }

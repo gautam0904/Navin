@@ -70,7 +70,24 @@ pub fn run() {
             delete_branch,
             get_current_repository,
             get_git_config,
-            set_git_config
+            get_git_config_detailed,
+            set_git_config,
+            // Phase 2: History commands
+            get_commits,
+            get_commit_details,
+            get_commit_diff,
+            get_file_history,
+            // Phase 2: Diff commands
+            get_file_diff_unstaged,
+            get_file_diff_staged,
+            get_diff_between_commits,
+            // Phase 2: Remote commands  
+            list_remotes,
+            add_remote,
+            remove_remote,
+            fetch_remote,
+            push_to_remote,
+            pull_from_remote
         ])
         .manage(GitState::new())
         .setup(|app| {

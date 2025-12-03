@@ -4,12 +4,13 @@ import { ThemeToggle } from './ThemeToggle';
 import { useFileExplorer } from '../../contexts/FileExplorerContext';
 import { Explorer } from './Explorer';
 import { Issues } from './Issues';
+import { GitPanel } from '../../features/git/GitPanel';
 
 interface SidebarProps {
   width: number;
 }
 
-type SidebarTab = 'explorer' | 'issues' | 'menu';
+type SidebarTab = 'explorer' | 'git' | 'issues' | 'menu';
 
 function SidebarHeader({
   collapsed,
@@ -58,8 +59,8 @@ function SidebarTabs({
   activeTab: SidebarTab;
   onTabChange: (tab: SidebarTab) => void;
 }) {
-  const tabs: SidebarTab[] = ['explorer', 'issues', 'menu'];
-  const tabLabels = { explorer: 'Explorer', issues: 'Issues', menu: 'Menu' };
+  const tabs: SidebarTab[] = ['explorer', 'git', 'issues', 'menu'];
+  const tabLabels = { explorer: 'Explorer', git: 'Git', issues: 'Issues', menu: 'Menu' };
 
   return (
     <div className="flex border-b border-border/40">
@@ -67,11 +68,10 @@ function SidebarTabs({
         <button
           key={tab}
           onClick={() => onTabChange(tab)}
-          className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === tab
+          className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab
               ? 'border-primary text-primary'
               : 'border-transparent text-text-secondary hover:text-text-primary'
-          }`}
+            }`}
         >
           {tabLabels[tab]}
         </button>
@@ -90,6 +90,7 @@ function SidebarContent({
   fullyCollapsed: boolean;
 }) {
   if (activeTab === 'explorer') return <Explorer />;
+  if (activeTab === 'git') return <GitPanel />;
   if (activeTab === 'issues') return <Issues />;
   if (activeTab === 'menu') return <Navigation collapsed={fullyCollapsed || collapsed} />;
   return null;

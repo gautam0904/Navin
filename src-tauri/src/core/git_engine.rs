@@ -1,6 +1,10 @@
 use crate::core::git_branch_ops::GitBranchOps;
+use crate::core::git_diff_operations::GitDiffOperations;
 use crate::core::git_error::{GitError, GitResult};
+use crate::core::git_history_operations::GitHistoryOperations;
 use crate::core::git_operations::GitOperations;
+use crate::core::git_remote_operations::GitRemoteOperations;
+// Note: GitStashOperations needs &mut self, not used directly in GitEngine yet
 use crate::models::git_repository::*;
 use git2::{Repository as Git2Repository, StatusOptions};
 use std::path::{Path, PathBuf};
@@ -182,19 +186,54 @@ impl GitEngine {
     pub fn get_config(&self) -> GitResult<(String, String)> {
         debug!("Fetching git configuration");
         let config = self.repo.config()?;
+
+        // Try local first, then fall back to global
         let name = config.get_string("user.name").unwrap_or_default();
         let email = config.get_string("user.email").unwrap_or_default();
+
         debug!(user_name = %name, user_email = %email, "Git configuration retrieved");
         Ok((name, email))
     }
 
     #[instrument(skip(self))]
-    pub fn set_config(&self, name: &str, email: &str) -> GitResult<()> {
-        debug!("Setting git configuration");
-        let mut config = self.repo.config()?;
-        config.set_str("user.name", name)?;
-        config.set_str("user.email", email)?;
-        debug!(user_name = %name, user_email = %email, "Git configuration updated");
+    pub fn get_config_detailed(&self) -> GitResult<(String, String, String, String)> {
+        debug!("Fetching detailed git configuration");
+
+        // Get global config
+        let global_config = git2::Config::open_default()?;
+        let global_name = global_config.get_string("user.name").unwrap_or_default();
+        let global_email = global_config.get_string("user.email").unwrap_or_default();
+
+        // Get local/repo config
+        let local_config = self.repo.config()?;
+        let local_name = local_config.get_string("user.name").unwrap_or_default();
+        let local_email = local_config.get_string("user.email").unwrap_or_default();
+
+        debug!(
+            global_name = %global_name, global_email = %global_email,
+            local_name = %local_name, local_email = %local_email,
+            "Detailed git configuration retrieved"
+        );
+
+        Ok((global_name, global_email, local_name, local_email))
+    }
+
+    #[instrument(skip(self))]
+    pub fn set_config(&self, name: &str, email: &str, global: bool) -> GitResult<()> {
+        debug!(global, "Setting git configuration");
+
+        if global {
+            let mut config = git2::Config::open_default()?;
+            config.set_str("user.name", name)?;
+            config.set_str("user.email", email)?;
+            debug!(user_name = %name, user_email = %email, "Global git configuration updated");
+        } else {
+            let mut config = self.repo.config()?;
+            config.set_str("user.name", name)?;
+            config.set_str("user.email", email)?;
+            debug!(user_name = %name, user_email = %email, "Local git configuration updated");
+        }
+
         Ok(())
     }
 
@@ -238,5 +277,64 @@ impl GitEngine {
 
     pub fn delete_branch(&self, name: &str, force: bool) -> GitResult<()> {
         self.repo.delete_branch(name, force)
+    }
+
+    // Phase 2: History operations
+    pub fn get_commits(&self, limit: usize, offset: usize) -> GitResult<Vec<CommitSummary>> {
+        self.repo.get_commits(limit, offset)
+    }
+
+    pub fn get_commit_details(&self, sha: &str) -> GitResult<Commit> {
+        self.repo.get_commit_details(sha)
+    }
+
+    pub fn get_commit_diff(&self, sha: &str) -> GitResult<Vec<FileDiff>> {
+        self.repo.get_commit_diff(sha)
+    }
+
+    pub fn get_file_history(&self, file_path: &str, limit: usize) -> GitResult<Vec<CommitSummary>> {
+        self.repo.get_file_history(file_path, limit)
+    }
+
+    // Phase 2: Diff operations
+    pub fn get_file_diff_unstaged<P: AsRef<Path>>(&self, path: P) -> GitResult<FileDiff> {
+        self.repo.get_file_diff_unstaged(path)
+    }
+
+    pub fn get_file_diff_staged<P: AsRef<Path>>(&self, path: P) -> GitResult<FileDiff> {
+        self.repo.get_file_diff_staged(path)
+    }
+
+    pub fn get_diff_between_commits(
+        &self,
+        commit1: &str,
+        commit2: &str,
+    ) -> GitResult<Vec<FileDiff>> {
+        self.repo.get_diff_between_commits(commit1, commit2)
+    }
+
+    // Phase 2: Remote operations
+    pub fn list_remotes(&self) -> GitResult<Vec<Remote>> {
+        self.repo.list_remotes()
+    }
+
+    pub fn add_remote(&self, name: &str, url: &str) -> GitResult<()> {
+        self.repo.add_remote(name, url)
+    }
+
+    pub fn remove_remote(&self, name: &str) -> GitResult<()> {
+        self.repo.remove_remote(name)
+    }
+
+    pub fn fetch(&self, remote_name: &str) -> GitResult<()> {
+        self.repo.fetch(remote_name)
+    }
+
+    pub fn push(&self, remote_name: &str, branch: &str, force: bool) -> GitResult<()> {
+        self.repo.push(remote_name, branch, force)
+    }
+
+    pub fn pull(&self, remote_name: &str, branch: &str) -> GitResult<()> {
+        self.repo.pull(remote_name, branch)
     }
 }
