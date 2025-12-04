@@ -1,4 +1,14 @@
-export { RepositoryPicker } from './RepositoryPicker';
-export { ChangesPanel } from './ChangesPanel';
-export { CommitComposer } from './CommitComposer';
-export { BranchPanel } from './BranchPanel';
+export { RepositoryPicker } from './components/RepositoryPicker';
+export { ChangesPanel } from './components/ChangesPanel';
+export { CommitComposer } from './components/CommitComposer';
+export { BranchPanel } from './components/BranchPanel';
+export { GitPanel } from './components/GitPanel';
+export { CommitHistory } from './components/CommitHistory';
+export { RemotePanel } from './components/RemotePanel';
+export { StashPanel } from './components/StashPanel';
+export { GitSidebarPanel } from './components/GitSidebarPanel';
+export { FileStatusBadge, FileStatusIcon, parseFileStatus } from './components/FileStatusBadge';
+export { DiffViewer, parseDiffOutput } from './components/DiffViewer';
+export { BranchGraph } from './components/BranchGraph';
+export type { FileStatusType } from './components/FileStatusBadge';
+export type { FileDiff, DiffLine, DiffHunk } from './components/DiffViewer';

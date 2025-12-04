@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FolderOpen, GitBranch, Search } from 'lucide-react';
 import { open } from '@tauri-apps/plugin-dialog';
-import { useGit } from '../../contexts/GitContext';
+import { useGit } from '@/contexts/GitContext';
 
 export function RepositoryPicker() {
   const { openRepository, repository, isLoading, error } = useGit();

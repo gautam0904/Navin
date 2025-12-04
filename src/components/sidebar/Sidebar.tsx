@@ -4,7 +4,7 @@ import { ThemeToggle } from './ThemeToggle';
 import { useFileExplorer } from '../../contexts/FileExplorerContext';
 import { Explorer } from './Explorer';
 import { Issues } from './Issues';
-import { GitPanel } from '../../features/git/GitPanel';
+import { GitSidebarPanel } from '../../features/git';
 
 interface SidebarProps {
   width: number;
@@ -91,7 +91,7 @@ function SidebarContent({
   fullyCollapsed: boolean;
 }) {
   if (activeTab === 'explorer') return <Explorer />;
-  if (activeTab === 'git') return <GitPanel />;
+  if (activeTab === 'git') return <GitSidebarPanel />;
   if (activeTab === 'issues') return <Issues />;
   if (activeTab === 'menu') return <Navigation collapsed={fullyCollapsed || collapsed} />;
   return null;
