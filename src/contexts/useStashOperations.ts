@@ -20,26 +20,38 @@ export function useStashOperations(
     }
   }, [repository, setStashes]);
 
-  const createStash = useCallback(async (message?: string) => {
-    await GitService.createStash(message);
-    await refreshStashes();
-  }, [refreshStashes]);
+  const createStash = useCallback(
+    async (message?: string) => {
+      await GitService.createStash(message);
+      await refreshStashes();
+    },
+    [refreshStashes]
+  );
 
-  const applyStash = useCallback(async (index: number) => {
-    await GitService.applyStash(index);
-    await refreshStatus();
-  }, [refreshStatus]);
+  const applyStash = useCallback(
+    async (index: number) => {
+      await GitService.applyStash(index);
+      await refreshStatus();
+    },
+    [refreshStatus]
+  );
 
-  const popStash = useCallback(async (index: number) => {
-    await GitService.popStash(index);
-    await refreshStatus();
-    await refreshStashes();
-  }, [refreshStatus, refreshStashes]);
+  const popStash = useCallback(
+    async (index: number) => {
+      await GitService.popStash(index);
+      await refreshStatus();
+      await refreshStashes();
+    },
+    [refreshStatus, refreshStashes]
+  );
 
-  const dropStash = useCallback(async (index: number) => {
-    await GitService.dropStash(index);
-    await refreshStashes();
-  }, [refreshStashes]);
+  const dropStash = useCallback(
+    async (index: number) => {
+      await GitService.dropStash(index);
+      await refreshStashes();
+    },
+    [refreshStashes]
+  );
 
   return {
     refreshStashes,
