@@ -5,8 +5,10 @@ pub mod validation;
 
 // Git engine modules
 pub mod git_branch_ops;
+pub mod git_diff_helpers;
 pub mod git_diff_operations;
 pub mod git_engine;
+mod git_engine_delegates;
 pub mod git_error;
 pub mod git_history_operations;
 pub mod git_operations;

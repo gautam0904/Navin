@@ -5,7 +5,9 @@ pub fn init() {
     // Configure default log levels per module
     // Set RUST_LOG environment variable to override, e.g., RUST_LOG=debug or RUST_LOG=git_engine=trace
     let env_filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| {
-        EnvFilter::new("info,navin_lib::core::git_engine=debug,navin_lib::commands::git_commands=debug")
+        EnvFilter::new(
+            "info,navin_lib::core::git_engine=debug,navin_lib::commands::git_commands=debug",
+        )
     });
 
     tracing_subscriber::registry()

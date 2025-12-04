@@ -173,10 +173,10 @@ pub struct ScoringConfig {
 /// Quality thresholds
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct QualityThresholds {
-    pub excellent: f32,  // >= 90
-    pub good: f32,       // >= 75
-    pub fair: f32,       // >= 60
-    pub poor: f32,       // < 60
+    pub excellent: f32, // >= 90
+    pub good: f32,      // >= 75
+    pub fair: f32,      // >= 60
+    pub poor: f32,      // < 60
 }
 
 impl Default for QualityThresholds {

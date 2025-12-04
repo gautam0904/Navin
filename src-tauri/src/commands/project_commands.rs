@@ -72,7 +72,7 @@ pub fn create_project(
             &project_id,
             sec_idx as i32,
         )
-        .map_err(|e| AppError::DatabaseError(e))?;
+        .map_err(AppError::DatabaseError)?;
     }
 
     // Return the created project
