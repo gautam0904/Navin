@@ -79,6 +79,7 @@ pub struct CommitSummary {
     pub message: String,
     pub author_name: String,
     pub timestamp: DateTime<Utc>,
+    pub parents: Vec<String>,
 }
 
 /// Author/Committer information

@@ -62,6 +62,7 @@ export interface CommitSummary {
   message: string;
   author_name: string;
   timestamp: string; // ISO 8601 datetime
+  parents: string[];
 }
 
 export interface Author {

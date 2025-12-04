@@ -12,6 +12,7 @@ import { useStashOperations } from './useStashOperations';
 import { useRemoteOperations } from './useRemoteOperations';
 import { useBranchOperations } from './useBranchOperations';
 import { useStagingOperations } from './useStagingOperations';
+import { useGitWatcher } from '../features/git/hooks/useGitWatcher';
 
 interface GitContextType {
   repository: RepositoryInfo | null;
@@ -122,11 +123,12 @@ export function GitProvider({ children }: { children: React.ReactNode }) {
   }, [repository]);
 
   const stashOps = useStashOperations();
+  const stashOpsRefreshStashes = stashOps.refreshStashes;
 
   const refreshStashes = useCallback(async () => {
-    const stashList = await stashOps.refreshStashes();
+    const stashList = await stashOpsRefreshStashes();
     setStashes(stashList);
-  }, [stashOps]);
+  }, [stashOpsRefreshStashes]);
 
   const openRepository = useCallback(async (path: string) => {
     setIsLoading(true);
@@ -218,12 +220,24 @@ export function GitProvider({ children }: { children: React.ReactNode }) {
     );
   }, [repository, refreshStatus, refreshBranches, refreshHistory, refreshRemotes]);
 
-  // Auto-refresh status
-  useEffect(() => {
+  // Unified refresh function
+  const refreshAll = useCallback(async () => {
     if (!repository) return;
-    const interval = setInterval(refreshStatus, 3000);
-    return () => clearInterval(interval);
-  }, [repository, refreshStatus]);
+    await Promise.all([
+      refreshStatus(),
+      refreshBranches(),
+      refreshHistory(), // Refresh history as well
+      refreshRemotes(),
+    ]);
+  }, [repository, refreshStatus, refreshBranches, refreshHistory, refreshRemotes]);
+
+  // Real-time monitoring
+  useGitWatcher({
+    repository,
+    onRefresh: refreshAll,
+    interval: 3000,
+    enabled: !!repository,
+  });
 
   const value: GitContextType = {
     repository,

@@ -184,11 +184,16 @@ fn commit_to_summary(commit: &Git2Commit) -> GitResult<CommitSummary> {
         .single()
         .unwrap_or_else(|| Utc::now());
 
+    let parents: Vec<String> = (0..commit.parent_count())
+        .filter_map(|i| commit.parent_id(i).ok().map(|oid| oid.to_string()))
+        .collect();
+
     Ok(CommitSummary {
         sha,
         short_sha,
         message,
         author_name,
         timestamp,
+        parents,
     })
 }
