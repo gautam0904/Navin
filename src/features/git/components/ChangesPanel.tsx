@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FileIcon, AlertTriangle, Check } from 'lucide-react';
 import { useGit } from '@/contexts/GitContext';
 import { StagingColumn } from './StagingColumn';
@@ -34,28 +34,32 @@ export function ChangesPanel() {
         </div>
       )}
 
-      <div className="flex flex-1 min-h-0">
-        <StagingColumn
-          title="Changes"
-          files={unstagedFiles}
-          onStageAll={stageAll}
-          onStageFile={stageFile}
-          isStaged={false}
-          selectedFile={selectedFile}
-          onSelectFile={setSelectedFile}
-          isLoading={isLoading}
-        />
+      <div className="flex flex-col flex-1 min-h-0">
+        <div className="flex-1 min-h-0 border-b border-[var(--git-panel-border)]">
+          <StagingColumn
+            title="Changes"
+            files={unstagedFiles}
+            onStageAll={stageAll}
+            onStageFile={stageFile}
+            isStaged={false}
+            selectedFile={selectedFile}
+            onSelectFile={setSelectedFile}
+            isLoading={isLoading}
+          />
+        </div>
 
-        <StagingColumn
-          title="Staged"
-          files={stagedFiles}
-          onUnstageAll={unstageAll}
-          onUnstageFile={unstageFile}
-          isStaged={true}
-          selectedFile={selectedFile}
-          onSelectFile={setSelectedFile}
-          isLoading={isLoading}
-        />
+        <div className="flex-1 min-h-0">
+          <StagingColumn
+            title="Staged"
+            files={stagedFiles}
+            onUnstageAll={unstageAll}
+            onUnstageFile={unstageFile}
+            isStaged={true}
+            selectedFile={selectedFile}
+            onSelectFile={setSelectedFile}
+            isLoading={isLoading}
+          />
+        </div>
       </div>
 
       {status.is_clean && (

@@ -9,6 +9,7 @@ import {
   ArrowUpCircle,
   ArrowDownCircle,
   RefreshCw,
+  Shield,
 } from 'lucide-react';
 import { ChangesPanel } from './ChangesPanel';
 import { BranchPanel } from './BranchPanel';
@@ -17,7 +18,7 @@ import { StashPanel } from './StashPanel';
 import { RemotePanel } from './RemotePanel';
 import { useGit } from '@/contexts/GitContext';
 
-type GitTab = 'changes' | 'branches' | 'history' | 'stash' | 'remotes';
+type GitTab = 'changes' | 'branches' | 'history' | 'stash' | 'remotes' | 'quality';
 
 interface TabButtonProps {
   tab: GitTab;
@@ -25,10 +26,11 @@ interface TabButtonProps {
   icon: React.ReactNode;
   label: string;
   badge?: number;
+  highlight?: boolean;
   onClick: () => void;
 }
 
-function TabButton({ tab, activeTab, icon, label, badge, onClick }: TabButtonProps) {
+function TabButton({ tab, activeTab, icon, label, badge, highlight, onClick }: TabButtonProps) {
   const isActive = tab === activeTab;
 
   return (
@@ -36,7 +38,7 @@ function TabButton({ tab, activeTab, icon, label, badge, onClick }: TabButtonPro
       onClick={onClick}
       className={`
         flex items-center gap-1.5 px-3 py-2 text-xs font-medium transition-all
-        border-b-2 whitespace-nowrap
+        border-b-2 whitespace-nowrap relative
         ${
           isActive
             ? 'border-[var(--color-primary)] text-[var(--color-primary)]'
@@ -60,6 +62,9 @@ function TabButton({ tab, activeTab, icon, label, badge, onClick }: TabButtonPro
         >
           {badge > 99 ? '99+' : badge}
         </span>
+      )}
+      {highlight && !isActive && (
+        <span className="absolute top-1 right-1 w-2 h-2 bg-[var(--color-primary)] rounded-full animate-pulse" />
       )}
     </button>
   );
@@ -112,10 +117,10 @@ function RepositoryHeader() {
         <button
           onClick={() => refreshStatus()}
           disabled={isLoading}
-          className={`p-1.5 rounded hover:bg-[var(--color-bg-surface-2)] transition-colors ${isLoading ? 'animate-spin' : ''}`}
+          className={`btn-premium btn-premium-ghost btn-premium-icon ${isLoading ? 'animate-spin' : ''}`}
           title="Refresh"
         >
-          <RefreshCw className="w-4 h-4 text-[var(--color-text-tertiary)]" />
+          <RefreshCw className="w-4 h-4" />
         </button>
       </div>
     </div>
@@ -138,10 +143,12 @@ export function GitSidebarPanel() {
 
   if (!repository) {
     return (
-      <div className="flex flex-col items-center justify-center h-full p-6 text-center">
-        <FolderGit2 className="w-12 h-12 mb-3 text-[var(--color-text-tertiary)] opacity-50" />
-        <p className="text-sm text-[var(--color-text-secondary)] mb-2">No repository open</p>
-        <p className="text-xs text-[var(--color-text-tertiary)]">
+      <div className="empty-state h-full">
+        <div className="empty-state-icon">
+          <FolderGit2 className="w-10 h-10" />
+        </div>
+        <h3 className="empty-state-title">No repository open</h3>
+        <p className="empty-state-description">
           Open a folder with a git repository to see changes
         </p>
       </div>
@@ -164,18 +171,18 @@ export function GitSidebarPanel() {
           onClick={() => setActiveTab('changes')}
         />
         <TabButton
-          tab="branches"
-          activeTab={activeTab}
-          icon={<GitBranch className="w-3.5 h-3.5" />}
-          label="Branches"
-          onClick={() => setActiveTab('branches')}
-        />
-        <TabButton
           tab="history"
           activeTab={activeTab}
           icon={<History className="w-3.5 h-3.5" />}
           label="History"
           onClick={() => setActiveTab('history')}
+        />
+        <TabButton
+          tab="branches"
+          activeTab={activeTab}
+          icon={<GitBranch className="w-3.5 h-3.5" />}
+          label="Branches"
+          onClick={() => setActiveTab('branches')}
         />
         <TabButton
           tab="stash"
@@ -190,6 +197,14 @@ export function GitSidebarPanel() {
           icon={<FolderGit2 className="w-3.5 h-3.5" />}
           label="Remotes"
           onClick={() => setActiveTab('remotes')}
+        />
+        <TabButton
+          tab="quality"
+          activeTab={activeTab}
+          icon={<Shield className="w-3.5 h-3.5" />}
+          label="Quality"
+          highlight={true}
+          onClick={() => setActiveTab('quality')}
         />
       </div>
 

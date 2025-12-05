@@ -1,20 +1,18 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { GitCommit, Calendar, User, ChevronRight, Hash, Circle } from 'lucide-react';
+import { useEffect, useState, useMemo } from 'react';
+import { GitCommit, User, ChevronRight, Hash, Clock, History, Filter } from 'lucide-react';
 import { useGit } from '@/contexts/GitContext';
 import { formatDistanceToNow, format, isToday, isYesterday, isThisWeek } from 'date-fns';
+import type { CommitSummary } from '@/types/git';
 
 interface CommitHistoryProps {
   onSelectCommit: (sha: string) => void;
   selectedSha?: string;
 }
 
-interface CommitSummary {
-  sha: string;
-  message: string;
-  author_name: string;
-  author_email?: string; // Optional - may not be provided by backend
-  timestamp: string;
-}
+// Extend CommitSummary with optional email
+
+// Quality filter options
+type QualityFilter = 'all' | 'excellent' | 'good' | 'fair' | 'poor';
 
 // Group commits by date
 function groupCommitsByDate(commits: CommitSummary[]) {
@@ -30,7 +28,7 @@ function groupCommitsByDate(commits: CommitSummary[]) {
     } else if (isYesterday(date)) {
       label = 'Yesterday';
     } else if (isThisWeek(date)) {
-      label = format(date, 'EEEE'); // Day name
+      label = format(date, 'EEEE');
     } else {
       label = format(date, 'MMMM d, yyyy');
     }
@@ -62,7 +60,32 @@ function stringToColor(str: string): string {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
   }
   const hue = hash % 360;
-  return `hsl(${hue}, 65%, 50%)`;
+  return `hsl(${hue}, 60%, 50%)`;
+}
+
+// Parse commit type from message
+function parseCommitType(message: string): { type: string; color: string } | null {
+  const match = message.match(
+    /^(feat|fix|docs|style|refactor|test|chore|build|ci|perf|revert)(\(.*?\))?:/i
+  );
+  if (!match) return null;
+
+  const typeColors: Record<string, string> = {
+    feat: '#10b981',
+    fix: '#ef4444',
+    docs: '#3b82f6',
+    style: '#8b5cf6',
+    refactor: '#f59e0b',
+    test: '#06b6d4',
+    chore: '#6b7280',
+    build: '#ec4899',
+    ci: '#14b8a6',
+    perf: '#f97316',
+    revert: '#dc2626',
+  };
+
+  const type = match[1].toLowerCase();
+  return { type, color: typeColors[type] || '#6b7280' };
 }
 
 interface CommitAvatarProps {
@@ -74,12 +97,12 @@ interface CommitAvatarProps {
 function CommitAvatar({ name, email, size = 'md' }: CommitAvatarProps) {
   const initials = getInitials(name);
   const color = stringToColor(email);
-  const sizeClasses = size === 'sm' ? 'w-6 h-6 text-[10px]' : 'w-8 h-8 text-xs';
+  const sizeClasses = size === 'sm' ? 'w-7 h-7 text-[10px]' : 'w-9 h-9 text-xs';
 
   return (
     <div
-      className={`${sizeClasses} rounded-full flex items-center justify-center font-semibold text-white shrink-0`}
-      style={{ backgroundColor: color }}
+      className={`${sizeClasses} rounded-lg flex items-center justify-center font-bold text-white shrink-0 shadow-sm`}
+      style={{ background: `linear-gradient(135deg, ${color} 0%, ${color}dd 100%)` }}
       title={`${name} <${email}>`}
     >
       {initials}
@@ -90,57 +113,80 @@ function CommitAvatar({ name, email, size = 'md' }: CommitAvatarProps) {
 interface CommitItemProps {
   commit: CommitSummary;
   isSelected: boolean;
-  isFirst: boolean;
-  isLast: boolean;
+  index: number;
+  totalInGroup: number;
   onSelect: () => void;
 }
 
-function CommitItem({ commit, isSelected, isFirst, isLast, onSelect }: CommitItemProps) {
+function CommitItem({ commit, isSelected, index, totalInGroup, onSelect }: CommitItemProps) {
   const firstLine = commit.message.split('\n')[0];
   const hasMoreLines = commit.message.includes('\n');
+  const commitType = parseCommitType(firstLine);
+  const isFirst = index === 0;
+  const isLast = index === totalInGroup - 1;
 
   return (
     <div
       onClick={onSelect}
-      className={`
-        git-commit-item group cursor-pointer relative
-        ${isSelected ? 'git-commit-item--selected' : ''}
-      `}
+      className={`timeline-item group ${isSelected ? 'timeline-item-selected' : ''}`}
     >
       {/* Timeline connector */}
-      <div className="absolute left-[26px] top-0 bottom-0 flex flex-col items-center pointer-events-none">
-        {!isFirst && <div className="w-0.5 flex-1 bg-[var(--git-panel-border)]" />}
-        <Circle
-          className={`w-2.5 h-2.5 shrink-0 ${isSelected ? 'text-[var(--color-primary)] fill-current' : 'text-[var(--git-commit-sha)]'}`}
-        />
-        {!isLast && <div className="w-0.5 flex-1 bg-[var(--git-panel-border)]" />}
-      </div>
+      {!isFirst && (
+        <div className="absolute left-[19px] top-0 h-1/2 w-0.5 bg-[var(--color-border-light)]" />
+      )}
+      {!isLast && (
+        <div className="absolute left-[19px] bottom-0 h-1/2 w-0.5 bg-[var(--color-border-light)]" />
+      )}
+
+      {/* Timeline node */}
+      <div className={`timeline-node ${isSelected ? 'timeline-node-active' : ''}`} />
 
       {/* Commit content */}
       <div className="flex items-start gap-3 pl-10">
-        <CommitAvatar name={commit.author_name} email={commit.author_email || commit.author_name} />
+        <CommitAvatar name={commit.author_name} email={commit.author_name} />
 
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-1">
-            <p
-              className={`text-sm font-medium leading-tight ${isSelected ? 'text-[var(--color-primary)]' : 'text-[var(--color-text-primary)]'} line-clamp-2`}
-            >
-              {firstLine}
-              {hasMoreLines && <span className="text-[var(--color-text-tertiary)]"> ...</span>}
-            </p>
-            <span className="shrink-0 text-[10px] font-mono text-[var(--git-commit-sha)] bg-[var(--color-bg-surface-2)] px-1.5 py-0.5 rounded flex items-center gap-1">
-              <Hash className="w-2.5 h-2.5" />
-              {commit.sha.substring(0, 7)}
-            </span>
+            <div className="flex items-start gap-2 min-w-0">
+              {commitType && (
+                <span
+                  className="shrink-0 px-2 py-0.5 text-[10px] font-bold uppercase rounded"
+                  style={{
+                    backgroundColor: `${commitType.color}20`,
+                    color: commitType.color,
+                    border: `1px solid ${commitType.color}40`,
+                  }}
+                >
+                  {commitType.type}
+                </span>
+              )}
+              <p
+                className={`text-sm font-medium leading-tight ${isSelected ? 'text-[var(--color-primary)]' : 'text-[var(--color-text-primary)]'} line-clamp-2`}
+              >
+                {commitType
+                  ? firstLine.replace(
+                      /^(feat|fix|docs|style|refactor|test|chore|build|ci|perf|revert)(\(.*?\))?:\s*/i,
+                      ''
+                    )
+                  : firstLine}
+                {hasMoreLines && <span className="text-[var(--color-text-tertiary)]"> ...</span>}
+              </p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="flex items-center gap-1 text-[10px] font-mono text-[var(--color-text-tertiary)] bg-[var(--color-bg-surface-2)] px-2 py-1 rounded-md border border-[var(--color-border-light)]">
+                <Hash className="w-3 h-3" />
+                {commit.sha.substring(0, 7)}
+              </span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3 text-xs text-[var(--git-commit-date)]">
-            <span className="flex items-center gap-1 truncate">
+          <div className="flex items-center gap-4 text-xs text-[var(--color-text-tertiary)]">
+            <span className="flex items-center gap-1.5 truncate">
               <User className="w-3 h-3" />
-              <span className="truncate max-w-[100px]">{commit.author_name}</span>
+              <span className="truncate max-w-[120px]">{commit.author_name}</span>
             </span>
-            <span className="flex items-center gap-1">
-              <Calendar className="w-3 h-3" />
+            <span className="flex items-center gap-1.5">
+              <Clock className="w-3 h-3" />
               <span>{formatDistanceToNow(new Date(commit.timestamp), { addSuffix: true })}</span>
             </span>
           </div>
@@ -157,104 +203,107 @@ interface DateGroupProps {
   commits: CommitSummary[];
   selectedSha?: string;
   onSelectCommit: (sha: string) => void;
-  isFirstGroup: boolean;
 }
 
-function DateGroup({ label, commits, selectedSha, onSelectCommit, isFirstGroup }: DateGroupProps) {
+function DateGroup({ label, commits, selectedSha, onSelectCommit }: DateGroupProps) {
   return (
-    <div className="relative">
-      {/* Date header */}
-      <div
-        className={`sticky top-0 z-10 px-4 py-2 bg-[var(--git-panel-header)] border-b border-[var(--git-panel-border)] ${!isFirstGroup ? 'border-t' : ''}`}
-      >
-        <span className="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider">
-          {label}
-        </span>
-      </div>
+    <div className="mb-4">
+      <h3 className="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider px-4 py-2 sticky top-0 bg-[var(--git-panel-bg)] z-10 border-b border-[var(--color-border-light)]">
+        {label}
+      </h3>
+      {commits.map((commit, idx) => (
+        <CommitItem
+          key={commit.sha}
+          commit={commit}
+          isSelected={selectedSha === commit.sha}
+          index={idx}
+          totalInGroup={commits.length}
+          onSelect={() => onSelectCommit(commit.sha)}
+        />
+      ))}
+    </div>
+  );
+}
 
-      {/* Commits */}
-      <div>
-        {commits.map((commit, idx) => (
-          <CommitItem
-            key={commit.sha}
-            commit={commit}
-            isSelected={selectedSha === commit.sha}
-            isFirst={idx === 0}
-            isLast={idx === commits.length - 1}
-            onSelect={() => onSelectCommit(commit.sha)}
-          />
-        ))}
+function EmptyHistoryState() {
+  return (
+    <div className="empty-state h-full">
+      <div className="empty-state-icon">
+        <History className="w-10 h-10" />
       </div>
+      <h3 className="empty-state-title">No commits yet</h3>
+      <p className="empty-state-description">Make your first commit to start tracking history</p>
     </div>
   );
 }
 
 export function CommitHistory({ onSelectCommit, selectedSha }: CommitHistoryProps) {
-  const { history, refreshHistory, isLoading } = useGit();
-  const [page, setPage] = useState(0);
-  const LIMIT = 50;
+  const { history: commits, refreshHistory: loadCommits, repository, isLoading } = useGit();
+  const [qualityFilter, setQualityFilter] = useState<QualityFilter>('all');
 
   useEffect(() => {
-    refreshHistory(LIMIT, 0);
-  }, [refreshHistory]);
+    if (repository) {
+      loadCommits();
+    }
+  }, [repository, loadCommits]);
+
+  // Calculate filter stats
+
+  // Filter commits by quality
+  const filteredCommits = useMemo(() => {
+    if (!commits || qualityFilter === 'all') return commits;
+
+    return commits;
+  }, [commits, qualityFilter]);
 
   const groupedCommits = useMemo(() => {
-    if (!history) return [];
-    return groupCommitsByDate(history);
-  }, [history]);
+    if (!filteredCommits) return [];
+    return groupCommitsByDate(filteredCommits as CommitSummary[]);
+  }, [filteredCommits]);
 
-  const handleLoadMore = () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    refreshHistory(LIMIT, nextPage * LIMIT);
-  };
-
-  if (!history || history.length === 0) {
+  if (isLoading && !commits?.length) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-[var(--color-text-tertiary)] p-8">
-        <GitCommit className="w-12 h-12 mb-3 opacity-30" />
-        <p className="text-sm font-medium mb-1">No commits yet</p>
-        <p className="text-xs text-center">Make your first commit to see the history</p>
+      <div className="flex items-center justify-center h-full">
+        <div className="flex flex-col items-center gap-2">
+          <GitCommit className="w-6 h-6 text-[var(--color-primary)] animate-pulse" />
+          <span className="text-xs text-[var(--color-text-tertiary)]">Loading commits...</span>
+        </div>
       </div>
     );
   }
 
-  return (
-    <div className="flex flex-col h-full bg-[var(--git-panel-bg)] overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--git-panel-border)] bg-[var(--git-panel-header)]">
-        <div className="flex items-center gap-2">
-          <GitCommit className="w-4 h-4 text-[var(--color-primary)]" />
-          <h2 className="text-sm font-semibold text-[var(--color-text-primary)]">Commit History</h2>
-        </div>
-        <span className="text-xs text-[var(--color-text-tertiary)] bg-[var(--color-bg-surface-2)] px-2 py-0.5 rounded-full">
-          {history.length} commits
-        </span>
-      </div>
+  if (!commits || commits.length === 0) {
+    return <EmptyHistoryState />;
+  }
 
+  return (
+    <div className="flex flex-col h-full bg-[var(--git-panel-bg)]">
       {/* Commit list */}
       <div className="flex-1 overflow-y-auto">
-        {groupedCommits.map((group, idx) => (
-          <DateGroup
-            key={group.label}
-            label={group.label}
-            commits={group.commits}
-            selectedSha={selectedSha}
-            onSelectCommit={onSelectCommit}
-            isFirstGroup={idx === 0}
-          />
-        ))}
-
-        {/* Load More */}
-        <div className="p-4 text-center border-t border-[var(--git-panel-border)]">
-          <button
-            onClick={handleLoadMore}
-            disabled={isLoading}
-            className="text-xs font-medium text-[var(--color-primary)] hover:underline disabled:opacity-50 disabled:no-underline"
-          >
-            {isLoading ? 'Loading...' : 'Load older commits'}
-          </button>
-        </div>
+        {filteredCommits && filteredCommits.length > 0 ? (
+          groupedCommits.map((group) => (
+            <DateGroup
+              key={group.label}
+              label={group.label}
+              commits={group.commits}
+              selectedSha={selectedSha}
+              onSelectCommit={onSelectCommit}
+            />
+          ))
+        ) : (
+          <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+            <Filter className="w-8 h-8 text-[var(--color-text-tertiary)] mb-3 opacity-50" />
+            <p className="text-sm text-[var(--color-text-secondary)]">
+              No commits match the {qualityFilter} quality filter
+            </p>
+            <button
+              onClick={() => setQualityFilter('all')}
+              className="mt-3 text-xs text-[var(--color-primary)] hover:underline"
+            >
+              Show all commits
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

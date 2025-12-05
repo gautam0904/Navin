@@ -1,108 +1,196 @@
-import React, { useState, useEffect } from 'react';
-import { Archive, Plus, Trash2, Play, Upload } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Archive, Plus, Trash2, Play, Upload, GitBranch, Clock, Package } from 'lucide-react';
 import { useGit } from '@/contexts/GitContext';
+import { formatDistanceToNow } from 'date-fns';
+
+interface StashEntry {
+  message: string;
+  branch: string | null;
+  index?: number;
+  timestamp?: string;
+}
+
+function EmptyStashState() {
+  return (
+    <div className="empty-state">
+      <div className="empty-state-icon">
+        <Package className="w-10 h-10" />
+      </div>
+      <h3 className="empty-state-title">No stashes yet</h3>
+      <p className="empty-state-description">
+        Stash your changes to save work in progress without committing
+      </p>
+    </div>
+  );
+}
+
+interface StashCardProps {
+  stash: StashEntry;
+  index: number;
+  onApply: () => void;
+  onPop: () => void;
+  onDrop: () => void;
+}
+
+function StashCard({ stash, index, onApply, onPop, onDrop }: StashCardProps) {
+  const displayMessage = stash.message || `WIP on ${stash.branch}`;
+  const truncatedMessage =
+    displayMessage.length > 60 ? displayMessage.slice(0, 60) + '...' : displayMessage;
+
+  return (
+    <div className="stash-card animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
+      <div className="stash-card-header">
+        <div className="stash-card-icon">
+          <Archive className="w-4 h-4" />
+        </div>
+        <div className="stash-card-content">
+          <div className="stash-card-title" title={displayMessage}>
+            {truncatedMessage}
+          </div>
+          <div className="stash-card-meta">
+            <span className="flex items-center gap-1">
+              <GitBranch className="w-3 h-3" />
+              {stash.branch}
+            </span>
+            {stash.timestamp && (
+              <span className="flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                {formatDistanceToNow(new Date(stash.timestamp), { addSuffix: true })}
+              </span>
+            )}
+            <span className="badge badge-neutral">stash@{`{${index}}`}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="stash-card-actions">
+        <button
+          onClick={onApply}
+          className="stash-card-action"
+          title="Apply this stash (keep stash)"
+        >
+          <Play className="w-3.5 h-3.5" />
+          Apply
+        </button>
+        <button onClick={onPop} className="stash-card-action" title="Apply and remove stash">
+          <Upload className="w-3.5 h-3.5" />
+          Pop
+        </button>
+        <button
+          onClick={onDrop}
+          className="stash-card-action stash-card-action-danger"
+          title="Delete this stash"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+          Drop
+        </button>
+      </div>
+    </div>
+  );
+}
+
+interface CreateStashFormProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (message?: string) => Promise<void>;
+}
+
+function CreateStashForm({ isOpen, onClose, onSubmit }: CreateStashFormProps) {
+  const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    await onSubmit(message || undefined);
+    setMessage('');
+    setIsSubmitting(false);
+    onClose();
+  };
+
+  return (
+    <div className="p-4 bg-[var(--color-bg-surface-2)] border-b border-[var(--color-border-light)] animate-slide-in">
+      <div className="space-y-3">
+        <input
+          type="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+          placeholder="Stash message (optional)"
+          className="input-premium"
+          autoFocus
+        />
+        <div className="flex justify-end gap-2">
+          <button onClick={onClose} className="btn-premium btn-premium-ghost btn-premium-sm">
+            Cancel
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className="btn-premium btn-premium-primary btn-premium-sm"
+          >
+            {isSubmitting ? 'Saving...' : 'Stash Changes'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function StashPanel() {
   const { stashes, refreshStashes, createStash, applyStash, popStash, dropStash } = useGit();
   const [isAdding, setIsAdding] = useState(false);
-  const [stashMessage, setStashMessage] = useState('');
 
   useEffect(() => {
     refreshStashes();
   }, [refreshStashes]);
 
-  const handleCreateStash = async () => {
-    await createStash(stashMessage || undefined);
-    setIsAdding(false);
-    setStashMessage('');
+  const handleCreateStash = async (message?: string) => {
+    await createStash(message);
   };
 
   return (
-    <div className="flex flex-col h-full bg-[var(--git-panel-bg)] text-[var(--color-text-primary)]">
-      <div className="flex items-center justify-between p-3 border-b border-[var(--git-panel-border)] bg-[var(--git-panel-header)]">
-        <h2 className="font-semibold text-sm uppercase tracking-wider text-[var(--color-text-secondary)]">
-          Stashes
-        </h2>
+    <div className="flex flex-col h-full bg-[var(--color-bg-primary)]">
+      {/* Header */}
+      <div className="section-header">
+        <div className="section-header-title">
+          <Archive className="w-4 h-4 text-[var(--color-primary)]" />
+          <span>Stashes</span>
+          {stashes && stashes.length > 0 && (
+            <span className="section-header-count">{stashes.length}</span>
+          )}
+        </div>
         <button
           onClick={() => setIsAdding(!isAdding)}
-          className="p-1 hover:bg-[var(--color-bg-surface-2)] rounded text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition-colors"
-          title="Stash Changes"
+          className="btn-premium btn-premium-ghost btn-premium-icon"
+          title="Stash current changes"
         >
           <Plus className="w-4 h-4" />
         </button>
       </div>
 
-      {isAdding && (
-        <div className="p-3 bg-[var(--color-bg-surface-2)] border-b border-[var(--git-panel-border)] space-y-2">
-          <input
-            type="text"
-            value={stashMessage}
-            onChange={(e) => setStashMessage(e.target.value)}
-            placeholder="Stash message (optional)"
-            className="w-full px-2 py-1 bg-[var(--color-bg-primary)] border border-[var(--git-panel-border)] rounded text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-primary)]"
-          />
-          <div className="flex justify-end gap-2">
-            <button
-              onClick={() => setIsAdding(false)}
-              className="px-2 py-1 text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleCreateStash}
-              className="px-2 py-1 bg-[var(--color-primary)] text-white text-xs rounded hover:bg-[var(--color-primary-dark)]"
-            >
-              Stash
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Create Form */}
+      <CreateStashForm
+        isOpen={isAdding}
+        onClose={() => setIsAdding(false)}
+        onSubmit={handleCreateStash}
+      />
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-2">
+      {/* Stash List */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-3">
         {!stashes || stashes.length === 0 ? (
-          <div className="text-center text-[var(--color-text-tertiary)] py-4 text-sm">
-            No stashes found
-          </div>
+          <EmptyStashState />
         ) : (
           stashes.map((stash, index) => (
-            <div
+            <StashCard
               key={index}
-              className="bg-[var(--color-bg-surface-1)] rounded border border-[var(--git-panel-border)] overflow-hidden group"
-            >
-              <div className="p-2 border-b border-[var(--git-panel-border)] flex items-start gap-2">
-                <Archive className="w-4 h-4 text-[var(--color-text-tertiary)] mt-0.5" />
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium truncate text-[var(--color-text-primary)]">
-                    {stash.message || `Stash@{${index}}`}
-                  </div>
-                  <div className="text-xs text-[var(--color-text-tertiary)]">{stash.branch}</div>
-                </div>
-              </div>
-
-              <div className="flex divide-x divide-[var(--git-panel-border)]">
-                <button
-                  onClick={() => applyStash(index)}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-1.5 hover:bg-[var(--git-panel-item-hover)] transition-colors text-xs text-[var(--color-text-secondary)]"
-                  title="Apply Stash"
-                >
-                  <Play className="w-3 h-3" /> Apply
-                </button>
-                <button
-                  onClick={() => popStash(index)}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-1.5 hover:bg-[var(--git-panel-item-hover)] transition-colors text-xs text-[var(--color-text-secondary)]"
-                  title="Pop Stash"
-                >
-                  <Upload className="w-3 h-3" /> Pop
-                </button>
-                <button
-                  onClick={() => dropStash(index)}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-1.5 hover:bg-[var(--git-panel-item-hover)] transition-colors text-xs hover:text-[var(--git-status-deleted)] text-[var(--color-text-secondary)]"
-                  title="Drop Stash"
-                >
-                  <Trash2 className="w-3 h-3" /> Drop
-                </button>
-              </div>
-            </div>
+              stash={stash}
+              index={index}
+              onApply={() => applyStash(index)}
+              onPop={() => popStash(index)}
+              onDrop={() => dropStash(index)}
+            />
           ))
         )}
       </div>

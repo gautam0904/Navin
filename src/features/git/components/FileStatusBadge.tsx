@@ -1,132 +1,113 @@
-/* eslint-disable complexity */
-import React from 'react';
-import { Plus, FileEdit, Trash2, ArrowRight, AlertTriangle, FileQuestion } from 'lucide-react';
+import type { FileStatusType as GitStatusType } from '@/types/git';
 
 export type FileStatusType =
   | 'added'
   | 'modified'
   | 'deleted'
   | 'renamed'
+  | 'untracked'
   | 'conflicted'
-  | 'untracked';
+  | 'unknown';
+
+// Parse the Git status type from backend - handles both string and object formats
+// Exact matches / Short codes
+function getShortCodeStatus(normalized: string): FileStatusType | null {
+  const shortCodes: Record<string, FileStatusType> = {
+    a: 'added',
+    m: 'modified',
+    d: 'deleted',
+    r: 'renamed',
+    '?': 'untracked',
+    u: 'conflicted',
+  };
+  return shortCodes[normalized] || null;
+}
+
+// Substring matches
+function getSubstringStatus(normalized: string): FileStatusType | null {
+  if (normalized.includes('add') || normalized.includes('cop')) return 'added';
+  if (normalized.includes('modif')) return 'modified';
+  if (normalized.includes('delet')) return 'deleted';
+  if (normalized.includes('renam')) return 'renamed';
+  if (normalized.includes('untrack')) return 'untracked';
+  if (normalized.includes('conflict')) return 'conflicted';
+  return null;
+}
+
+function parseStringStatus(status: string): FileStatusType {
+  const normalized = status.toLowerCase().trim();
+
+  const shortCode = getShortCodeStatus(normalized);
+  if (shortCode) return shortCode;
+
+  const substringMatch = getSubstringStatus(normalized);
+  if (substringMatch) return substringMatch;
+
+  return 'unknown';
+}
+
+function parseObjectStatus(status: object): FileStatusType {
+  const map: Record<string, FileStatusType> = {
+    Added: 'added',
+    Modified: 'modified',
+    Deleted: 'deleted',
+    Renamed: 'renamed',
+    Copied: 'added',
+    Untracked: 'untracked',
+    Ignored: 'unknown',
+    Conflicted: 'conflicted',
+  };
+
+  for (const key in map) {
+    if (key in status) return map[key];
+  }
+  return 'unknown';
+}
+
+// Parse the Git status type from backend - handles both string and object formats
+export function parseFileStatus(status: GitStatusType | string): FileStatusType {
+  if (typeof status === 'string') {
+    return parseStringStatus(status);
+  }
+
+  if (typeof status === 'object' && status !== null) {
+    return parseObjectStatus(status);
+  }
+
+  return 'unknown';
+}
 
 interface FileStatusBadgeProps {
   status: FileStatusType;
   showLabel?: boolean;
-  size?: 'sm' | 'md';
 }
 
-const statusConfig: Record<
-  FileStatusType,
-  {
-    label: string;
-    shortLabel: string;
-    icon: React.ReactNode;
-    className: string;
-  }
-> = {
-  added: {
-    label: 'Added',
-    shortLabel: 'A',
-    icon: <Plus className="w-3 h-3" />,
-    className: 'git-status-badge--added',
-  },
-  modified: {
-    label: 'Modified',
-    shortLabel: 'M',
-    icon: <FileEdit className="w-3 h-3" />,
-    className: 'git-status-badge--modified',
-  },
-  deleted: {
-    label: 'Deleted',
-    shortLabel: 'D',
-    icon: <Trash2 className="w-3 h-3" />,
-    className: 'git-status-badge--deleted',
-  },
-  renamed: {
-    label: 'Renamed',
-    shortLabel: 'R',
-    icon: <ArrowRight className="w-3 h-3" />,
-    className: 'git-status-badge--renamed',
-  },
-  conflicted: {
-    label: 'Conflict',
-    shortLabel: '!',
-    icon: <AlertTriangle className="w-3 h-3" />,
-    className: 'git-status-badge--conflicted',
-  },
-  untracked: {
-    label: 'Untracked',
-    shortLabel: 'U',
-    icon: <FileQuestion className="w-3 h-3" />,
-    className: 'git-status-badge--untracked',
-  },
+const statusConfig: Record<FileStatusType, { label: string; className: string }> = {
+  added: { label: 'A', className: 'status-badge-added' },
+  modified: { label: 'M', className: 'status-badge-modified' },
+  deleted: { label: 'D', className: 'status-badge-deleted' },
+  renamed: { label: 'R', className: 'status-badge-renamed' },
+  untracked: { label: 'U', className: 'status-badge-untracked' },
+  conflicted: { label: '!', className: 'status-badge-conflicted' },
+  unknown: { label: '?', className: 'status-badge-untracked' },
 };
 
-export function FileStatusBadge({ status, showLabel = false, size = 'sm' }: FileStatusBadgeProps) {
-  const config = statusConfig[status];
-  if (!config) return null;
+export function FileStatusBadge({ status, showLabel = false }: FileStatusBadgeProps) {
+  const config = statusConfig[status] || statusConfig.unknown;
 
-  const sizeClasses = size === 'sm' ? 'text-[10px] px-1.5 py-0.5' : 'text-xs px-2 py-1';
-
-  return (
-    <span
-      className={`git-status-badge ${config.className} ${sizeClasses} inline-flex items-center gap-1`}
-      title={config.label}
-    >
-      {config.icon}
-      {showLabel ? config.label : config.shortLabel}
-    </span>
-  );
-}
-
-export function FileStatusIcon({
-  status,
-  className = '',
-}: {
-  status: FileStatusType;
-  className?: string;
-}) {
-  const config = statusConfig[status];
-  if (!config) return null;
-
-  const colorClasses: Record<FileStatusType, string> = {
-    added: 'text-[var(--git-status-added)]',
-    modified: 'text-[var(--git-status-modified)]',
-    deleted: 'text-[var(--git-status-deleted)]',
-    renamed: 'text-[var(--git-status-renamed)]',
-    conflicted: 'text-[var(--git-status-conflicted)]',
-    untracked: 'text-[var(--git-status-untracked)]',
+  const fullLabels: Record<FileStatusType, string> = {
+    added: 'Added',
+    modified: 'Modified',
+    deleted: 'Deleted',
+    renamed: 'Renamed',
+    untracked: 'Untracked',
+    conflicted: 'Conflicted',
+    unknown: 'Unknown',
   };
 
   return (
-    <span className={`${colorClasses[status]} ${className}`} title={config.label}>
-      {config.icon}
+    <span className={`status-badge ${config.className}`} title={fullLabels[status]}>
+      {showLabel ? fullLabels[status] : config.label}
     </span>
   );
-}
-
-// Helper to convert backend status to our type
-export function parseFileStatus(backendStatus: string | object): FileStatusType {
-  const tag = typeof backendStatus === 'string' ? backendStatus : Object.keys(backendStatus)[0];
-
-  switch (tag?.toLowerCase()) {
-    case 'added':
-    case 'new':
-      return 'added';
-    case 'modified':
-    case 'changed':
-      return 'modified';
-    case 'deleted':
-    case 'removed':
-      return 'deleted';
-    case 'renamed':
-      return 'renamed';
-    case 'conflicted':
-    case 'conflict':
-      return 'conflicted';
-    case 'untracked':
-    default:
-      return 'untracked';
-  }
 }

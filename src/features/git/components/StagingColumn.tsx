@@ -1,4 +1,3 @@
-import React from 'react';
 import { StagingHeader } from './StagingHeader';
 import { FilesList } from './FilesList';
 import { EmptyState } from './EmptyState';
@@ -32,7 +31,7 @@ export function StagingColumn({
   const hasFiles = files.length > 0;
 
   return (
-    <div className="flex flex-col h-full border-r border-[var(--git-panel-border)] last:border-r-0">
+    <div className="flex flex-col h-full">
       <StagingHeader
         title={title}
         count={files.length}

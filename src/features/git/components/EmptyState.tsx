@@ -1,5 +1,4 @@
-import React from 'react';
-import { Check, FileIcon } from 'lucide-react';
+import { Inbox, CheckCircle2 } from 'lucide-react';
 
 interface EmptyStateProps {
   isStaged: boolean;
@@ -7,22 +6,16 @@ interface EmptyStateProps {
 
 export function EmptyState({ isStaged }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center h-full p-6 text-center">
-      <div className="w-12 h-12 rounded-full bg-[var(--color-bg-surface-2)] flex items-center justify-center mb-3">
-        {isStaged ? (
-          <Check className="w-6 h-6 text-[var(--color-text-tertiary)] opacity-40" />
-        ) : (
-          <FileIcon className="w-6 h-6 text-[var(--color-text-tertiary)] opacity-40" />
-        )}
+    <div className="empty-state py-8">
+      <div className="empty-state-icon">
+        {isStaged ? <Inbox className="w-10 h-10" /> : <CheckCircle2 className="w-10 h-10" />}
       </div>
-      <p className="text-sm text-[var(--color-text-tertiary)]">
-        {isStaged ? 'No staged changes' : 'No changes'}
+      <h3 className="empty-state-title">{isStaged ? 'No staged changes' : 'No changes'}</h3>
+      <p className="empty-state-description">
+        {isStaged
+          ? 'Stage files from the changes list to prepare for commit'
+          : 'Your working directory is clean'}
       </p>
-      {!isStaged && (
-        <p className="text-xs text-[var(--color-text-tertiary)] mt-1">
-          Make changes to see them here
-        </p>
-      )}
     </div>
   );
 }

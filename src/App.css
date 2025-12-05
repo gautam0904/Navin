@@ -2,6 +2,7 @@
 @import './theme/base.css';
 @import './theme/design-system.css';
 @import './theme/scrollbar.css';
+@import './theme/premium-components.css';
 @import './features/git/styles/git-theme.css';
 @import 'tailwindcss';
 

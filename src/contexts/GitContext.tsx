@@ -61,6 +61,15 @@ interface GitContextType {
   applyStash: (index: number) => Promise<void>;
   popStash: (index: number) => Promise<void>;
   dropStash: (index: number) => Promise<void>;
+
+  activeView: 'changes' | 'history' | 'branches' | 'stash' | 'remotes' | 'quality';
+  setActiveView: (
+    view: 'changes' | 'history' | 'branches' | 'stash' | 'remotes' | 'quality'
+  ) => void;
+  selectedFile: string | null;
+  setSelectedFile: (path: string | null) => void;
+  selectedCommit: string | null;
+  setSelectedCommit: (sha: string | null) => void;
 }
 
 const GitContext = createContext<GitContextType | undefined>(undefined);
@@ -72,6 +81,13 @@ export function GitProvider({ children }: { children: React.ReactNode }) {
   const [history, setHistory] = useState<CommitSummary[] | null>(null);
   const [remotes, setRemotes] = useState<Remote[] | null>(null);
   const [stashes, setStashes] = useState<Stash[] | null>(null);
+
+  // UI State
+  const [activeView, setActiveView] = useState<
+    'changes' | 'history' | 'branches' | 'stash' | 'remotes' | 'quality'
+  >('changes');
+  const [selectedFile, setSelectedFile] = useState<string | null>(null);
+  const [selectedCommit, setSelectedCommit] = useState<string | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -273,6 +289,13 @@ export function GitProvider({ children }: { children: React.ReactNode }) {
     applyStash,
     popStash,
     dropStash,
+    // UI State
+    activeView,
+    setActiveView,
+    selectedFile,
+    setSelectedFile,
+    selectedCommit,
+    setSelectedCommit,
   };
 
   return <GitContext.Provider value={value}>{children}</GitContext.Provider>;
