@@ -7,6 +7,7 @@ import type {
   CommitSummary,
   FileDiff,
   Remote,
+  Stash,
 } from '../types/git';
 
 export class GitService {
@@ -227,5 +228,42 @@ export class GitService {
    */
   static async pullFromRemote(remote: string, branch: string): Promise<void> {
     return invoke('pull_from_remote', { remote, branch });
+  }
+
+  // ===== Stash Operations =====
+
+  /**
+   * List all stashes
+   */
+  static async listStashes(): Promise<Stash[]> {
+    return invoke<Stash[]>('list_stashes');
+  }
+
+  /**
+   * Create a new stash
+   */
+  static async createStash(message?: string): Promise<string> {
+    return invoke<string>('create_stash', { message });
+  }
+
+  /**
+   * Apply a stash by index
+   */
+  static async applyStash(index: number): Promise<void> {
+    return invoke('apply_stash', { index });
+  }
+
+  /**
+   * Pop a stash by index
+   */
+  static async popStash(index: number): Promise<void> {
+    return invoke('pop_stash', { index });
+  }
+
+  /**
+   * Drop a stash by index
+   */
+  static async dropStash(index: number): Promise<void> {
+    return invoke('drop_stash', { index });
   }
 }

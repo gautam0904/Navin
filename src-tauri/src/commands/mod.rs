@@ -9,6 +9,7 @@ pub mod git_history_commands;
 pub mod git_remote_commands;
 pub mod git_repository_commands;
 pub mod git_staging_commands;
+pub mod git_stash_commands;
 pub mod git_state;
 
 // Re-export all commands for easy access
@@ -23,4 +24,5 @@ pub use git_history_commands::*;
 pub use git_remote_commands::*;
 pub use git_repository_commands::*;
 pub use git_staging_commands::*;
+pub use git_stash_commands::*;
 pub use git_state::GitState;

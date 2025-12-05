@@ -1,12 +1,11 @@
-/// SQL query constants organized by domain
+// SQL query constants organized by domain
 
 // ========================================
 // CHECKLIST QUERIES
 // ========================================
 
 // Section queries
-pub const GET_SECTIONS: &str = 
-    "SELECT id, title, display_order FROM checklist_sections 
+pub const GET_SECTIONS: &str = "SELECT id, title, display_order FROM checklist_sections 
      WHERE project_id = ?1 ORDER BY display_order";
 
 pub const INSERT_SECTION: &str =
@@ -19,8 +18,7 @@ pub const UPDATE_SECTION_TITLE: &str =
     "UPDATE checklist_sections SET title = ?1, updated_at = datetime('now') WHERE id = ?2";
 
 // Item queries
-pub const GET_ITEMS_FOR_SECTION: &str =
-    "SELECT id, text, display_order FROM checklist_items 
+pub const GET_ITEMS_FOR_SECTION: &str = "SELECT id, text, display_order FROM checklist_items 
      WHERE section_id = ?1 ORDER BY display_order";
 
 pub const INSERT_ITEM: &str =
@@ -65,10 +63,10 @@ pub const GET_ITEM_CODE_EXAMPLES_V2: &str =
     "SELECT example_type, language, code_text, display_order FROM item_code_examples_v2 
      WHERE item_id = ?1 ORDER BY example_type, display_order";
 
-pub const DELETE_SECTION_CODE_EXAMPLES_V2: &str = 
+pub const DELETE_SECTION_CODE_EXAMPLES_V2: &str =
     "DELETE FROM section_code_examples_v2 WHERE section_id = ?1";
 
-pub const DELETE_ITEM_CODE_EXAMPLES_V2: &str = 
+pub const DELETE_ITEM_CODE_EXAMPLES_V2: &str =
     "DELETE FROM item_code_examples_v2 WHERE item_id = ?1";
 
 pub const INSERT_SECTION_CODE_EXAMPLE_V2: &str =
@@ -92,11 +90,10 @@ pub const INSERT_OR_REPLACE_SECTION_CODE_EXAMPLE: &str =
 pub const INSERT_OR_REPLACE_ITEM_CODE_EXAMPLE: &str =
     "INSERT OR REPLACE INTO item_code_examples (item_id, code_text) VALUES (?1, ?2)";
 
-pub const DELETE_SECTION_CODE_EXAMPLE: &str = 
+pub const DELETE_SECTION_CODE_EXAMPLE: &str =
     "DELETE FROM section_code_examples WHERE section_id = ?1";
 
-pub const DELETE_ITEM_CODE_EXAMPLE: &str = 
-    "DELETE FROM item_code_examples WHERE item_id = ?1";
+pub const DELETE_ITEM_CODE_EXAMPLE: &str = "DELETE FROM item_code_examples WHERE item_id = ?1";
 
 // ========================================
 // PROJECT QUERIES
@@ -152,11 +149,9 @@ pub const RESET_ALL_PROGRESS: &str = "DELETE FROM user_progress WHERE project_id
 pub const CHECK_TABLE_EXISTS: &str =
     "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?1";
 
-pub const CHECK_COLUMN_EXISTS: &str =
-    "SELECT COUNT(*) FROM pragma_table_info(?1) WHERE name=?2";
+pub const CHECK_COLUMN_EXISTS: &str = "SELECT COUNT(*) FROM pragma_table_info(?1) WHERE name=?2";
 
 pub const DELETE_CHECKLIST_SECTIONS_BY_PROJECT: &str =
     "DELETE FROM checklist_sections WHERE project_id = ?1";
 
-pub const DELETE_USER_PROGRESS_BY_PROJECT: &str =
-    "DELETE FROM user_progress WHERE project_id = ?1";
+pub const DELETE_USER_PROGRESS_BY_PROJECT: &str = "DELETE FROM user_progress WHERE project_id = ?1";

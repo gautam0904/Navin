@@ -122,13 +122,17 @@ export function GitProvider({ children }: { children: React.ReactNode }) {
     }
   }, [repository]);
 
-  const stashOps = useStashOperations();
-  const stashOpsRefreshStashes = stashOps.refreshStashes;
+  const {
+    refreshStashes: stashOpsRefresh,
+    createStash,
+    applyStash,
+    popStash,
+    dropStash,
+  } = useStashOperations(repository?.path ?? null, setStashes, refreshStatus);
 
   const refreshStashes = useCallback(async () => {
-    const stashList = await stashOpsRefreshStashes();
-    setStashes(stashList);
-  }, [stashOpsRefreshStashes]);
+    await stashOpsRefresh();
+  }, [stashOpsRefresh]);
 
   const openRepository = useCallback(async (path: string) => {
     setIsLoading(true);
@@ -203,10 +207,7 @@ export function GitProvider({ children }: { children: React.ReactNode }) {
   const pullFromRemote = remoteOps.pullFromRemote;
 
   // Stash operations delegated to hook
-  const createStash = stashOps.createStash;
-  const applyStash = stashOps.applyStash;
-  const popStash = stashOps.popStash;
-  const dropStash = stashOps.dropStash;
+  // createStash, applyStash, popStash, dropStash are already destructured above
 
   // Initial load
   useEffect(() => {

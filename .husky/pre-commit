@@ -4,3 +4,10 @@ npm run format
 # Check for ESLint errors in the entire project
 # This will fail the commit if there are any linting errors
 npm run lint
+
+# Format Rust code
+npm run fmt:rust
+
+# Check for Rust errors with clippy
+# This will fail the commit if there are any clippy warnings
+npm run lint:rust
