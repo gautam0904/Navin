@@ -51,7 +51,7 @@ impl GitStashOperations for Git2Repository {
                 let timestamp = if let Ok(commit) = self.find_commit(oid) {
                     Utc.timestamp_opt(commit.time().seconds(), 0)
                         .single()
-                        .unwrap_or_else(|| Utc::now())
+                        .unwrap_or_else(Utc::now)
                 } else {
                     Utc::now()
                 };

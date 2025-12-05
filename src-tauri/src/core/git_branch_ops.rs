@@ -20,23 +20,19 @@ impl GitBranchOps for Git2Repository {
         let mut has_branches = false;
 
         if let Ok(local_branches) = self.branches(Some(BranchType::Local)) {
-            for branch_result in local_branches {
-                if let Ok((branch, _)) = branch_result {
-                    if let Ok(Some(branch_info)) = get_branch_info(self, &branch, false) {
-                        branches.push(branch_info);
-                        has_branches = true;
-                    }
+            for (branch, _) in local_branches.flatten() {
+                if let Ok(Some(branch_info)) = get_branch_info(self, &branch, false) {
+                    branches.push(branch_info);
+                    has_branches = true;
                 }
             }
         }
 
         if let Ok(remote_branches) = self.branches(Some(BranchType::Remote)) {
-            for branch_result in remote_branches {
-                if let Ok((branch, _)) = branch_result {
-                    if let Ok(Some(branch_info)) = get_branch_info(self, &branch, true) {
-                        branches.push(branch_info);
-                        has_branches = true;
-                    }
+            for (branch, _) in remote_branches.flatten() {
+                if let Ok(Some(branch_info)) = get_branch_info(self, &branch, true) {
+                    branches.push(branch_info);
+                    has_branches = true;
                 }
             }
         }
@@ -182,7 +178,7 @@ fn commit_to_summary(commit: &Git2Commit) -> GitResult<CommitSummary> {
     let timestamp = Utc
         .timestamp_opt(commit.time().seconds(), 0)
         .single()
-        .unwrap_or_else(|| Utc::now());
+        .unwrap_or_else(Utc::now);
 
     let parents: Vec<String> = (0..commit.parent_count())
         .filter_map(|i| commit.parent_id(i).ok().map(|oid| oid.to_string()))

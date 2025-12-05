@@ -10,7 +10,7 @@ impl ProgressRepository {
         )?;
 
         let items: Vec<String> = stmt
-            .query_map(params![project_id], |row| Ok(row.get(0)?))?
+            .query_map(params![project_id], |row| row.get(0))?
             .collect::<Result<Vec<_>>>()?;
 
         Ok(items)

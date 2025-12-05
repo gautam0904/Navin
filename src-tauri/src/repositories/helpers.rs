@@ -2,11 +2,7 @@ use crate::models::{CodeExample, CodeExamples, Examples};
 use rusqlite::{params, Connection, Result};
 
 /// Generic helper to fetch good/bad examples for a given entity (section or item)
-pub fn fetch_examples(
-    conn: &Connection,
-    query: &str,
-    entity_id: &str,
-) -> Result<Examples> {
+pub fn fetch_examples(conn: &Connection, query: &str, entity_id: &str) -> Result<Examples> {
     let mut stmt = conn.prepare(query)?;
 
     let mut good = Vec::new();

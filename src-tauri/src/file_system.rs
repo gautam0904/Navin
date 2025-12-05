@@ -1,8 +1,8 @@
-use std::fs;
-use std::path::Path;
-use serde::{Serialize, Deserialize};
 use crate::core::error::AppError;
 use crate::core::result::AppResult;
+use serde::{Deserialize, Serialize};
+use std::fs;
+use std::path::Path;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FileEntry {
@@ -24,28 +24,26 @@ pub fn read_dir(path: String) -> AppResult<Vec<FileEntry>> {
     }
 
     let mut entries = Vec::new();
-    
+
     match fs::read_dir(path) {
         Ok(dir) => {
-            for entry in dir {
-                if let Ok(entry) = entry {
-                    let path = entry.path();
-                    let name = entry.file_name().to_string_lossy().to_string();
-                    let is_dir = path.is_dir();
-                    
-                    // Skip hidden files/folders (starting with .)
-                    if name.starts_with('.') {
-                        continue;
-                    }
+            for entry in dir.flatten() {
+                let path = entry.path();
+                let name = entry.file_name().to_string_lossy().to_string();
+                let is_dir = path.is_dir();
 
-                    entries.push(FileEntry {
-                        name,
-                        path: path.to_string_lossy().to_string(),
-                        is_dir,
-                        extension: path.extension().map(|e| e.to_string_lossy().to_string()),
-                        children: None, // Lazy load children
-                    });
+                // Skip hidden files/folders (starting with .)
+                if name.starts_with('.') {
+                    continue;
                 }
+
+                entries.push(FileEntry {
+                    name,
+                    path: path.to_string_lossy().to_string(),
+                    is_dir,
+                    extension: path.extension().map(|e| e.to_string_lossy().to_string()),
+                    children: None, // Lazy load children
+                });
             }
         }
         Err(e) => return Err(AppError::IoError(e)),

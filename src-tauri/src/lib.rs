@@ -87,13 +87,19 @@ pub fn run() {
             remove_remote,
             fetch_remote,
             push_to_remote,
-            pull_from_remote
+            pull_from_remote,
+            // Stash commands
+            list_stashes,
+            create_stash,
+            apply_stash,
+            pop_stash,
+            drop_stash
         ])
         .manage(GitState::new())
         .setup(|app| {
-            let db_path = get_db_path(&app.handle());
+            let db_path = get_db_path(app.handle());
 
-            match init_db(&app.handle()) {
+            match init_db(app.handle()) {
                 Ok(_) => {
                     tracing::info!("✅ Database initialized successfully");
                 }
@@ -103,7 +109,7 @@ pub fn run() {
 
                     // Try to show error dialog if possible
                     if let Some(window) = app.get_webview_window("main") {
-                        let _ = window.eval(&format!(
+                        let _ = window.eval(format!(
                             "alert('Database initialization failed. Please contact support. Error: {}')",
                             e
                         ));
@@ -125,7 +131,7 @@ pub fn run() {
                 }
             }
 
-            match menu::create_menu(&app.handle()) {
+            match menu::create_menu(app.handle()) {
                 Ok(menu) => {
                     if let Err(e) = app.set_menu(menu) {
                         tracing::error!("Failed to set menu: {}", e);
@@ -141,7 +147,7 @@ pub fn run() {
             Ok(())
         })
         .on_menu_event(|app, event| {
-            menu::handle_menu_event(&app, event);
+            menu::handle_menu_event(app, event);
         })
         .on_window_event(|_window, event| {
             if let tauri::WindowEvent::CloseRequested { .. } = event {

@@ -1,4 +1,6 @@
 mod checklist_data;
+mod checklist_data_part1;
+mod checklist_data_part2;
 pub mod migrations;
 pub mod pool;
 pub mod queries;

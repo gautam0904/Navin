@@ -1,44 +1,57 @@
 import { useCallback } from 'react';
+import { GitService } from '../services/gitService';
+import { Stash } from '../types/git';
 
-// Placeholder stash operations - to be implemented when backend is ready
-export function useStashOperations() {
+export function useStashOperations(
+  repository: string | null,
+  setStashes: (stashes: Stash[]) => void,
+  refreshStatus: () => Promise<void>
+) {
   const refreshStashes = useCallback(async () => {
-    // Stash support not fully implemented in service yet, placeholder
-    // if (!repository) return;
-    // try {
-    //   const stashList = await GitService.listStashes();
-    //   setStashes(stashList);
-    // } catch (err) {
-    //   console.error('[GitContext] Failed to refresh stashes:', err);
-    //   setStashes([]);
-    // }
-    return [];
-  }, []);
+    if (!repository) return [];
+    try {
+      const stashList = await GitService.listStashes();
+      setStashes(stashList);
+      return stashList;
+    } catch (err) {
+      console.error('[GitContext] Failed to refresh stashes:', err);
+      setStashes([]);
+      return [];
+    }
+  }, [repository, setStashes]);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const createStash = useCallback(async (_message?: string) => {
-    // await GitService.createStash(_message);
-    // await refreshStashes();
-  }, []);
+  const createStash = useCallback(
+    async (message?: string) => {
+      await GitService.createStash(message);
+      await refreshStashes();
+    },
+    [refreshStashes]
+  );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const applyStash = useCallback(async (_index: number) => {
-    // await GitService.applyStash(_index);
-    // await refreshStatus();
-  }, []);
+  const applyStash = useCallback(
+    async (index: number) => {
+      await GitService.applyStash(index);
+      await refreshStatus();
+    },
+    [refreshStatus]
+  );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const popStash = useCallback(async (_index: number) => {
-    // await GitService.popStash(_index);
-    // await refreshStatus();
-    // await refreshStashes();
-  }, []);
+  const popStash = useCallback(
+    async (index: number) => {
+      await GitService.popStash(index);
+      await refreshStatus();
+      await refreshStashes();
+    },
+    [refreshStatus, refreshStashes]
+  );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const dropStash = useCallback(async (_index: number) => {
-    // await GitService.dropStash(_index);
-    // await refreshStashes();
-  }, []);
+  const dropStash = useCallback(
+    async (index: number) => {
+      await GitService.dropStash(index);
+      await refreshStashes();
+    },
+    [refreshStashes]
+  );
 
   return {
     refreshStashes,

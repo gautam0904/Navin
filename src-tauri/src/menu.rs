@@ -31,8 +31,8 @@ pub fn create_menu(app: &AppHandle) -> Result<Menu<tauri::Wry>, tauri::Error> {
     let menu_new_section = MenuItemBuilder::with_id("new_section", "New Section")
         .accelerator("Ctrl+Shift+N")
         .build(app)?;
-    let menu_reset_progress = MenuItemBuilder::with_id("reset_progress", "Reset Progress")
-        .build(app)?;
+    let menu_reset_progress =
+        MenuItemBuilder::with_id("reset_progress", "Reset Progress").build(app)?;
 
     let tasks_menu = SubmenuBuilder::new(app, "Tasks")
         .item(&menu_new_section)
@@ -40,21 +40,19 @@ pub fn create_menu(app: &AppHandle) -> Result<Menu<tauri::Wry>, tauri::Error> {
         .item(&menu_reset_progress)
         .build()?;
 
-    let menu_view_stats = MenuItemBuilder::with_id("view_stats", "View Statistics")
-        .build(app)?;
-    let menu_progress_report = MenuItemBuilder::with_id("progress_report", "Progress Report")
-        .build(app)?;
+    let menu_view_stats = MenuItemBuilder::with_id("view_stats", "View Statistics").build(app)?;
+    let menu_progress_report =
+        MenuItemBuilder::with_id("progress_report", "Progress Report").build(app)?;
 
     let analytics_menu = SubmenuBuilder::new(app, "Analytics")
         .item(&menu_view_stats)
         .item(&menu_progress_report)
         .build()?;
-    
+
     let menu_preferences = MenuItemBuilder::with_id("preferences", "Preferences")
         .accelerator("Ctrl+,")
         .build(app)?;
-    let menu_about = MenuItemBuilder::with_id("about", "About Navin")
-        .build(app)?;
+    let menu_about = MenuItemBuilder::with_id("about", "About Navin").build(app)?;
 
     let settings_menu = SubmenuBuilder::new(app, "Settings")
         .item(&menu_preferences)
@@ -74,7 +72,7 @@ pub fn create_menu(app: &AppHandle) -> Result<Menu<tauri::Wry>, tauri::Error> {
 
 pub fn handle_menu_event(app: &AppHandle, event: tauri::menu::MenuEvent) {
     let event_id = event.id().0.clone();
-    
+
     match event_id.as_str() {
         "new" => {
             tracing::info!("New Project menu clicked");
