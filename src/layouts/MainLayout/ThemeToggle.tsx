@@ -117,7 +117,7 @@ export const ThemeToggle = ({ collapsed }: { collapsed?: boolean }) => {
           createPortal(
             <div
               ref={dropdownRef}
-              className="fixed z-50 bg-gray-800 border border-gray-700 rounded-md shadow-xl p-2 backdrop-blur-sm bg-gray-800/95"
+              className="fixed z-50 bg-gray-800 border border-gray-700 rounded-md shadow-xl p-2 backdrop-blur-sm"
               style={modalPosition}
               role="menu"
               aria-orientation="vertical"

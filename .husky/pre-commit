@@ -1,9 +1,11 @@
-# Format the entire project
-npm run format
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
 
-# Check for ESLint errors in the entire project
-# This will fail the commit if there are any linting errors
-npm run lint
+# Run lint-staged: format -> stage -> lint (fails on errors)
+npx lint-staged
+
+# Check CSS file line counts
+npm run check:css
 
 # Format Rust code
 npm run fmt:rust

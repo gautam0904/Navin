@@ -124,8 +124,8 @@ export function FileItem({
           onClick={handleActionClick}
           className={`btn-premium btn-premium-icon btn-premium-sm ${
             isStaged
-              ? 'hover:bg-[rgba(239,68,68,0.1)] text-[var(--color-error)]'
-              : 'hover:bg-[rgba(16,185,129,0.1)] text-[var(--color-success)]'
+              ? 'hover:bg-[rgba(239,68,68,0.1)] text-[--color-error]'
+              : 'hover:bg-[rgba(16,185,129,0.1)] text-[--color-success]'
           }`}
           title={isStaged ? 'Unstage file' : 'Stage file'}
         >

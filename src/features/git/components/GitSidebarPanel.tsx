@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import React, { useState } from 'react';
 import {
   GitBranch,
@@ -41,8 +40,8 @@ function TabButton({ tab, activeTab, icon, label, badge, highlight, onClick }: T
         border-b-2 whitespace-nowrap relative
         ${
           isActive
-            ? 'border-[var(--color-primary)] text-[var(--color-primary)]'
-            : 'border-transparent text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-surface-2)]'
+            ? 'border-[--color-primary] text-[--color-primary]'
+            : 'border-transparent text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-[--color-bg-surface-2]'
         }
       `}
       title={label}
@@ -55,8 +54,8 @@ function TabButton({ tab, activeTab, icon, label, badge, highlight, onClick }: T
           ml-1 px-1.5 py-0.5 text-[10px] font-bold rounded-full
           ${
             isActive
-              ? 'bg-[var(--color-primary)] text-white'
-              : 'bg-[var(--color-bg-surface-3)] text-[var(--color-text-secondary)]'
+              ? 'bg-[--color-primary] text-white'
+              : 'bg-[--color-bg-surface-3] text-[--color-text-secondary]'
           }
         `}
         >
@@ -64,11 +63,32 @@ function TabButton({ tab, activeTab, icon, label, badge, highlight, onClick }: T
         </span>
       )}
       {highlight && !isActive && (
-        <span className="absolute top-1 right-1 w-2 h-2 bg-[var(--color-primary)] rounded-full animate-pulse" />
+        <span className="absolute top-1 right-1 w-2 h-2 bg-[--color-primary] rounded-full animate-pulse" />
       )}
     </button>
   );
 }
+
+const BranchSyncInfo: React.FC<{ ahead: number; behind: number }> = ({ ahead, behind }) => {
+  if (ahead === 0 && behind === 0) return null;
+
+  return (
+    <div className="flex items-center gap-3 mt-1 text-xs">
+      {ahead > 0 && (
+        <span className="git-sync-badge git-sync-badge--ahead flex items-center gap-1">
+          <ArrowUpCircle className="w-3 h-3" />
+          {ahead} ahead
+        </span>
+      )}
+      {behind > 0 && (
+        <span className="git-sync-badge git-sync-badge--behind flex items-center gap-1">
+          <ArrowDownCircle className="w-3 h-3" />
+          {behind} behind
+        </span>
+      )}
+    </div>
+  );
+};
 
 function RepositoryHeader() {
   const { repository, branches, refreshStatus, isLoading } = useGit();
@@ -80,38 +100,23 @@ function RepositoryHeader() {
   const behind = currentBranch?.behind || 0;
 
   return (
-    <div className="px-3 py-2 border-b border-[var(--git-panel-border)] bg-[var(--git-panel-header)]">
+    <div className="px-3 py-2 border-b border-[--git-panel-border] bg-[--git-panel-header]">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 min-w-0">
-          <FolderGit2 className="w-4 h-4 text-[var(--color-primary)] shrink-0" />
+          <FolderGit2 className="w-4 h-4 text-[--color-primary] shrink-0" />
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold text-[var(--color-text-primary)] truncate">
+              <span className="text-sm font-semibold text-[--color-text-primary] truncate">
                 {repository.name}
               </span>
               {currentBranch && (
-                <span className="flex items-center gap-1 text-xs font-medium text-[var(--git-branch-current)] bg-[var(--git-panel-item-selected)] px-2 py-0.5 rounded-full">
+                <span className="flex items-center gap-1 text-xs font-medium text-[--git-branch-current] bg-[--git-panel-item-selected] px-2 py-0.5 rounded-full">
                   <GitBranch className="w-3 h-3" />
                   {currentBranch.name}
                 </span>
               )}
             </div>
-            {(ahead > 0 || behind > 0) && (
-              <div className="flex items-center gap-3 mt-1 text-xs">
-                {ahead > 0 && (
-                  <span className="git-sync-badge git-sync-badge--ahead flex items-center gap-1">
-                    <ArrowUpCircle className="w-3 h-3" />
-                    {ahead} ahead
-                  </span>
-                )}
-                {behind > 0 && (
-                  <span className="git-sync-badge git-sync-badge--behind flex items-center gap-1">
-                    <ArrowDownCircle className="w-3 h-3" />
-                    {behind} behind
-                  </span>
-                )}
-              </div>
-            )}
+            <BranchSyncInfo ahead={ahead} behind={behind} />
           </div>
         </div>
         <button
@@ -126,6 +131,74 @@ function RepositoryHeader() {
     </div>
   );
 }
+
+// Helper component to reduce complexity
+const TabNavigation: React.FC<{
+  activeTab: GitTab;
+  changesCount: number;
+  onTabChange: (tab: GitTab) => void;
+}> = ({ activeTab, changesCount, onTabChange }) => {
+  const tabs: Array<{
+    id: GitTab;
+    icon: React.ReactNode;
+    label: string;
+    badge?: number;
+    highlight?: boolean;
+  }> = [
+    {
+      id: 'changes',
+      icon: <GitCommit className="w-3.5 h-3.5" />,
+      label: 'Changes',
+      badge: changesCount,
+    },
+    { id: 'history', icon: <History className="w-3.5 h-3.5" />, label: 'History' },
+    { id: 'branches', icon: <GitBranch className="w-3.5 h-3.5" />, label: 'Branches' },
+    { id: 'stash', icon: <Package className="w-3.5 h-3.5" />, label: 'Stash' },
+    { id: 'remotes', icon: <FolderGit2 className="w-3.5 h-3.5" />, label: 'Remotes' },
+    { id: 'quality', icon: <Shield className="w-3.5 h-3.5" />, label: 'Quality', highlight: true },
+  ];
+
+  return (
+    <div className="flex border-b border-[--git-panel-border] overflow-x-auto scrollbar-hide">
+      {tabs.map((tab) => (
+        <TabButton
+          key={tab.id}
+          tab={tab.id}
+          activeTab={activeTab}
+          icon={tab.icon}
+          label={tab.label}
+          badge={tab.badge}
+          highlight={tab.highlight}
+          onClick={() => onTabChange(tab.id)}
+        />
+      ))}
+    </div>
+  );
+};
+
+const TabContent: React.FC<{ activeTab: GitTab; onSelectCommit: (sha: string) => void }> = ({
+  activeTab,
+  onSelectCommit,
+}) => {
+  switch (activeTab) {
+    case 'changes':
+      return <ChangesPanel />;
+    case 'branches':
+      return <BranchPanel />;
+    case 'history':
+      return (
+        <div className="h-full">
+          <CommitHistory onSelectCommit={onSelectCommit} />
+        </div>
+      );
+    case 'stash':
+      return <StashPanel />;
+    case 'remotes':
+      return <RemotePanel />;
+    default:
+      return null;
+  }
+};
 
 export function GitSidebarPanel() {
   const [activeTab, setActiveTab] = useState<GitTab>('changes');
@@ -156,69 +229,11 @@ export function GitSidebarPanel() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-[var(--git-panel-bg)]">
-      {/* Repository Header */}
+    <div className="flex flex-col h-full bg-[--git-panel-bg]">
       <RepositoryHeader />
-
-      {/* Tab Navigation */}
-      <div className="flex border-b border-[var(--git-panel-border)] overflow-x-auto scrollbar-hide">
-        <TabButton
-          tab="changes"
-          activeTab={activeTab}
-          icon={<GitCommit className="w-3.5 h-3.5" />}
-          label="Changes"
-          badge={changesCount}
-          onClick={() => setActiveTab('changes')}
-        />
-        <TabButton
-          tab="history"
-          activeTab={activeTab}
-          icon={<History className="w-3.5 h-3.5" />}
-          label="History"
-          onClick={() => setActiveTab('history')}
-        />
-        <TabButton
-          tab="branches"
-          activeTab={activeTab}
-          icon={<GitBranch className="w-3.5 h-3.5" />}
-          label="Branches"
-          onClick={() => setActiveTab('branches')}
-        />
-        <TabButton
-          tab="stash"
-          activeTab={activeTab}
-          icon={<Package className="w-3.5 h-3.5" />}
-          label="Stash"
-          onClick={() => setActiveTab('stash')}
-        />
-        <TabButton
-          tab="remotes"
-          activeTab={activeTab}
-          icon={<FolderGit2 className="w-3.5 h-3.5" />}
-          label="Remotes"
-          onClick={() => setActiveTab('remotes')}
-        />
-        <TabButton
-          tab="quality"
-          activeTab={activeTab}
-          icon={<Shield className="w-3.5 h-3.5" />}
-          label="Quality"
-          highlight={true}
-          onClick={() => setActiveTab('quality')}
-        />
-      </div>
-
-      {/* Tab Content */}
+      <TabNavigation activeTab={activeTab} changesCount={changesCount} onTabChange={setActiveTab} />
       <div className="flex-1 overflow-hidden">
-        {activeTab === 'changes' && <ChangesPanel />}
-        {activeTab === 'branches' && <BranchPanel />}
-        {activeTab === 'history' && (
-          <div className="h-full">
-            <CommitHistory onSelectCommit={handleSelectCommit} />
-          </div>
-        )}
-        {activeTab === 'stash' && <StashPanel />}
-        {activeTab === 'remotes' && <RemotePanel />}
+        <TabContent activeTab={activeTab} onSelectCommit={handleSelectCommit} />
       </div>
     </div>
   );

@@ -43,7 +43,7 @@ export default [
             ...reactHooksPlugin.configs.recommended.rules,
 
             // Custom rules from .eslintrc.json
-            'max-lines': ['error', { max: 300, skipBlankLines: true, skipComments: true }],
+            'max-lines': ['error', { max: 300, skipBlankLines: false, skipComments: false }],
             'complexity': ['error', 10],
             'max-depth': ['error', 3],
             'react/react-in-jsx-scope': 'off',

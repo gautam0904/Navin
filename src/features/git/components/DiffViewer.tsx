@@ -27,12 +27,12 @@ function DiffStats({ additions, deletions }: { additions: number; deletions: num
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-xs font-medium text-[var(--git-status-added)]">+{additions}</span>
-      <span className="text-xs font-medium text-[var(--git-status-deleted)]">-{deletions}</span>
-      <div className="flex w-16 h-1.5 rounded-full overflow-hidden bg-[var(--color-bg-surface-3)]">
-        <div className="h-full bg-[var(--git-status-added)]" style={{ width: `${addPercent}%` }} />
+      <span className="text-xs font-medium text-[--git-status-added]">+{additions}</span>
+      <span className="text-xs font-medium text-[--git-status-deleted]">-{deletions}</span>
+      <div className="flex w-16 h-1.5 rounded-full overflow-hidden bg-[--color-bg-surface-3]">
+        <div className="h-full bg-[--git-status-added]" style={{ width: `${addPercent}%` }} />
         <div
-          className="h-full bg-[var(--git-status-deleted)]"
+          className="h-full bg-[--git-status-deleted]"
           style={{ width: `${100 - addPercent}%` }}
         />
       </div>
@@ -48,13 +48,13 @@ function ViewModeToggle({
   onChange: (mode: 'unified' | 'split') => void;
 }) {
   return (
-    <div className="flex rounded-md overflow-hidden border border-[var(--git-panel-border)]">
+    <div className="flex rounded-md overflow-hidden border border-[--git-panel-border]">
       <button
         onClick={() => onChange('unified')}
         className={`flex items-center gap-1 px-2 py-1 text-xs ${
           mode === 'unified'
-            ? 'bg-[var(--color-primary)] text-white'
-            : 'bg-[var(--color-bg-surface-2)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-surface-3)]'
+            ? 'bg-[--color-primary] text-white'
+            : 'bg-[--color-bg-surface-2] text-[--color-text-secondary] hover:bg-[--color-bg-surface-3]'
         }`}
         title="Unified View"
       >
@@ -64,8 +64,8 @@ function ViewModeToggle({
         onClick={() => onChange('split')}
         className={`flex items-center gap-1 px-2 py-1 text-xs ${
           mode === 'split'
-            ? 'bg-[var(--color-primary)] text-white'
-            : 'bg-[var(--color-bg-surface-2)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-surface-3)]'
+            ? 'bg-[--color-primary] text-white'
+            : 'bg-[--color-bg-surface-2] text-[--color-text-secondary] hover:bg-[--color-bg-surface-3]'
         }`}
         title="Split View"
       >
@@ -98,8 +98,8 @@ function QualitySummary({ hints }: { hints: QualityHint[] }) {
   const suggestionCount = hints.filter((h) => h.type === 'suggestion').length;
 
   return (
-    <div className="flex items-center gap-3 px-3 py-1.5 bg-[var(--color-bg-surface-2)] border-b border-[var(--color-border-light)]">
-      <span className="text-xs font-medium text-[var(--color-text-secondary)]">Quality:</span>
+    <div className="flex items-center gap-3 px-3 py-1.5 bg-[--color-bg-surface-2] border-b border-[--color-border-light]">
+      <span className="text-xs font-medium text-[--color-text-secondary]">Quality:</span>
       {errorCount > 0 && (
         <span className="flex items-center gap-1 text-xs text-[#ef4444]">
           <AlertTriangle className="w-3 h-3" />
@@ -143,10 +143,10 @@ export function DiffViewer({
   }
 
   const statusColors: Record<string, string> = {
-    added: 'text-[var(--git-status-added)]',
-    modified: 'text-[var(--git-status-modified)]',
-    deleted: 'text-[var(--git-status-deleted)]',
-    renamed: 'text-[var(--git-status-renamed)]',
+    added: 'text-[--git-status-added]',
+    modified: 'text-[--git-status-modified]',
+    deleted: 'text-[--git-status-deleted]',
+    renamed: 'text-[--git-status-renamed]',
   };
 
   const statusIcons: Record<string, React.ReactNode> = {
@@ -157,18 +157,18 @@ export function DiffViewer({
   };
 
   return (
-    <div className="flex flex-col h-full bg-[var(--git-panel-bg)] overflow-hidden">
+    <div className="flex flex-col h-full bg-[--git-panel-bg] overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--git-panel-border)] bg-[var(--git-panel-header)]">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[--git-panel-border] bg-[--git-panel-header]">
         <div className="flex items-center gap-3 min-w-0">
           <span className={statusColors[diff.status]}>{statusIcons[diff.status]}</span>
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-[var(--color-text-primary)] truncate">
+              <span className="text-sm font-medium text-[--color-text-primary] truncate">
                 {diff.path}
               </span>
               {diff.oldPath && (
-                <span className="text-xs text-[var(--color-text-tertiary)]">← {diff.oldPath}</span>
+                <span className="text-xs text-[--color-text-tertiary]">← {diff.oldPath}</span>
               )}
             </div>
           </div>
@@ -186,7 +186,7 @@ export function DiffViewer({
       {/* Diff content */}
       <div className="flex-1 overflow-y-auto">
         {diff.hunks.length === 0 ? (
-          <div className="flex items-center justify-center h-32 text-[var(--color-text-tertiary)]">
+          <div className="flex items-center justify-center h-32 text-[--color-text-tertiary]">
             <p className="text-sm">No changes in this file</p>
           </div>
         ) : (

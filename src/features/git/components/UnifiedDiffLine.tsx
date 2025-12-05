@@ -11,26 +11,26 @@ function getLineStyles(type: DiffLineType['type']) {
   switch (type) {
     case 'add':
       return {
-        bgClass: 'bg-[var(--git-diff-add-line)]',
-        textClass: 'text-[var(--git-status-added)]',
+        bgClass: 'bg-[--git-diff-add-line]',
+        textClass: 'text-[--git-status-added]',
         prefix: '+',
       };
     case 'del':
       return {
-        bgClass: 'bg-[var(--git-diff-del-line)]',
-        textClass: 'text-[var(--git-status-deleted)]',
+        bgClass: 'bg-[--git-diff-del-line]',
+        textClass: 'text-[--git-status-deleted]',
         prefix: '-',
       };
     case 'hunk':
       return {
-        bgClass: 'bg-[var(--git-diff-hunk)]',
-        textClass: 'text-[var(--color-primary)] italic',
+        bgClass: 'bg-[--git-diff-hunk]',
+        textClass: 'text-[--color-primary] italic',
         prefix: '@@',
       };
     default:
       return {
         bgClass: '',
-        textClass: 'text-[var(--color-text-primary)]',
+        textClass: 'text-[--color-text-primary]',
         prefix: ' ',
       };
   }
@@ -54,10 +54,10 @@ export function UnifiedDiffLine({ line, hints, onApplyFix }: UnifiedDiffLineProp
         {hasWarning && <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#f59e0b]" />}
 
         {/* Line numbers */}
-        <div className="git-diff-gutter w-12 shrink-0 select-none text-right pr-2 border-r border-[var(--git-panel-border)]">
+        <div className="git-diff-gutter w-12 shrink-0 select-none text-right pr-2 border-r border-[--git-panel-border]">
           {line.type !== 'hunk' && line.oldLineNumber}
         </div>
-        <div className="git-diff-gutter w-12 shrink-0 select-none text-right pr-2 border-r border-[var(--git-panel-border)]">
+        <div className="git-diff-gutter w-12 shrink-0 select-none text-right pr-2 border-r border-[--git-panel-border]">
           {line.type !== 'hunk' && line.newLineNumber}
         </div>
 

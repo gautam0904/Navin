@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import { GraphData, GraphNode } from './graphParser';
 
 interface NodeMetadata {
@@ -94,83 +93,88 @@ export function buildGraphLayout(data: GraphData): GraphData {
 }
 
 /**
+ * Try to inherit lane from parent
+ */
+function tryInheritLane(
+  meta: NodeMetadata,
+  metadata: Map<string, NodeMetadata>,
+  laneUsage: Map<number, string | null>
+): number | null {
+  if (meta.parents.size === 0) return null;
+
+  const parentSha = Array.from(meta.parents)[0];
+  const parentMeta = metadata.get(parentSha);
+  if (!parentMeta) return null;
+
+  const parentLane = parentMeta.lane;
+  if (laneUsage.get(parentLane) === parentSha || laneUsage.get(parentLane) === null) {
+    return parentLane;
+  }
+  return null;
+}
+
+/**
+ * Find a free lane or create a new one
+ */
+function findFreeLane(
+  laneUsage: Map<number, string | null>,
+  nextFreeLane: number
+): { lane: number; nextFreeLane: number } {
+  for (let i = 0; i < nextFreeLane; i++) {
+    if (laneUsage.get(i) === null) {
+      return { lane: i, nextFreeLane };
+    }
+  }
+  return { lane: nextFreeLane, nextFreeLane: nextFreeLane + 1 };
+}
+
+/**
+ * Free up parent lanes if they have no more children
+ */
+function freeParentLanes(
+  meta: NodeMetadata,
+  metadata: Map<string, NodeMetadata>,
+  laneUsage: Map<number, string | null>
+): void {
+  meta.parents.forEach((parentSha) => {
+    const parentMeta = metadata.get(parentSha);
+    if (!parentMeta) return;
+
+    const allChildrenProcessed = Array.from(parentMeta.children).every((childSha) => {
+      const childMeta = metadata.get(childSha);
+      return childMeta && childMeta.lane !== 0;
+    });
+
+    if (allChildrenProcessed && laneUsage.get(parentMeta.lane) === parentSha) {
+      laneUsage.set(parentMeta.lane, null);
+    }
+  });
+}
+
+/**
  * Assign lanes to nodes using a greedy algorithm
  * This tries to keep branches in consistent lanes and minimize crossings
  */
 function assignLanes(nodes: GraphNode[], metadata: Map<string, NodeMetadata>): void {
-  const laneUsage: Map<number, string | null> = new Map(); // lane -> current commit SHA using it
+  const laneUsage: Map<number, string | null> = new Map();
   let nextFreeLane = 0;
 
   nodes.forEach((node) => {
     const meta = metadata.get(node.sha);
     if (!meta) return;
 
-    // Try to inherit lane from parent
-    let assignedLane: number | null = null;
+    let assignedLane = tryInheritLane(meta, metadata, laneUsage);
 
-    if (meta.parents.size === 1) {
-      // Single parent - try to use parent's lane
-      const parentSha = Array.from(meta.parents)[0];
-      const parentMeta = metadata.get(parentSha);
-      if (parentMeta) {
-        const parentLane = parentMeta.lane;
-        if (laneUsage.get(parentLane) === parentSha || laneUsage.get(parentLane) === null) {
-          assignedLane = parentLane;
-        }
-      }
-    } else if (meta.parents.size > 1) {
-      // Merge commit - try to use the first parent's lane
-      const firstParentSha = Array.from(meta.parents)[0];
-      const firstParentMeta = metadata.get(firstParentSha);
-      if (firstParentMeta) {
-        const parentLane = firstParentMeta.lane;
-        if (laneUsage.get(parentLane) === firstParentSha || laneUsage.get(parentLane) === null) {
-          assignedLane = parentLane;
-        }
-      }
-    }
-
-    // If no lane assigned yet, find a free lane
     if (assignedLane === null) {
-      // Look for a free lane
-      let foundFreeLane = false;
-      for (let i = 0; i < nextFreeLane; i++) {
-        if (laneUsage.get(i) === null) {
-          assignedLane = i;
-          foundFreeLane = true;
-          break;
-        }
-      }
-
-      if (!foundFreeLane) {
-        assignedLane = nextFreeLane;
-        nextFreeLane++;
-      }
-    }
-
-    // Ensure assignedLane is not null
-    if (assignedLane === null) {
-      assignedLane = 0; // Fallback to lane 0
+      const result = findFreeLane(laneUsage, nextFreeLane);
+      assignedLane = result.lane;
+      nextFreeLane = result.nextFreeLane;
     }
 
     node.lane = assignedLane;
     meta.lane = assignedLane;
     laneUsage.set(assignedLane, node.sha);
 
-    // Free up parent lanes if they have no more children
-    meta.parents.forEach((parentSha) => {
-      const parentMeta = metadata.get(parentSha);
-      if (!parentMeta) return;
-
-      // Check if all children have been processed
-      const allChildrenProcessed = Array.from(parentMeta.children).every((childSha) => {
-        const childMeta = metadata.get(childSha);
-        return childMeta && childMeta.lane !== 0; // Assuming 0 means not yet assigned
-      });
-
-      if (allChildrenProcessed && laneUsage.get(parentMeta.lane) === parentSha) {
-        laneUsage.set(parentMeta.lane, null);
-      }
-    });
+    freeParentLanes(meta, metadata, laneUsage);
   });
 }

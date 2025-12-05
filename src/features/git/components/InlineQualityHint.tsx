@@ -46,22 +46,22 @@ export function InlineQualityHint({ hint, onApplyFix }: InlineQualityHintProps) 
         ) : (
           <AlertTriangle className={`w-4 h-4 shrink-0 ${style.icon}`} />
         )}
-        <span className="text-xs font-medium text-[var(--color-text-secondary)] truncate flex-1">
+        <span className="text-xs font-medium text-[--color-text-secondary] truncate flex-1">
           {hint.rule}
         </span>
         <span className={`text-xs ${style.icon}`}>Line {hint.lineNumber}</span>
         {isExpanded ? (
-          <ChevronDown className="w-3 h-3 text-[var(--color-text-tertiary)]" />
+          <ChevronDown className="w-3 h-3 text-[--color-text-tertiary]" />
         ) : (
-          <ChevronRight className="w-3 h-3 text-[var(--color-text-tertiary)]" />
+          <ChevronRight className="w-3 h-3 text-[--color-text-tertiary]" />
         )}
       </button>
 
       {isExpanded && (
-        <div className="px-3 pb-3 pt-0 border-t border-[var(--color-border-light)]">
-          <p className="text-xs text-[var(--color-text-primary)] mb-2 mt-2">{hint.message}</p>
+        <div className="px-3 pb-3 pt-0 border-t border-[--color-border-light]">
+          <p className="text-xs text-[--color-text-primary] mb-2 mt-2">{hint.message}</p>
           {hint.suggestedFix && (
-            <div className="p-2 bg-[var(--color-bg-primary)] rounded-md font-mono text-xs text-[var(--color-text-secondary)] mb-2">
+            <div className="p-2 bg-[--color-bg-primary] rounded-md font-mono text-xs text-[--color-text-secondary] mb-2">
               {hint.suggestedFix}
             </div>
           )}

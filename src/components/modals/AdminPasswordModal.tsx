@@ -62,7 +62,7 @@ export const AdminPasswordModal: React.FC<AdminPasswordModalProps> = ({
           <div className="flex gap-3">
             <button
               type="submit"
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl transition-all font-semibold shadow-lg shadow-blue-200"
+              className="flex-1 px-6 py-3 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl transition-all font-semibold shadow-lg shadow-blue-200"
             >
               Enter Admin Mode
             </button>

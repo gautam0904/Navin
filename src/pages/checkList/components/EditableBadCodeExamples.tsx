@@ -43,7 +43,7 @@ export const EditableBadCodeExamples: React.FC<EditableBadCodeExamplesProps> = (
   };
 
   return (
-    <div className="bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-300 rounded-2xl p-5 shadow-lg">
+    <div className="bg-linear-to-br from-orange-50 to-red-50 border-2 border-orange-300 rounded-2xl p-5 shadow-lg">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-orange-100 rounded-xl border border-orange-200 relative">

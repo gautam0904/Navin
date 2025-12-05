@@ -45,16 +45,16 @@ export function CommitTooltip({ node, x, y }: CommitTooltipProps) {
         top: `${position.y}px`,
       }}
     >
-      <div className="bg-[var(--color-bg-surface-2)] border border-[var(--git-panel-border)] rounded-lg shadow-lg p-3 max-w-sm">
+      <div className="bg-[--color-bg-surface-2] border border-[--git-panel-border] rounded-lg shadow-lg p-3 max-w-sm">
         <div className="flex items-start gap-2 mb-2">
-          <span className="text-xs font-mono text-[var(--git-commit-sha)] bg-[var(--color-bg-surface-3)] px-2 py-1 rounded">
+          <span className="text-xs font-mono text-[--git-commit-sha] bg-[--color-bg-surface-3] px-2 py-1 rounded">
             {node.short_sha}
           </span>
         </div>
 
-        <p className="text-sm text-[var(--color-text-primary)] mb-2 line-clamp-3">{node.message}</p>
+        <p className="text-sm text-[--color-text-primary] mb-2 line-clamp-3">{node.message}</p>
 
-        <div className="flex flex-col gap-1 text-xs text-[var(--color-text-tertiary)]">
+        <div className="flex flex-col gap-1 text-xs text-[--color-text-tertiary]">
           <div className="flex items-center gap-2">
             <span className="font-semibold">Author:</span>
             <span>{node.author_name}</span>
@@ -66,7 +66,7 @@ export function CommitTooltip({ node, x, y }: CommitTooltipProps) {
           {node.parents.length > 1 && (
             <div className="flex items-center gap-2">
               <span className="font-semibold">Merge:</span>
-              <span className="text-[var(--git-graph-lane-3)]">{node.parents.length} parents</span>
+              <span className="text-[--git-graph-lane-3]">{node.parents.length} parents</span>
             </div>
           )}
         </div>

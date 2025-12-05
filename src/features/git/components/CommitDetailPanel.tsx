@@ -21,19 +21,19 @@ export function CommitDetailPanel({
   const body = commitMessage.split('\n').slice(1).join('\n').trim();
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg-primary)]">
+    <div className="flex flex-col h-full bg-(--color-bg-primary)">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-[var(--color-border-light)] bg-[var(--color-bg-surface-1)]">
+      <div className="px-4 py-3 border-b border-(--color-border-light) bg-(--color-bg-surface-1)">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-[var(--color-primary-light)]">
-              <GitCommit className="w-5 h-5 text-[var(--color-primary)]" />
+            <div className="p-2 rounded-lg bg-(--color-primary-light)">
+              <GitCommit className="w-5 h-5 text-(--color-primary)" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-[var(--color-text-primary)] line-clamp-1">
+              <h2 className="text-sm font-semibold text-(--color-text-primary) line-clamp-1">
                 {firstLine}
               </h2>
-              <span className="text-[10px] font-mono text-[var(--color-text-tertiary)]">
+              <span className="text-[10px] font-mono text-[(--color-text-tertiary)]">
                 {commitSha.substring(0, 7)}
               </span>
             </div>
@@ -49,7 +49,7 @@ export function CommitDetailPanel({
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {/* Meta info */}
-        <div className="flex items-center gap-4 text-xs text-[var(--color-text-secondary)]">
+        <div className="flex items-center gap-4 text-xs text-[(--color-text-secondary)]">
           <span className="flex items-center gap-1.5">
             <User className="w-3.5 h-3.5" />
             {authorName}
@@ -62,7 +62,7 @@ export function CommitDetailPanel({
 
         {/* Commit body */}
         {body && (
-          <div className="p-3 rounded-lg bg-[var(--color-bg-surface-2)] text-xs text-[var(--color-text-secondary)] whitespace-pre-wrap">
+          <div className="p-3 rounded-lg bg-[(--color-bg-surface-2)] text-xs text-[(--color-text-secondary)] whitespace-pre-wrap">
             {body}
           </div>
         )}

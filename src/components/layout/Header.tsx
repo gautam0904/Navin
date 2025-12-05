@@ -54,7 +54,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Left Block: Title, Subtitle, Progress */}
         <div className="flex-1" style={{ paddingLeft: 0 }}>
           <div className="flex items-center gap-3 mb-3">
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-gradient-to-r from-primary to-primary-dark dark:from-primary dark:to-primary-dark text-text-inverse dark:text-text-inverse rounded-lg shadow-sm">
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-linear-to-r from-primary to-primary-dark dark:from-primary dark:to-primary-dark text-text-inverse dark:text-text-inverse rounded-lg shadow-sm">
               <ClipboardList className="w-5 h-5" />
               <span className="text-sm font-bold text-text-inverse dark:text-text-inverse tracking-wide">
                 PRE-COMMIT CHECKLIST
@@ -157,7 +157,7 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
             {hasUnsavedChanges && (
               <div className="flex items-center gap-2 px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg text-sm shadow-sm">
-                <AlertTriangle className="w-4 h-4 text-yellow-700 dark:text-yellow-400 flex-shrink-0" />
+                <AlertTriangle className="w-4 h-4 text-yellow-700 dark:text-yellow-400 shrink-0" />
                 <span className="text-yellow-700 dark:text-yellow-400 font-medium">
                   Click &quot;Copy Code&quot; to save permanently
                 </span>

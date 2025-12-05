@@ -28,8 +28,8 @@ export function BranchGraph() {
   if (!history || history.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-        <GitBranch className="w-12 h-12 mb-3 text-[var(--color-text-tertiary)] opacity-30" />
-        <p className="text-sm text-[var(--color-text-secondary)]">No commits found</p>
+        <GitBranch className="w-12 h-12 mb-3 text-(--color-text-tertiary) opacity-30" />
+        <p className="text-sm text-(--color-text-secondary)">No commits found</p>
       </div>
     );
   }
@@ -39,7 +39,7 @@ export function BranchGraph() {
   const canvasWidth = ((graphData?.lanes || 1) * LANE_WIDTH + 600) * zoomLevel;
 
   return (
-    <div className="flex flex-col h-full bg-[var(--git-graph-bg)]">
+    <div className="flex flex-col h-full bg-(--git-graph-bg)">
       {/* <GraphHeader
                 laneCount={graphData?.lanes || 0}
                 commitCount={history.length}
@@ -120,7 +120,7 @@ export function BranchGraph() {
                 <text
                   x={cx + 16 * zoomLevel}
                   y={cy - 8 * zoomLevel}
-                  className="text-xs font-mono fill-[var(--git-commit-sha)] select-none pointer-events-none"
+                  className="text-xs font-mono fill-(--git-commit-sha) select-none pointer-events-none"
                   style={{ fontSize: `${11 * zoomLevel}px` }}
                 >
                   {node.short_sha}
@@ -128,7 +128,7 @@ export function BranchGraph() {
                 <text
                   x={cx + 16 * zoomLevel}
                   y={cy + 8 * zoomLevel}
-                  className="text-sm fill-[var(--color-text-primary)] select-none pointer-events-none"
+                  className="text-sm fill-(--color-text-primary) select-none pointer-events-none"
                   style={{ fontSize: `${13 * zoomLevel}px` }}
                 >
                   {node.message.length > 60 ? node.message.substring(0, 60) + '...' : node.message}

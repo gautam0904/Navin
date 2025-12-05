@@ -23,7 +23,7 @@ export const AdminControls: React.FC<AdminControlsProps> = ({
         </button>
         {hasUnsavedChanges && (
           <div className="flex items-center gap-2 px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg text-xs sm:text-sm shadow-sm w-full sm:w-auto justify-center sm:justify-start">
-            <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellow-700 dark:text-yellow-400 flex-shrink-0" />
+            <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellow-700 dark:text-yellow-400 shrink-0" />
             <span className="text-yellow-700 dark:text-yellow-400 font-medium text-center sm:text-left">
               <span className="hidden sm:inline">
                 Click &quot;Copy Code&quot; to save permanently

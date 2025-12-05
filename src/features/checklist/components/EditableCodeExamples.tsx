@@ -86,7 +86,7 @@ export const EditableCodeExamples: React.FC<EditableCodeExamplesProps> = ({
 
   return (
     <div
-      className={`bg-gradient-to-br ${colors.bg} border-2 ${colors.border} rounded-2xl p-5 shadow-lg`}
+      className={`bg-linear-to-br ${colors.bg} border-2 ${colors.border} rounded-2xl p-5 shadow-lg`}
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">

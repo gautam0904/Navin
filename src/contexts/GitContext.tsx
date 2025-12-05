@@ -225,27 +225,16 @@ export function GitProvider({ children }: { children: React.ReactNode }) {
   // Stash operations delegated to hook
   // createStash, applyStash, popStash, dropStash are already destructured above
 
-  // Initial load
-  useEffect(() => {
-    if (!repository) return;
-
-    console.log('[GitContext] Repository changed, loading initial data...');
-    Promise.all([refreshStatus(), refreshBranches(), refreshHistory(), refreshRemotes()]).catch(
-      (err) => {
-        console.error('[GitContext] Failed to load initial data:', err);
-      }
-    );
-  }, [repository, refreshStatus, refreshBranches, refreshHistory, refreshRemotes]);
-
-  // Unified refresh function
   const refreshAll = useCallback(async () => {
     if (!repository) return;
-    await Promise.all([
-      refreshStatus(),
-      refreshBranches(),
-      refreshHistory(), // Refresh history as well
-      refreshRemotes(),
-    ]);
+    await Promise.all([refreshStatus(), refreshBranches(), refreshHistory(), refreshRemotes()]);
+  }, [repository, refreshStatus, refreshBranches, refreshHistory, refreshRemotes]);
+
+  useEffect(() => {
+    if (!repository) return;
+    Promise.all([refreshStatus(), refreshBranches(), refreshHistory(), refreshRemotes()]).catch(
+      (err) => console.error('[GitContext] Failed to load initial data:', err)
+    );
   }, [repository, refreshStatus, refreshBranches, refreshHistory, refreshRemotes]);
 
   // Real-time monitoring

@@ -20,7 +20,7 @@ export function StagingHeader({
   onUnstageAll,
 }: StagingHeaderProps) {
   return (
-    <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--git-panel-border)] bg-[var(--git-panel-header)] min-h-[40px]">
+    <div className="flex items-center justify-between px-3 py-2 border-b border-[--git-panel-border] bg-[--git-panel-header] min-h-[40px]">
       <div className="section-header-title">
         <span>{title}</span>
         {hasFiles && <span className="section-header-count">{count}</span>}

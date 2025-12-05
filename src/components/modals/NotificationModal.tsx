@@ -21,7 +21,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, ty
       className={`fixed top-6 right-6 z-50 ${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl max-w-md animate-slide-in border`}
     >
       <div className="flex items-start gap-3">
-        <CheckCircle size={24} className="flex-shrink-0 mt-1" />
+        <CheckCircle size={24} className="shrink-0 mt-1" />
         <div>
           <p className="font-semibold text-lg mb-1">{isSave ? 'Ready to save!' : 'Code copied!'}</p>
           <p className={`text-sm ${textColor}`}>

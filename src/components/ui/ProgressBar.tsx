@@ -16,7 +16,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
       {/* Header Row - Aligned with sections */}
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center shadow-sm flex-shrink-0">
+          <div className="w-10 h-10 rounded-lg bg-linear-to-br from-primary to-primary-dark flex items-center justify-center shadow-sm shrink-0">
             <svg
               className="w-5 h-5 text-white"
               fill="none"
@@ -41,7 +41,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
           </div>
         </div>
         {/* Fixed-width right-side counters */}
-        <div className="flex items-center gap-3 flex-shrink-0">
+        <div className="flex items-center gap-3 shrink-0">
           <div className="text-center">
             <div className="text-3xl font-bold text-primary dark:text-primary leading-none">
               {progressPercent}%

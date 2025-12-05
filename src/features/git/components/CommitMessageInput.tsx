@@ -31,12 +31,12 @@ export function CommitMessage({ message, onMessageChange, onKeyDown }: CommitMes
           />
         </div>
         <span
-          className={`font-mono ${isError ? 'text-[var(--color-error)]' : isWarning ? 'text-[var(--color-warning)]' : ''}`}
+          className={`font-mono ${isError ? 'text-[--color-error]' : isWarning ? 'text-[--color-warning]' : ''}`}
         >
           {firstLineLength}/72
         </span>
       </div>
-      <p className="text-[10px] text-[var(--color-text-tertiary)] flex items-center gap-1">
+      <p className="text-[10px] text-[--color-text-tertiary] flex items-center gap-1">
         <Sparkles className="w-3 h-3" />
         Tip: Use conventional commits (feat:, fix:, docs:, etc.)
       </p>

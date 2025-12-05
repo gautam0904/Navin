@@ -12,9 +12,9 @@ export function GitPanel() {
   }
 
   return (
-    <div className="flex h-full bg-[var(--color-bg-primary)] overflow-hidden">
+    <div className="flex h-full bg-[--color-bg-primary] overflow-hidden">
       {/* Left Panel: Navigation & Branches */}
-      <div className="w-64 shrink-0 flex flex-col border-r border-[var(--git-panel-border)]">
+      <div className="w-64 shrink-0 flex flex-col border-r border-[--git-panel-border]">
         <LeftPanel />
       </div>
 
@@ -24,7 +24,7 @@ export function GitPanel() {
       </div>
 
       {/* Right Panel: Context & Details */}
-      <div className="w-80 shrink-0 flex flex-col border-l border-[var(--git-panel-border)]">
+      <div className="w-80 shrink-0 flex flex-col border-l border-[--git-panel-border]">
         <RightPanel />
       </div>
     </div>

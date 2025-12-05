@@ -20,8 +20,8 @@ export function CreateBranchForm({ isOpen, isLoading, onClose, onSubmit }: Creat
   };
 
   return (
-    <div className="p-4 bg-[var(--color-bg-surface-2)] border-b border-[var(--color-border-light)] animate-slide-in">
-      <div className="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-3">
+    <div className="p-4 bg-[(--color-bg-surface-2)] border-b border-[(--color-border-light)] animate-slide-in">
+      <div className="text-xs font-semibold text-[(--color-text-secondary)] uppercase tracking-wider mb-3">
         Create New Branch
       </div>
       <div className="space-y-3">

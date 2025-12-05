@@ -110,7 +110,7 @@ function CreateStashForm({ isOpen, onClose, onSubmit }: CreateStashFormProps) {
   };
 
   return (
-    <div className="p-4 bg-[var(--color-bg-surface-2)] border-b border-[var(--color-border-light)] animate-slide-in">
+    <div className="p-4 bg-[--color-bg-surface-2] border-b border-[--color-border-light] animate-slide-in">
       <div className="space-y-3">
         <input
           type="text"
@@ -151,11 +151,11 @@ export function StashPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg-primary)]">
+    <div className="flex flex-col h-full bg-[--color-bg-primary]">
       {/* Header */}
       <div className="section-header">
         <div className="section-header-title">
-          <Archive className="w-4 h-4 text-[var(--color-primary)]" />
+          <Archive className="w-4 h-4 text-[--color-primary]" />
           <span>Stashes</span>
           {stashes && stashes.length > 0 && (
             <span className="section-header-count">{stashes.length}</span>

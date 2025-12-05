@@ -12,4 +12,3 @@ export { DiffViewer, parseDiffOutput } from './components/DiffViewer';
 export { BranchGraph } from './components/BranchGraph';
 export { CommitDetailPanel } from './components/CommitDetailPanel';
 export type { FileStatusType } from './components/FileStatusBadge';
-export type { FileDiff, DiffLine, DiffHunk, QualityHint } from './components/DiffViewer';

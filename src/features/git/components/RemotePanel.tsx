@@ -63,14 +63,12 @@ function RemoteCard({
       <div className="premium-card-header">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] flex items-center justify-center text-white">
+            <div className="w-9 h-9 rounded-lg bg-linear-to-br from-[--color-primary] to-[--color-primary-dark] flex items-center justify-center text-white">
               <Globe className="w-4.5 h-4.5" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-[var(--color-text-primary)]">
-                {remote.name}
-              </h3>
-              <span className="text-xs text-[var(--color-text-tertiary)]">Remote repository</span>
+              <h3 className="text-sm font-semibold text-[--color-text-primary]">{remote.name}</h3>
+              <span className="text-xs text-[--color-text-tertiary]">Remote repository</span>
             </div>
           </div>
           <div className="flex items-center gap-1">
@@ -84,7 +82,7 @@ function RemoteCard({
             </button>
             <button
               onClick={onRemove}
-              className="btn-premium btn-premium-ghost btn-premium-icon text-[var(--color-text-tertiary)] hover:text-[var(--color-error)]"
+              className="btn-premium btn-premium-ghost btn-premium-icon text-[--color-text-tertiary] hover:text-[--color-error]"
               title="Remove remote"
             >
               <Trash2 className="w-4 h-4" />
@@ -95,20 +93,20 @@ function RemoteCard({
 
       {/* URL */}
       <div className="premium-card-body py-2">
-        <div className="flex items-center gap-2 p-2 rounded-lg bg-[var(--color-bg-surface-2)] group">
-          <Link2 className="w-3.5 h-3.5 text-[var(--color-text-tertiary)] shrink-0" />
-          <span className="text-xs text-[var(--color-text-secondary)] font-mono truncate flex-1">
+        <div className="flex items-center gap-2 p-2 rounded-lg bg-[--color-bg-surface-2] group">
+          <Link2 className="w-3.5 h-3.5 text-[--color-text-tertiary] shrink-0" />
+          <span className="text-xs text-[--color-text-secondary] font-mono truncate flex-1">
             {remote.url}
           </span>
           <button
             onClick={handleCopyUrl}
-            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-[var(--color-bg-surface-3)] rounded"
+            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-[--color-bg-surface-3] rounded"
             title="Copy URL"
           >
             {copied ? (
-              <Check className="w-3.5 h-3.5 text-[var(--color-success)]" />
+              <Check className="w-3.5 h-3.5 text-[--color-success]" />
             ) : (
-              <Copy className="w-3.5 h-3.5 text-[var(--color-text-tertiary)]" />
+              <Copy className="w-3.5 h-3.5 text-[--color-text-tertiary]" />
             )}
           </button>
         </div>
@@ -116,10 +114,10 @@ function RemoteCard({
 
       {/* Actions */}
       <div className="premium-card-footer p-0">
-        <div className="flex divide-x divide-[var(--color-border-light)]">
+        <div className="flex divide-x divide-[--color-border-light]">
           <button
             onClick={onPull}
-            className="flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-surface-2)] transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-medium text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-[--color-bg-surface-2] transition-colors"
             title={`Pull ${currentBranch} from ${remote.name}`}
           >
             <Download className="w-3.5 h-3.5" />
@@ -127,7 +125,7 @@ function RemoteCard({
           </button>
           <button
             onClick={onPush}
-            className="flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-surface-2)] transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-medium text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-[--color-bg-surface-2] transition-colors"
             title={`Push ${currentBranch} to ${remote.name}`}
           >
             <Upload className="w-3.5 h-3.5" />
@@ -163,9 +161,9 @@ function AddRemoteForm({ isOpen, onClose, onSubmit }: AddRemoteFormProps) {
   };
 
   return (
-    <div className="p-4 bg-[var(--color-bg-surface-2)] border-b border-[var(--color-border-light)] animate-slide-in">
+    <div className="p-4 bg-[--color-bg-surface-2] border-b border-[--color-border-light] animate-slide-in">
       <div className="space-y-3">
-        <div className="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
+        <div className="text-xs font-semibold text-[--color-text-secondary] uppercase tracking-wider mb-2">
           Add Remote Repository
         </div>
         <input
@@ -232,11 +230,11 @@ export function RemotePanel() {
   const currentBranch = branches?.find((b) => b.is_head)?.name || 'main';
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg-primary)]">
+    <div className="flex flex-col h-full bg-[--color-bg-primary]">
       {/* Header */}
       <div className="section-header">
         <div className="section-header-title">
-          <Globe className="w-4 h-4 text-[var(--color-primary)]" />
+          <Globe className="w-4 h-4 text-[--color-primary]" />
           <span>Remotes</span>
           {remotes && remotes.length > 0 && (
             <span className="section-header-count">{remotes.length}</span>

@@ -17,7 +17,8 @@
     "lint:rust": "cd src-tauri && cargo clippy -- -D warnings",
     "fmt:rust": "cd src-tauri && cargo fmt",
     "fmt:rust:check": "cd src-tauri && cargo fmt -- --check",
-    "copy-icons": "node scripts/copy-icons.js"
+    "copy-icons": "node scripts/copy-icons.js",
+    "check:css": "node scripts/check-css-lines.js"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
@@ -55,8 +56,8 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
+      "prettier --write",
+      "eslint --max-warnings=0"
     ],
     "*.{css,json,md}": [
       "prettier --write"

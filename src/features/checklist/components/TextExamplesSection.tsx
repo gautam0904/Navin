@@ -76,7 +76,7 @@ export const TextExamplesSection: React.FC<TextExamplesSectionProps> = ({
   return (
     <div className="space-y-5">
       {/* Text Examples - Good */}
-      <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-300 rounded-2xl p-5 shadow-lg">
+      <div className="bg-linear-to-br from-green-50 to-emerald-50 border-2 border-green-300 rounded-2xl p-5 shadow-lg">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-green-100 rounded-xl border border-green-200">
@@ -157,7 +157,7 @@ export const TextExamplesSection: React.FC<TextExamplesSectionProps> = ({
       </div>
 
       {/* Text Examples - Bad */}
-      <div className="bg-gradient-to-br from-red-50 to-pink-50 border-2 border-red-300 rounded-2xl p-5 shadow-lg">
+      <div className="bg-linear-to-br from-red-50 to-pink-50 border-2 border-red-300 rounded-2xl p-5 shadow-lg">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-red-100 rounded-xl border border-red-200">

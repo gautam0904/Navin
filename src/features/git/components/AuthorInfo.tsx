@@ -29,18 +29,18 @@ export function AuthorInfo({
 
   if (isEditing) {
     return (
-      <div className="p-3 bg-[var(--color-bg-surface-2)] rounded-lg border border-[var(--color-border-light)] animate-scale-in">
+      <div className="p-3 bg-(--color-bg-surface-2) rounded-lg border border-(--color-border-light) animate-scale-in">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider">
+          <span className="text-xs font-semibold text-(--color-text-secondary) uppercase tracking-wider">
             Edit Identity
           </span>
-          <div className="flex bg-[var(--color-bg-primary)] rounded-lg p-0.5 border border-[var(--color-border-light)]">
+          <div className="flex bg-(--color-bg-primary) rounded-lg p-0.5 border border-(--color-border-light)">
             <button
               onClick={() => onScopeChange(false)}
               className={`px-2.5 py-1 text-xs font-medium rounded-md flex items-center gap-1.5 transition-all ${
                 !isGlobal
-                  ? 'bg-[var(--color-primary)] text-white shadow-sm'
-                  : 'text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]'
+                  ? 'bg-(--color-primary) text-white shadow-sm'
+                  : 'text-(--color-text-tertiary) hover:text-(--color-text-primary)'
               }`}
               title="Local Repository Config"
             >
@@ -51,8 +51,8 @@ export function AuthorInfo({
               onClick={() => onScopeChange(true)}
               className={`px-2.5 py-1 text-xs font-medium rounded-md flex items-center gap-1.5 transition-all ${
                 isGlobal
-                  ? 'bg-[var(--color-primary)] text-white shadow-sm'
-                  : 'text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]'
+                  ? 'bg-(--color-primary) text-white shadow-sm'
+                  : 'text-(--color-text-tertiary) hover:text-(--color-text-primary)'
               }`}
               title="Global User Config"
             >
@@ -89,23 +89,23 @@ export function AuthorInfo({
   }
 
   return (
-    <div className="flex items-center justify-between p-2.5 rounded-lg hover:bg-[var(--color-bg-surface-2)] group transition-all border border-transparent hover:border-[var(--color-border-light)]">
+    <div className="flex items-center justify-between p-2.5 rounded-lg hover:bg-(--color-bg-surface-2) group transition-all border border-transparent hover:border-(--color-border-light)">
       <div className="flex items-center gap-3 overflow-hidden">
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] flex items-center justify-center text-white shrink-0">
+        <div className="w-8 h-8 rounded-lg bg-linear-to-br from-(--color-primary) to-(--color-primary-dark) flex items-center justify-center text-white shrink-0">
           <User className="w-4 h-4" />
         </div>
         <div className="flex flex-col truncate">
-          <span className="text-sm font-medium text-[var(--color-text-primary)] truncate">
+          <span className="text-sm font-medium text-(--color-text-primary) truncate">
             {authorName || 'Anonymous'}
           </span>
-          <span className="text-xs text-[var(--color-text-tertiary)] truncate">
+          <span className="text-xs text-(--color-text-tertiary) truncate">
             {authorEmail || 'No email configured'}
           </span>
         </div>
       </div>
       <button
         onClick={() => setIsEditing(true)}
-        className="p-2 hover:bg-[var(--color-bg-surface-3)] rounded-lg text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] opacity-0 group-hover:opacity-100 transition-all"
+        className="p-2 hover:bg-(--color-bg-surface-3) rounded-lg text-(--color-text-tertiary) hover:text-(--color-text-primary) opacity-0 group-hover:opacity-100 transition-all"
         title="Edit Author Configuration"
       >
         <Pencil className="w-4 h-4" />

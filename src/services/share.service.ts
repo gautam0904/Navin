@@ -287,15 +287,12 @@ export class ShareService {
   private static reconstructChunks(chunks: Uint8Array[]): unknown {
     const totalLength = chunks.reduce((sum, c) => sum + c.length, 0);
     const combined = new Uint8Array(totalLength);
-
     let offset = 0;
     for (const chunk of chunks) {
       combined.set(chunk, offset);
       offset += chunk.length;
     }
-
     const decoder = new TextDecoder();
-    const jsonStr = decoder.decode(combined);
-    return JSON.parse(jsonStr);
+    return JSON.parse(decoder.decode(combined));
   }
 }

@@ -71,7 +71,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
         </div>
       </div>
 
-      <div className="flex items-center gap-3 flex-shrink-0">
+      <div className="flex items-center gap-3 shrink-0">
         {isAdminMode && (
           <div
             className="flex gap-1.5 p-1.5 bg-bg-secondary dark:bg-bg-secondary rounded-lg shadow-sm"
@@ -112,7 +112,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
           </span>
           {sectionCompleted === sectionTotal && sectionTotal > 0 && (
             <Check
-              className="text-primary dark:text-primary-light flex-shrink-0"
+              className="text-primary dark:text-primary-light shrink-0"
               size={14}
               strokeWidth={3}
             />

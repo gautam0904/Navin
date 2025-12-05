@@ -176,7 +176,7 @@ export function CommitComposer() {
         />
 
         {config.error && (
-          <div className="p-3 rounded-lg bg-[rgba(239,68,68,0.1)] border border-[var(--color-error)] text-[var(--color-error)] text-sm animate-scale-in">
+          <div className="p-3 rounded-lg bg-[rgba(239,68,68,0.1)] border border-(--color-error) text-(--color-error) text-sm animate-scale-in">
             {config.error}
           </div>
         )}

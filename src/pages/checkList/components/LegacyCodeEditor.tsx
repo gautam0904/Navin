@@ -28,7 +28,7 @@ export const LegacyCodeEditor: React.FC<LegacyCodeEditorProps> = ({
   };
 
   return (
-    <div className="bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-gray-700 rounded-2xl p-5 shadow-2xl">
+    <div className="bg-linear-to-br from-gray-900 to-gray-800 border-2 border-gray-700 rounded-2xl p-5 shadow-2xl">
       <div className="flex items-center justify-between mb-4">
         <h4 className="font-bold text-white text-lg">Code Example (Legacy)</h4>
         <div className="flex gap-2">

@@ -19,8 +19,8 @@
       "error",
       {
         "max": 300,
-        "skipBlankLines": true,
-        "skipComments": true
+        "skipBlankLines": false,
+        "skipComments": false
       }
     ],
     "complexity": ["error", 10],

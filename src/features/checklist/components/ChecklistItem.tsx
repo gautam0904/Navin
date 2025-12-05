@@ -216,7 +216,7 @@ export const ChecklistItem: React.FC<ChecklistItemProps> = ({
             type="checkbox"
             checked={isChecked}
             onChange={onToggle}
-            className="w-6 h-6 rounded-md border-2 border-primary dark:border-primary bg-transparent text-primary dark:text-primary focus:ring-2 focus:ring-primary/50 dark:focus:ring-primary/50 cursor-pointer transition-all duration-200 checked:bg-gradient-to-br checked:from-primary checked:to-primary-dark dark:checked:from-primary dark:checked:to-primary-dark checked:border-primary dark:checked:border-primary hover:border-primary-light dark:hover:border-primary-light hover:scale-110 active:scale-95 shadow-sm checked:shadow-md"
+            className="w-6 h-6 rounded-md border-2 border-primary dark:border-primary bg-transparent text-primary dark:text-primary focus:ring-2 focus:ring-primary/50 dark:focus:ring-primary/50 cursor-pointer transition-all duration-200 checked:bg-linear-to-br checked:from-primary checked:to-primary-dark dark:checked:from-primary dark:checked:to-primary-dark checked:border-primary dark:checked:border-primary hover:border-primary-light dark:hover:border-primary-light hover:scale-110 active:scale-95 shadow-sm checked:shadow-md"
             style={{
               accentColor: 'var(--color-primary)',
             }}
