@@ -63,15 +63,13 @@ export function ChangesPanel() {
       </div>
 
       {status.is_clean && (
-        // <div className="absolute inset-0 flex flex-col items-center justify-center bg-(--git-panel-bg) bg-opacity-95">
-        <>
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-(--git-panel-bg) bg-opacity-95 z-10">
           <div className="w-16 h-16 rounded-full bg-(--git-status-added-bg) flex items-center justify-center mb-4">
             <Check className="w-8 h-8 text-(--git-ahead)" />
           </div>
           <p className="text-base font-semibold text-(--color-text-primary) mb-1">No changes</p>
           <p className="text-sm text-(--color-text-tertiary)">Your working tree is clean</p>
-          {/* </div> */}
-        </>
+        </div>
       )}
     </div>
   );

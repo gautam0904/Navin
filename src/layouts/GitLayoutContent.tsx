@@ -27,7 +27,7 @@ export function MainContent({ activeView }: MainContentProps) {
         <div className="flex flex-1 min-h-0">
           <div className="w-80 border-r border-[--git-panel-border] flex flex-col">
             <CommitComposer />
-            <div className="flex-1 overflow-hidden">
+            <div className="flex flex-col h-full bg-(--git-panel-bg) relative">
               <ChangesPanel />
             </div>
           </div>
