@@ -58,7 +58,7 @@ export function StatusBar() {
   const isClean = getIsClean(status);
 
   return (
-    <div className="flex items-center justify-between px-4 py-2 border-t border-[--git-panel-border] bg-[--git-panel-header] text-xs">
+    <div className="flex items-center justify-between px-4 py-2.5 border-t border-[--git-panel-border] bg-[--git-panel-header] text-xs">
       <div className="flex items-center gap-4">
         <StatusIndicator
           isLoading={isLoading}

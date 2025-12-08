@@ -24,24 +24,27 @@ const BranchInfo: React.FC<{ branch: { name: string; ahead: number; behind: numb
   const { name, ahead, behind } = branch;
 
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[--color-bg-surface-2] border border-[--git-panel-border]">
-      <GitBranch className="w-4 h-4 text-[--git-branch-current]" />
-      <span className="text-sm font-medium text-[--color-text-primary]">{name}</span>
+    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[--color-bg-surface-2] border border-[--git-panel-border] hover:bg-[--color-bg-surface-3] transition-colors cursor-pointer group">
+      <GitBranch className="w-4 h-4 text-[--git-branch-current] group-hover:text-[--color-primary] transition-colors" />
+      <span className="text-sm font-semibold text-[--color-text-primary]">{name}</span>
       {(ahead > 0 || behind > 0) && (
-        <div className="flex items-center gap-1.5 ml-2 pl-2 border-l border-[--git-panel-border]">
+        <div className="flex items-center gap-2 ml-2 pl-2 border-l border-[--git-panel-border]">
           {behind > 0 && (
-            <span className="flex items-center gap-0.5 text-xs text-[--git-behind]">
+            <span className="flex items-center gap-0.5 text-xs font-medium text-[--git-behind] bg-[rgba(239,68,68,0.1)] px-1.5 py-0.5 rounded">
               <ArrowDownCircle className="w-3.5 h-3.5" />
               {behind}
             </span>
           )}
           {ahead > 0 && (
-            <span className="flex items-center gap-0.5 text-xs text-[--git-ahead]">
+            <span className="flex items-center gap-0.5 text-xs font-medium text-[--git-ahead] bg-[rgba(16,185,129,0.1)] px-1.5 py-0.5 rounded">
               <ArrowUpCircle className="w-3.5 h-3.5" />
               {ahead}
             </span>
           )}
         </div>
+      )}
+      {ahead === 0 && behind === 0 && (
+        <span className="text-[10px] text-[--color-text-tertiary] ml-1">synced</span>
       )}
     </div>
   );
@@ -163,20 +166,22 @@ export function TopBar({ onPull, onPush, onFetch, isLoading }: TopBarProps) {
   const branchInfo = currentBranch ? { name: currentBranch.name, ahead, behind } : null;
 
   return (
-    <div className="flex items-center justify-between px-4 py-2 border-b border-[--git-panel-border] bg-[--git-panel-header]">
+    <div className="flex items-center justify-between px-4 py-3 border-b border-[--git-panel-border] bg-[--git-panel-header]">
       <div className="flex items-center gap-4">
         <RepositoryName name={repository?.name} />
         <BranchInfo branch={branchInfo} />
       </div>
-      <ActionButtons
-        onFetch={onFetch}
-        onPull={onPull}
-        onPush={onPush}
-        isLoading={isLoading}
-        hasRemote={hasRemote}
-        ahead={ahead}
-        behind={behind}
-      />
+      <div className="flex items-center">
+        <ActionButtons
+          onFetch={onFetch}
+          onPull={onPull}
+          onPush={onPush}
+          isLoading={isLoading}
+          hasRemote={hasRemote}
+          ahead={ahead}
+          behind={behind}
+        />
+      </div>
     </div>
   );
 }

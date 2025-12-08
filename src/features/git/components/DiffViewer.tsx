@@ -51,22 +51,20 @@ function ViewModeToggle({
     <div className="flex rounded-md overflow-hidden border border-[--git-panel-border]">
       <button
         onClick={() => onChange('unified')}
-        className={`flex items-center gap-1 px-2 py-1 text-xs ${
-          mode === 'unified'
-            ? 'bg-[--color-primary] text-white'
-            : 'bg-[--color-bg-surface-2] text-[--color-text-secondary] hover:bg-[--color-bg-surface-3]'
-        }`}
+        className={`flex items-center gap-1 px-2 py-1 text-xs ${mode === 'unified'
+          ? 'bg-[--color-primary] text-white'
+          : 'bg-[--color-bg-surface-2] text-[--color-text-secondary] hover:bg-[--color-bg-surface-3]'
+          }`}
         title="Unified View"
       >
         <AlignLeft className="w-3.5 h-3.5" />
       </button>
       <button
         onClick={() => onChange('split')}
-        className={`flex items-center gap-1 px-2 py-1 text-xs ${
-          mode === 'split'
-            ? 'bg-[--color-primary] text-white'
-            : 'bg-[--color-bg-surface-2] text-[--color-text-secondary] hover:bg-[--color-bg-surface-3]'
-        }`}
+        className={`flex items-center gap-1 px-2 py-1 text-xs ${mode === 'split'
+          ? 'bg-[--color-primary] text-white'
+          : 'bg-[--color-bg-surface-2] text-[--color-text-secondary] hover:bg-[--color-bg-surface-3]'
+          }`}
         title="Split View"
       >
         <SplitSquareHorizontal className="w-3.5 h-3.5" />
@@ -75,16 +73,23 @@ function ViewModeToggle({
   );
 }
 
+import { KeyboardShortcuts } from './KeyboardShortcuts';
+
 function EmptyDiffState() {
   return (
-    <div className="empty-state h-full">
-      <div className="empty-state-icon">
-        <FileCode className="w-10 h-10" />
+    <div className="flex flex-col h-full items-center justify-center p-6">
+      <div className="text-center max-w-sm">
+        <div className="mb-4 p-4 bg-[--color-bg-surface-2] rounded-lg inline-block">
+          <FileCode className="w-12 h-12 text-[--color-text-tertiary] opacity-50" />
+        </div>
+        <h3 className="text-base font-semibold text-[--color-text-primary] mb-2">Select a file to view changes</h3>
+        <p className="text-xs text-[--color-text-secondary] leading-relaxed mb-6">
+          Click any file from the changes list to see its diff
+        </p>
+        <div className="mt-auto pt-6 border-t border-[--git-panel-border] w-full">
+          <KeyboardShortcuts />
+        </div>
       </div>
-      <h3 className="empty-state-title">No file selected</h3>
-      <p className="empty-state-description">
-        Select a file from the changes list to view its diff
-      </p>
     </div>
   );
 }

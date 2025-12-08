@@ -30,9 +30,17 @@ export function StagingHeader({
         <button
           onClick={isStaged ? onUnstageAll : onStageAll}
           disabled={isLoading}
-          className={`btn-premium btn-premium-sm ${
-            isStaged ? 'btn-premium-ghost' : 'btn-premium-primary'
-          }`}
+          className={`
+            flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md
+            transition-all duration-200
+            border border-[--git-panel-border]
+            ${
+              isStaged
+                ? 'bg-transparent hover:bg-[--color-bg-surface-2] text-[--color-text-secondary] hover:text-[--color-text-primary]'
+                : 'bg-[--color-bg-surface-2] hover:bg-[--color-bg-surface-3] text-[--color-text-secondary] hover:text-[--color-text-primary]'
+            }
+            disabled:opacity-50 disabled:cursor-not-allowed
+          `}
         >
           {isStaged ? (
             <>

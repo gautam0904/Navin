@@ -3,8 +3,13 @@ import { RepositoryPicker } from '../features/git';
 import { MainContent } from './GitLayoutContent';
 import { TopBar } from './GitLayoutTopBar';
 import { StatusBar } from './GitLayoutStatusBar';
+import { GitAppHeader } from './GitAppHeader';
+import { CommitDrawer } from '../features/git/components/CommitDrawer';
+import { RecentReposList } from '../features/git/components/RecentReposList';
+import { ReviewModeToggle } from '../features/git/components/ReviewModeToggle';
 import { useGit } from '../contexts/GitContext';
-import { History, Package, Globe, GitCommit, GitBranch } from 'lucide-react';
+import { History, Package, Globe, GitCommit, GitBranch, Maximize2, Minimize2 } from 'lucide-react';
+import { ToastContainer, type Toast } from '../features/git/components/Toast';
 
 type GitView = 'changes' | 'history' | 'branches' | 'stash' | 'remotes';
 
@@ -30,31 +35,29 @@ function LeftNav({ activeView, onViewChange, changesCount }: LeftNavProps) {
   ];
 
   return (
-    <nav className="flex flex-col py-2">
+    <nav className="flex flex-col py-3 px-2 gap-1">
       {navItems.map((item) => (
         <button
           key={item.id}
           onClick={() => onViewChange(item.id)}
           className={`
-            flex items-center gap-3 px-4 py-3 mx-2 rounded-lg transition-colors text-left
-            ${
-              activeView === item.id
-                ? 'bg-[--git-panel-item-selected] text-[--color-primary]'
-                : 'text-[--color-text-secondary] hover:bg-[--git-panel-item-hover] hover:text-[--color-text-primary]'
+            flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-left
+            ${activeView === item.id
+              ? 'bg-[--git-panel-item-selected] text-[--color-primary] font-semibold'
+              : 'text-[--color-text-secondary] hover:bg-[--git-panel-item-hover] hover:text-[--color-text-primary]'
             }
           `}
         >
-          {item.icon}
-          <span className="font-medium">{item.label}</span>
+          <span className="shrink-0">{item.icon}</span>
+          <span className="font-medium flex-1">{item.label}</span>
           {item.badge !== undefined && item.badge > 0 && (
             <span
               className={`
-              ml-auto px-2 py-0.5 text-xs font-bold rounded-full
-              ${
-                activeView === item.id
+              ml-auto px-2 py-0.5 text-xs font-bold rounded-full min-w-[20px] text-center
+              ${activeView === item.id
                   ? 'bg-[--color-primary] text-white'
-                  : 'bg-[--color-bg-surface-3] text-[--color-text-secondary]'
-              }
+                  : 'bg-[--color-bg-surface-3] text-[--color-text-primary]'
+                }
             `}
             >
               {item.badge}
@@ -97,13 +100,25 @@ export function GitLayout() {
   const { repository, status, isLoading } = useGit();
   const [activeView, setActiveView] = useState<GitView>('changes');
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
+  const [toasts, setToasts] = useState<Toast[]>([]);
+  const [isCommitDrawerOpen, setIsCommitDrawerOpen] = useState(false);
+  const [isReviewMode, setIsReviewMode] = useState(false);
+  const [isDistractionFree, setIsDistractionFree] = useState(false);
   const { handleFetch, handlePull, handlePush } = useGitActions();
 
   const changesCount = status
     ? (status.staged?.length || 0) +
-      (status.unstaged?.length || 0) +
-      (status.untracked?.length || 0)
+    (status.unstaged?.length || 0) +
+    (status.untracked?.length || 0)
     : 0;
+
+  const handleToast = (toast: Toast) => {
+    setToasts((prev) => [...prev, toast]);
+  };
+
+  const handleCloseToast = (id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
 
   if (!repository) {
     return <RepositoryPicker />;
@@ -111,24 +126,68 @@ export function GitLayout() {
 
   return (
     <div className="flex flex-col h-screen bg-[--git-panel-bg]">
+      <GitAppHeader currentFilePath={selectedFile} />
       <TopBar onPull={handlePull} onPush={handlePush} onFetch={handleFetch} isLoading={isLoading} />
       <div className="flex flex-1 min-h-0">
-        <div className="w-56 border-r border-[--git-panel-border] bg-[--color-bg-secondary]">
-          <LeftNav
-            activeView={activeView}
-            onViewChange={setActiveView}
-            changesCount={changesCount}
-          />
-        </div>
+        {!isDistractionFree && (
+          <div className="w-56 border-r border-[--git-panel-border] bg-[--color-bg-secondary] flex flex-col">
+            <LeftNav
+              activeView={activeView}
+              onViewChange={setActiveView}
+              changesCount={changesCount}
+            />
+            <div className="mt-auto">
+              <RecentReposList />
+            </div>
+          </div>
+        )}
         <div className="flex-1 flex flex-col min-w-0">
+          {!isDistractionFree && (
+            <div className="px-3 py-2 border-b border-[--git-panel-border] bg-[--git-panel-header] flex items-center justify-between">
+              <ReviewModeToggle isReviewMode={isReviewMode} onToggle={setIsReviewMode} />
+              <button
+                onClick={() => setIsDistractionFree(true)}
+                className="p-1.5 rounded hover:bg-[--color-bg-surface-2] transition-colors"
+                title="Distraction-free mode"
+              >
+                <Maximize2 className="w-4 h-4 text-[--color-text-secondary]" />
+              </button>
+            </div>
+          )}
+          {isDistractionFree && (
+            <div className="px-3 py-2 border-b border-[--git-panel-border] bg-[--git-panel-header] flex items-center justify-end">
+              <button
+                onClick={() => setIsDistractionFree(false)}
+                className="p-1.5 rounded hover:bg-[--color-bg-surface-2] transition-colors"
+                title="Exit distraction-free mode"
+              >
+                <Minimize2 className="w-4 h-4 text-[--color-text-secondary]" />
+              </button>
+            </div>
+          )}
           <MainContent
             activeView={activeView}
             selectedFile={selectedFile}
             onFileSelect={setSelectedFile}
+            onToast={handleToast}
+            isReviewMode={isReviewMode}
+          />
+          <MainContent
+            activeView={activeView}
+            selectedFile={selectedFile}
+            onFileSelect={setSelectedFile}
+            onToast={handleToast}
+            isReviewMode={isReviewMode}
           />
         </div>
       </div>
       <StatusBar />
+      <CommitDrawer
+        isOpen={isCommitDrawerOpen}
+        onClose={() => setIsCommitDrawerOpen(false)}
+        onToast={handleToast}
+      />
+      <ToastContainer toasts={toasts} onClose={handleCloseToast} />
     </div>
   );
 }

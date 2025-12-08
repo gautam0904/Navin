@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Navigation from './Navigation';
 import { ThemeToggle } from './ThemeToggle';
 import { useFileExplorer } from '../../contexts/FileExplorerContext';
-import { Explorer } from './Explorer';
+import { ExplorerWithGitBadges } from './ExplorerWithGitBadges';
 import { Issues } from './Issues';
 import { GitSidebarPanel } from '../../features/git';
 
@@ -68,11 +68,10 @@ function SidebarTabs({
         <button
           key={tab}
           onClick={() => onTabChange(tab)}
-          className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === tab
+          className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab
               ? 'border-primary text-primary'
               : 'border-transparent text-text-secondary hover:text-text-primary'
-          }`}
+            }`}
         >
           {tabLabels[tab]}
         </button>
@@ -90,7 +89,7 @@ function SidebarContent({
   collapsed: boolean;
   fullyCollapsed: boolean;
 }) {
-  if (activeTab === 'explorer') return <Explorer />;
+  if (activeTab === 'explorer') return <ExplorerWithGitBadges />;
   if (activeTab === 'git') return <GitSidebarPanel />;
   if (activeTab === 'issues') return <Issues />;
   if (activeTab === 'menu') return <Navigation collapsed={fullyCollapsed || collapsed} />;

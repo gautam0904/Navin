@@ -1,5 +1,5 @@
-import React from 'react';
-import { Sparkles } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Sparkles, CheckCircle2, AlertCircle, XCircle, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface CommitMessageProps {
   message: string;
@@ -7,39 +7,106 @@ interface CommitMessageProps {
   onKeyDown: (e: React.KeyboardEvent) => void;
 }
 
+const COMMIT_TYPES = [
+  { type: 'feat', description: 'add new feature' },
+  { type: 'fix', description: 'resolve bug' },
+  { type: 'docs', description: 'update documentation' },
+  { type: 'style', description: 'formatting, missing semicolons, etc.' },
+  { type: 'refactor', description: 'code restructuring' },
+  { type: 'test', description: 'add or update tests' },
+  { type: 'chore', description: 'maintenance tasks' },
+];
+
 export function CommitMessage({ message, onMessageChange, onKeyDown }: CommitMessageProps) {
-  const firstLineLength = message.split('\n')[0].length;
+  const [showExamples, setShowExamples] = useState(false);
+  const firstLine = message.split('\n')[0];
+  const firstLineLength = firstLine.length;
   const charPercentage = Math.min((firstLineLength / 72) * 100, 100);
   const isWarning = firstLineLength > 50 && firstLineLength <= 72;
   const isError = firstLineLength > 72;
+  const isEmpty = firstLineLength === 0;
+  const isTooShort = firstLineLength > 0 && firstLineLength < 10;
+
+  // Check if message follows conventional commit format
+  const conventionalPattern = /^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .+/;
+  const isConventional = conventionalPattern.test(firstLine);
+  const isValid = !isEmpty && !isTooShort && !isError && isConventional;
+
+  // Get suggestions based on what user is typing
+  const suggestions = useMemo(() => {
+    if (!firstLine || firstLine.length > 5) return [];
+    const lower = firstLine.toLowerCase();
+    return COMMIT_TYPES.filter(({ type }) => type.startsWith(lower)).slice(0, 3);
+  }, [firstLine]);
+
+  const handleSuggestionClick = (type: string) => {
+    const description = COMMIT_TYPES.find(t => t.type === type)?.description || '';
+    onMessageChange(`${type}: ${description}`);
+  };
 
   return (
-    <div className="space-y-2">
-      <textarea
-        value={message}
-        onChange={(e) => onMessageChange(e.target.value)}
-        onKeyDown={onKeyDown}
-        placeholder="Write a meaningful commit message..."
-        rows={3}
-        className="commit-textarea"
-      />
-      <div className="commit-char-counter">
-        <div className="commit-char-counter-bar">
-          <div
-            className={`commit-char-counter-fill ${isWarning ? 'warning' : ''} ${isError ? 'error' : ''}`}
-            style={{ width: `${charPercentage}%` }}
-          />
+    <div className="space-y-1">
+      <div className="relative">
+        <input
+          type="text"
+          value={firstLine}
+          onChange={(e) => {
+            const newFirstLine = e.target.value;
+            const rest = message.split('\n').slice(1).join('\n');
+            onMessageChange(rest ? `${newFirstLine}\n${rest}` : newFirstLine);
+          }}
+          onKeyDown={onKeyDown}
+          placeholder="feat: add new feature..."
+          className="w-full px-3 py-1.5 pr-16 text-sm rounded border border-[--git-panel-border] bg-[--color-bg-primary] text-[--color-text-primary] focus:outline-none focus:ring-1 focus:ring-[--color-primary]"
+        />
+        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+          {isValid && <CheckCircle2 className="w-3 h-3 text-[--git-status-added]" />}
+          {isTooShort && <XCircle className="w-3 h-3 text-[--color-error]" />}
+          {!isConventional && !isEmpty && !isTooShort && <AlertCircle className="w-3 h-3 text-[#f59e0b]" />}
+          <span
+            className={`text-xs font-mono ${
+              isError ? 'text-[--color-error]' : isWarning ? 'text-[#f59e0b]' : isValid ? 'text-[--git-status-added]' : 'text-[--color-text-tertiary]'
+            }`}
+          >
+            {firstLineLength}/72
+          </span>
         </div>
-        <span
-          className={`font-mono ${isError ? 'text-[--color-error]' : isWarning ? 'text-[--color-warning]' : ''}`}
-        >
-          {firstLineLength}/72
-        </span>
       </div>
-      <p className="text-[10px] text-[--color-text-tertiary] flex items-center gap-1">
-        <Sparkles className="w-3 h-3" />
-        Tip: Use conventional commits (feat:, fix:, docs:, etc.)
-      </p>
+
+      <div className="flex items-center gap-2">
+        {suggestions.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {suggestions.map(({ type }) => (
+              <button
+                key={type}
+                onClick={() => handleSuggestionClick(type)}
+                className="px-1.5 py-0.5 text-[10px] bg-[--color-bg-surface-2] hover:bg-[--color-bg-surface-3] rounded text-[--color-text-secondary] hover:text-[--color-text-primary] transition-colors"
+              >
+                {type}
+              </button>
+            ))}
+          </div>
+        )}
+        <button
+          onClick={() => setShowExamples(!showExamples)}
+          className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] text-[--color-text-tertiary] hover:text-[--color-text-secondary] transition-colors"
+          title="Show conventional commit examples"
+        >
+          <Sparkles className="w-3 h-3" />
+          <span>Examples</span>
+          {showExamples ? <ChevronUp className="w-2.5 h-2.5" /> : <ChevronDown className="w-2.5 h-2.5" />}
+        </button>
+      </div>
+      
+      {showExamples && (
+        <div className="pt-1 pb-0.5 space-y-0.5 border-t border-[--git-panel-border]">
+          {COMMIT_TYPES.slice(0, 4).map(({ type, description }) => (
+            <div key={type} className="text-[10px] text-[--color-text-secondary] font-mono">
+              <span className="text-[--color-primary]">{type}:</span> {description}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

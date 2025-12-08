@@ -16,14 +16,43 @@ export function RepositoryPicker() {
       });
 
       if (selected && typeof selected === 'string') {
-        await openRepository(selected);
-
-        // Add to recent repos
-        setRecentRepos((prev) => {
-          const updated = [selected, ...prev.filter((p) => p !== selected)].slice(0, 10);
-          localStorage.setItem('recentGitRepos', JSON.stringify(updated));
-          return updated;
-        });
+        // Check if it's a Git repository
+        try {
+          const { GitService } = await import('@/services/gitService');
+          const repoInfo = await GitService.discoverRepository(selected);
+          
+          if (repoInfo) {
+            // Show confirmation modal
+            const confirmed = window.confirm(
+              `Repository detected: ${repoInfo.name}\n\nPath: ${selected}\n\nOpen this repository?`
+            );
+            
+            if (confirmed) {
+              await openRepository(selected);
+              
+              // Add to recent repos
+              setRecentRepos((prev) => {
+                const updated = [selected, ...prev.filter((p) => p !== selected)].slice(0, 10);
+                localStorage.setItem('recentGitRepos', JSON.stringify(updated));
+                return updated;
+              });
+            }
+          } else {
+            // Not a Git repo - offer to initialize
+            const initRepo = window.confirm(
+              `No Git repository found in:\n${selected}\n\nWould you like to initialize a new Git repository here?`
+            );
+            
+            if (initRepo) {
+              // TODO: Implement git init
+              alert('Git init not yet implemented. Please initialize the repository manually.');
+            }
+          }
+        } catch (error) {
+          console.error('Failed to discover repository:', error);
+          // Still try to open it
+          await openRepository(selected);
+        }
       }
     } catch (err) {
       console.error('Failed to open repository:', err);

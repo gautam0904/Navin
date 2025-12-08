@@ -27,7 +27,7 @@ export const Layout = ({ children }: LayoutProps) => {
         {/* Main content */}
         <div className="flex-1 flex flex-col overflow-hidden">
           <main className="flex-1 overflow-y-auto custom-scrollbar">
-            <div className="h-full w-full p-8 max-w-7xl mx-auto">{children}</div>
+            <div className="h-full w-full p-2 mx-auto">{children}</div>
           </main>
 
           <StatusBar />
