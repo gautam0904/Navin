@@ -48,19 +48,6 @@ export function FileSearchFilter({
     if (filter !== 'all') {
       filtered = filtered.filter((file) => {
         const status = file.status;
-        if (typeof status === 'string') {
-          const lower = status.toLowerCase();
-          switch (filter) {
-            case 'modified':
-              return lower.includes('modif');
-            case 'added':
-              return lower.includes('add') || lower.includes('untrack');
-            case 'deleted':
-              return lower.includes('delet');
-            default:
-              return true;
-          }
-        }
         if (typeof status === 'object' && status !== null) {
           switch (filter) {
             case 'modified':
@@ -129,4 +116,3 @@ export function FileSearchFilter({
     </div>
   );
 }
-

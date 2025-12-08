@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { RepositoryPicker } from '../features/git';
+import React, { useState, useMemo, useCallback } from 'react';
+import { RepositoryPicker, GitWorkspace } from '../features/git';
 import { MainContent } from './GitLayoutContent';
 import { TopBar } from './GitLayoutTopBar';
 import { StatusBar } from './GitLayoutStatusBar';
@@ -42,9 +42,10 @@ function LeftNav({ activeView, onViewChange, changesCount }: LeftNavProps) {
           onClick={() => onViewChange(item.id)}
           className={`
             flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-left
-            ${activeView === item.id
-              ? 'bg-[--git-panel-item-selected] text-[--color-primary] font-semibold'
-              : 'text-[--color-text-secondary] hover:bg-[--git-panel-item-hover] hover:text-[--color-text-primary]'
+            ${
+              activeView === item.id
+                ? 'bg-[--git-panel-item-selected] text-[--color-primary] font-semibold'
+                : 'text-[--color-text-secondary] hover:bg-[--git-panel-item-hover] hover:text-[--color-text-primary]'
             }
           `}
         >
@@ -54,10 +55,11 @@ function LeftNav({ activeView, onViewChange, changesCount }: LeftNavProps) {
             <span
               className={`
               ml-auto px-2 py-0.5 text-xs font-bold rounded-full min-w-[20px] text-center
-              ${activeView === item.id
+              ${
+                activeView === item.id
                   ? 'bg-[--color-primary] text-white'
                   : 'bg-[--color-bg-surface-3] text-[--color-text-primary]'
-                }
+              }
             `}
             >
               {item.badge}
@@ -96,6 +98,47 @@ const useGitActions = () => {
   return { handleFetch, handlePull, handlePush };
 };
 
+// Distraction-free mode toolbar component to reduce complexity
+interface DistractionFreeToggleProps {
+  isDistractionFree: boolean;
+  isReviewMode: boolean;
+  onToggleDistractionFree: (value: boolean) => void;
+  onToggleReviewMode: (value: boolean) => void;
+}
+
+function DistractionFreeToolbar({
+  isDistractionFree,
+  isReviewMode,
+  onToggleDistractionFree,
+  onToggleReviewMode,
+}: DistractionFreeToggleProps) {
+  if (isDistractionFree) {
+    return (
+      <div className="px-3 py-2 border-b border-[--git-panel-border] bg-[--git-panel-header] flex items-center justify-end">
+        <button
+          onClick={() => onToggleDistractionFree(false)}
+          className="p-1.5 rounded hover:bg-[--color-bg-surface-2] transition-colors"
+          title="Exit distraction-free mode"
+        >
+          <Minimize2 className="w-4 h-4 text-[--color-text-secondary]" />
+        </button>
+      </div>
+    );
+  }
+  return (
+    <div className="px-3 py-2 border-b border-[--git-panel-border] bg-[--git-panel-header] flex items-center justify-between">
+      <ReviewModeToggle isReviewMode={isReviewMode} onToggle={onToggleReviewMode} />
+      <button
+        onClick={() => onToggleDistractionFree(true)}
+        className="p-1.5 rounded hover:bg-[--color-bg-surface-2] transition-colors"
+        title="Distraction-free mode"
+      >
+        <Maximize2 className="w-4 h-4 text-[--color-text-secondary]" />
+      </button>
+    </div>
+  );
+}
+
 export function GitLayout() {
   const { repository, status, isLoading } = useGit();
   const [activeView, setActiveView] = useState<GitView>('changes');
@@ -106,19 +149,22 @@ export function GitLayout() {
   const [isDistractionFree, setIsDistractionFree] = useState(false);
   const { handleFetch, handlePull, handlePush } = useGitActions();
 
-  const changesCount = status
-    ? (status.staged?.length || 0) +
-    (status.unstaged?.length || 0) +
-    (status.untracked?.length || 0)
-    : 0;
+  const changesCount = useMemo(() => {
+    if (!status) return 0;
+    return (
+      (status.staged?.length || 0) +
+      (status.unstaged?.length || 0) +
+      (status.untracked?.length || 0)
+    );
+  }, [status]);
 
-  const handleToast = (toast: Toast) => {
+  const handleToast = useCallback((toast: Toast) => {
     setToasts((prev) => [...prev, toast]);
-  };
+  }, []);
 
-  const handleCloseToast = (id: string) => {
+  const handleCloseToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
-  };
+  }, []);
 
   if (!repository) {
     return <RepositoryPicker />;
@@ -142,43 +188,23 @@ export function GitLayout() {
           </div>
         )}
         <div className="flex-1 flex flex-col min-w-0">
-          {!isDistractionFree && (
-            <div className="px-3 py-2 border-b border-[--git-panel-border] bg-[--git-panel-header] flex items-center justify-between">
-              <ReviewModeToggle isReviewMode={isReviewMode} onToggle={setIsReviewMode} />
-              <button
-                onClick={() => setIsDistractionFree(true)}
-                className="p-1.5 rounded hover:bg-[--color-bg-surface-2] transition-colors"
-                title="Distraction-free mode"
-              >
-                <Maximize2 className="w-4 h-4 text-[--color-text-secondary]" />
-              </button>
-            </div>
-          )}
-          {isDistractionFree && (
-            <div className="px-3 py-2 border-b border-[--git-panel-border] bg-[--git-panel-header] flex items-center justify-end">
-              <button
-                onClick={() => setIsDistractionFree(false)}
-                className="p-1.5 rounded hover:bg-[--color-bg-surface-2] transition-colors"
-                title="Exit distraction-free mode"
-              >
-                <Minimize2 className="w-4 h-4 text-[--color-text-secondary]" />
-              </button>
-            </div>
-          )}
-          <MainContent
-            activeView={activeView}
-            selectedFile={selectedFile}
-            onFileSelect={setSelectedFile}
-            onToast={handleToast}
+          <DistractionFreeToolbar
+            isDistractionFree={isDistractionFree}
             isReviewMode={isReviewMode}
+            onToggleDistractionFree={setIsDistractionFree}
+            onToggleReviewMode={setIsReviewMode}
           />
-          <MainContent
-            activeView={activeView}
-            selectedFile={selectedFile}
-            onFileSelect={setSelectedFile}
-            onToast={handleToast}
-            isReviewMode={isReviewMode}
-          />
+          {activeView === 'changes' ? (
+            <GitWorkspace onToast={handleToast} />
+          ) : (
+            <MainContent
+              activeView={activeView}
+              selectedFile={selectedFile}
+              onFileSelect={setSelectedFile}
+              onToast={handleToast}
+              isReviewMode={isReviewMode}
+            />
+          )}
         </div>
       </div>
       <StatusBar />

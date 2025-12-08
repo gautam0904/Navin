@@ -20,11 +20,11 @@ interface FileGroup {
 
 function groupFilesByFolder(files: FileStatus[]): FileGroup[] {
   const groups = new Map<string, FileStatus[]>();
-  
+
   files.forEach((file) => {
     const pathParts = file.path.split('/');
     const folder = pathParts.length > 1 ? pathParts.slice(0, -1).join('/') : '/';
-    
+
     if (!groups.has(folder)) {
       groups.set(folder, []);
     }
@@ -103,7 +103,7 @@ export function FilesList({
 }: FilesListProps) {
   if (groupByFolder && files.length > 3) {
     const groups = groupFilesByFolder(files);
-    
+
     return (
       <div>
         {groups.map((group) => (

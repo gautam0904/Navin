@@ -55,6 +55,7 @@ pub fn run() {
             switch_project,
             get_project_checklist,
             file_system::read_dir,
+            file_system::read_file_content,
             // Git commands
             open_repository,
             discover_repository,

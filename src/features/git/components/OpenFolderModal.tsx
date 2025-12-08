@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FolderOpen, GitBranch, X, CheckSquare, Square } from 'lucide-react';
 import { open } from '@tauri-apps/plugin-dialog';
 import { GitService } from '@/services/gitService';
@@ -23,6 +23,28 @@ export function OpenFolderModal({ isOpen, onClose, onRepositoryOpened }: OpenFol
 
   if (!isOpen) return null;
 
+  const scanForRepository = async (path: string) => {
+    try {
+      const repoInfo = await GitService.discoverRepository(path);
+      if (repoInfo) {
+        return [{ path, name: repoInfo.name, isSelected: true }];
+      }
+    } catch (error) {
+      console.error('Failed to discover repository:', error);
+    }
+    return null;
+  };
+
+  const promptForInit = (path: string) => {
+    const initRepo = window.confirm(
+      `No Git repository found in:\n${path}\n\nWould you like to initialize a new Git repository here?`
+    );
+    if (initRepo) {
+      // TODO: Implement git init
+      alert('Git init not yet implemented. Please initialize the repository manually.');
+    }
+  };
+
   const handleSelectFolder = async () => {
     try {
       setIsScanning(true);
@@ -32,28 +54,13 @@ export function OpenFolderModal({ isOpen, onClose, onRepositoryOpened }: OpenFol
         title: 'Open Folder',
       });
 
-      if (selected && typeof selected === 'string') {
-        // Scan for Git repositories
-        try {
-          const repoInfo = await GitService.discoverRepository(selected);
-          
-          if (repoInfo) {
-            setDetectedRepos([{ path: selected, name: repoInfo.name, isSelected: true }]);
-          } else {
-            // Check for nested repos
-            // TODO: Implement nested repo scanning
-            const initRepo = window.confirm(
-              `No Git repository found in:\n${selected}\n\nWould you like to initialize a new Git repository here?`
-            );
-            
-            if (initRepo) {
-              // TODO: Implement git init
-              alert('Git init not yet implemented. Please initialize the repository manually.');
-            }
-          }
-        } catch (error) {
-          console.error('Failed to discover repository:', error);
-        }
+      if (!selected || typeof selected !== 'string') return;
+
+      const repos = await scanForRepository(selected);
+      if (repos) {
+        setDetectedRepos(repos);
+      } else {
+        promptForInit(selected);
       }
     } catch (err) {
       console.error('Failed to open folder:', err);
@@ -78,7 +85,10 @@ export function OpenFolderModal({ isOpen, onClose, onRepositoryOpened }: OpenFol
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      onClick={onClose}
+    >
       <div
         className="w-[600px] max-h-[500px] bg-[--color-bg-primary] border border-[--git-panel-border] rounded-lg shadow-xl flex flex-col"
         onClick={(e) => e.stopPropagation()}
@@ -132,7 +142,9 @@ export function OpenFolderModal({ isOpen, onClose, onRepositoryOpened }: OpenFol
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <GitBranch className="w-4 h-4 text-[--color-primary]" />
-                      <span className="text-sm font-semibold text-[--color-text-primary]">{repo.name}</span>
+                      <span className="text-sm font-semibold text-[--color-text-primary]">
+                        {repo.name}
+                      </span>
                     </div>
                     <p className="text-xs text-[--color-text-tertiary] truncate">{repo.path}</p>
                   </div>
@@ -163,5 +175,3 @@ export function OpenFolderModal({ isOpen, onClose, onRepositoryOpened }: OpenFol
     </div>
   );
 }
-
-

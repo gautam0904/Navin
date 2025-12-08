@@ -20,23 +20,21 @@ export function RecentCommits() {
         className="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-[--color-bg-surface-2] transition-colors"
       >
         <div className="flex items-center gap-2">
-          {isExpanded ? (
-            <ChevronDown className="w-3 h-3" />
-          ) : (
-            <ChevronRight className="w-3 h-3" />
-          )}
+          {isExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
           <GitCommit className="w-3.5 h-3.5" />
           <span>Recent Commits</span>
-          <span className="text-[10px] font-normal text-[--color-text-tertiary]">({recentCommits.length})</span>
+          <span className="text-[10px] font-normal text-[--color-text-tertiary]">
+            ({recentCommits.length})
+          </span>
         </div>
       </button>
-      
+
       {isExpanded && (
         <div className="px-3 pb-3 space-y-2 max-h-64 overflow-y-auto">
           {recentCommits.map((commit) => {
             const timeAgo = formatDistanceToNow(new Date(commit.timestamp), { addSuffix: true });
             const firstLine = commit.message.split('\n')[0];
-            
+
             return (
               <div
                 key={commit.sha}
@@ -53,7 +51,9 @@ export function RecentCommits() {
                         {commit.short_sha}
                       </span>
                       <span className="text-[10px] text-[--color-text-tertiary]">•</span>
-                      <span className="text-[10px] text-[--color-text-tertiary]">{commit.author_name}</span>
+                      <span className="text-[10px] text-[--color-text-tertiary]">
+                        {commit.author_name}
+                      </span>
                       <span className="text-[10px] text-[--color-text-tertiary]">•</span>
                       <div className="flex items-center gap-0.5 text-[10px] text-[--color-text-tertiary]">
                         <Clock className="w-2.5 h-2.5" />
@@ -70,4 +70,3 @@ export function RecentCommits() {
     </div>
   );
 }
-

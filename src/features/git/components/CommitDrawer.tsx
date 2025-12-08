@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, GripVertical, Send, CheckSquare, Square } from 'lucide-react';
+import { X, GripVertical, Send } from 'lucide-react';
 import { useGit } from '@/contexts/GitContext';
 import { GitService } from '@/services/gitService';
 import { createToast, type Toast } from './Toast';
@@ -58,16 +58,14 @@ export function CommitDrawer({ isOpen, onClose, onToast }: CommitDrawerProps) {
 
     setIsCommitting(true);
     try {
-      const fullMessage = description.trim()
-        ? `${message}\n\n${description}`
-        : message;
+      const fullMessage = description.trim() ? `${message}\n\n${description}` : message;
 
       // Get git config for author
       const [authorName, authorEmail] = await GitService.getConfig();
 
       await commit(fullMessage, authorName, authorEmail);
       await refreshStatus();
-      
+
       setMessage('');
       setDescription('');
       onToast?.(createToast('Changes committed successfully', 'success'));
@@ -114,7 +112,10 @@ export function CommitDrawer({ isOpen, onClose, onToast }: CommitDrawerProps) {
         <div className="px-4 py-2 border-b border-[--git-panel-border] bg-[--git-panel-header] max-h-32 overflow-y-auto">
           <div className="space-y-1">
             {stagedFiles.map((file) => (
-              <div key={file.path} className="flex items-center gap-2 text-xs text-[--color-text-secondary]">
+              <div
+                key={file.path}
+                className="flex items-center gap-2 text-xs text-[--color-text-secondary]"
+              >
                 <span className="text-[--git-status-added]">+</span>
                 <span className="truncate">{file.path}</span>
               </div>
@@ -125,7 +126,9 @@ export function CommitDrawer({ isOpen, onClose, onToast }: CommitDrawerProps) {
         {/* Commit Message */}
         <div className="flex-1 flex flex-col p-4 space-y-3 overflow-hidden">
           <div className="flex-1 flex flex-col space-y-2">
-            <label className="text-xs font-medium text-[--color-text-secondary]">Commit Message</label>
+            <label className="text-xs font-medium text-[--color-text-secondary]">
+              Commit Message
+            </label>
             <input
               type="text"
               placeholder="feat: add new feature"
@@ -187,4 +190,3 @@ export function CommitDrawer({ isOpen, onClose, onToast }: CommitDrawerProps) {
     </div>
   );
 }
-

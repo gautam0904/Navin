@@ -24,7 +24,13 @@ interface MainContentProps {
   isReviewMode?: boolean;
 }
 
-export function MainContent({ activeView, selectedFile, onFileSelect, onToast, isReviewMode = false }: MainContentProps) {
+export function MainContent({
+  activeView,
+  selectedFile,
+  onFileSelect,
+  onToast,
+  isReviewMode = false,
+}: MainContentProps) {
   const [diff, setDiff] = useState<FileDiff | null>(null);
   const { status } = useGit();
 
@@ -36,7 +42,7 @@ export function MainContent({ activeView, selectedFile, onFileSelect, onToast, i
       }
 
       try {
-        const isStaged = status?.staged.some(f => f.path === selectedFile) ?? false;
+        const isStaged = status?.staged.some((f) => f.path === selectedFile) ?? false;
         const rawDiff = isStaged
           ? await GitService.getFileDiffStaged(selectedFile)
           : await GitService.getFileDiffUnstaged(selectedFile);
@@ -45,16 +51,23 @@ export function MainContent({ activeView, selectedFile, onFileSelect, onToast, i
           path: selectedFile,
           oldPath: rawDiff.old_path || selectedFile,
           status: 'modified',
-          hunks: (rawDiff.hunks || []).map(hunk => ({
+          hunks: (rawDiff.hunks || []).map((hunk) => ({
             header: hunk.header || '',
-            lines: (hunk.lines || []).map(line => {
+            lines: (hunk.lines || []).map((line) => {
               const origin = 'origin' in line ? line.origin : 'Context';
-              const lineType = origin === 'Addition' ? 'add' : origin === 'Deletion' ? 'del' : 'context';
+              const lineType =
+                origin === 'Addition' ? 'add' : origin === 'Deletion' ? 'del' : 'context';
               return {
                 type: lineType,
                 content: 'content' in line ? String(line.content || '') : '',
-                oldLineNumber: 'old_lineno' in line && typeof line.old_lineno === 'number' ? line.old_lineno : undefined,
-                newLineNumber: 'new_lineno' in line && typeof line.new_lineno === 'number' ? line.new_lineno : undefined,
+                oldLineNumber:
+                  'old_lineno' in line && typeof line.old_lineno === 'number'
+                    ? line.old_lineno
+                    : undefined,
+                newLineNumber:
+                  'new_lineno' in line && typeof line.new_lineno === 'number'
+                    ? line.new_lineno
+                    : undefined,
               };
             }),
             oldStart: hunk.old_start || 0,
@@ -83,7 +96,9 @@ export function MainContent({ activeView, selectedFile, onFileSelect, onToast, i
     case 'changes':
       return (
         <div className="flex flex-1 min-h-0">
-          <div className={`${isReviewMode ? 'w-[420px]' : 'w-80'} border-r border-[--git-panel-border] flex flex-col bg-[--git-panel-bg] transition-all`}>
+          <div
+            className={`${isReviewMode ? 'w-[420px]' : 'w-80'} border-r border-[--git-panel-border] flex flex-col bg-[--git-panel-bg] transition-all`}
+          >
             <div className="bg-[--git-panel-header] shrink-0">
               <CommitComposer onToast={onToast} />
             </div>

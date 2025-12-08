@@ -44,10 +44,11 @@ export function parseCommitType(message: string): { type: string; color: string 
 }
 
 // Group commits by date
-export function groupCommitsByDate(commits: { timestamp: string | number | Date }[]) {
-  const groups: { label: string; commits: { timestamp: string | number | Date }[] }[] = [];
-  let currentGroup: { label: string; commits: { timestamp: string | number | Date }[] } | null =
-    null;
+export function groupCommitsByDate<T extends { timestamp: string | number | Date }>(
+  commits: T[]
+): { label: string; commits: T[] }[] {
+  const groups: { label: string; commits: T[] }[] = [];
+  let currentGroup: { label: string; commits: T[] } | null = null;
 
   commits.forEach((commit) => {
     const date = new Date(commit.timestamp);

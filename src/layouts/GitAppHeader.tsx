@@ -48,7 +48,9 @@ export function GitAppHeader({ currentFilePath, onSearch }: GitAppHeaderProps) {
               className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-[--color-bg-surface-2] hover:bg-[--color-bg-surface-3] border border-[--git-panel-border] transition-colors group"
             >
               <GitBranch className="w-3.5 h-3.5 text-[--git-branch-current] group-hover:text-[--color-primary] transition-colors" />
-              <span className="text-xs font-medium text-[--color-text-primary]">{currentBranch.name}</span>
+              <span className="text-xs font-medium text-[--color-text-primary]">
+                {currentBranch.name}
+              </span>
               <ChevronDown className="w-3 h-3 text-[--color-text-tertiary] group-hover:text-[--color-text-primary] transition-colors" />
             </button>
           )}
@@ -90,13 +92,8 @@ export function GitAppHeader({ currentFilePath, onSearch }: GitAppHeaderProps) {
       </div>
 
       {showBranchModal && (
-        <BranchSwitchModal
-          isOpen={showBranchModal}
-          onClose={() => setShowBranchModal(false)}
-        />
+        <BranchSwitchModal isOpen={showBranchModal} onClose={() => setShowBranchModal(false)} />
       )}
     </>
   );
 }
-
-

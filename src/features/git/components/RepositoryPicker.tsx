@@ -7,6 +7,42 @@ export function RepositoryPicker() {
   const { openRepository, repository, isLoading, error } = useGit();
   const [recentRepos, setRecentRepos] = useState<string[]>([]);
 
+  const discoverAndOpenRepo = async (path: string) => {
+    try {
+      const { GitService } = await import('@/services/gitService');
+      const repoInfo = await GitService.discoverRepository(path);
+
+      if (!repoInfo) return false;
+
+      const confirmed = window.confirm(
+        `Repository detected: ${repoInfo.name}\n\nPath: ${path}\n\nOpen this repository?`
+      );
+
+      if (!confirmed) return true; // User cancelled, but repo was found
+
+      await openRepository(path);
+      setRecentRepos((prev) => {
+        const updated = [path, ...prev.filter((p) => p !== path)].slice(0, 10);
+        localStorage.setItem('recentGitRepos', JSON.stringify(updated));
+        return updated;
+      });
+      return true;
+    } catch (error) {
+      console.error('Failed to discover repository:', error);
+      return false;
+    }
+  };
+
+  const promptForInit = (path: string) => {
+    const initRepo = window.confirm(
+      `No Git repository found in:\n${path}\n\nWould you like to initialize a new Git repository here?`
+    );
+    if (initRepo) {
+      // TODO: Implement git init
+      alert('Git init not yet implemented. Please initialize the repository manually.');
+    }
+  };
+
   const handleOpenFolder = async () => {
     try {
       const selected = await open({
@@ -15,44 +51,11 @@ export function RepositoryPicker() {
         title: 'Open Git Repository',
       });
 
-      if (selected && typeof selected === 'string') {
-        // Check if it's a Git repository
-        try {
-          const { GitService } = await import('@/services/gitService');
-          const repoInfo = await GitService.discoverRepository(selected);
-          
-          if (repoInfo) {
-            // Show confirmation modal
-            const confirmed = window.confirm(
-              `Repository detected: ${repoInfo.name}\n\nPath: ${selected}\n\nOpen this repository?`
-            );
-            
-            if (confirmed) {
-              await openRepository(selected);
-              
-              // Add to recent repos
-              setRecentRepos((prev) => {
-                const updated = [selected, ...prev.filter((p) => p !== selected)].slice(0, 10);
-                localStorage.setItem('recentGitRepos', JSON.stringify(updated));
-                return updated;
-              });
-            }
-          } else {
-            // Not a Git repo - offer to initialize
-            const initRepo = window.confirm(
-              `No Git repository found in:\n${selected}\n\nWould you like to initialize a new Git repository here?`
-            );
-            
-            if (initRepo) {
-              // TODO: Implement git init
-              alert('Git init not yet implemented. Please initialize the repository manually.');
-            }
-          }
-        } catch (error) {
-          console.error('Failed to discover repository:', error);
-          // Still try to open it
-          await openRepository(selected);
-        }
+      if (!selected || typeof selected !== 'string') return;
+
+      const repoFound = await discoverAndOpenRepo(selected);
+      if (!repoFound) {
+        promptForInit(selected);
       }
     } catch (err) {
       console.error('Failed to open repository:', err);

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Clock, Pin, PinOff, X, GitBranch } from 'lucide-react';
+import { useState, useCallback } from 'react';
+import { Pin, PinOff, X, GitBranch } from 'lucide-react';
 import { useGit } from '@/contexts/GitContext';
 import { GitService } from '@/services/gitService';
 import { formatDistanceToNow } from 'date-fns';
@@ -14,59 +14,61 @@ interface RecentRepo {
 
 const STORAGE_KEY = 'navin_recent_repos';
 
+// Helper function to load and sort repos from localStorage
+function loadReposFromStorage(): RecentRepo[] {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored) as RecentRepo[];
+      return parsed.sort((a, b) => {
+        if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1;
+        return b.lastOpened - a.lastOpened;
+      });
+    }
+  } catch (error) {
+    console.error('Failed to load recent repos:', error);
+  }
+  return [];
+}
+
 export function RecentReposList() {
   const { repository, openRepository } = useGit();
-  const [repos, setRepos] = useState<RecentRepo[]>([]);
+  const [repos, setRepos] = useState<RecentRepo[]>(loadReposFromStorage);
   const [isExpanded, setIsExpanded] = useState(true);
 
-  useEffect(() => {
-    loadRecentRepos();
-  }, []);
-
-  const loadRecentRepos = () => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored) as RecentRepo[];
-        setRepos(parsed.sort((a, b) => {
-          if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1;
-          return b.lastOpened - a.lastOpened;
-        }));
-      }
-    } catch (error) {
-      console.error('Failed to load recent repos:', error);
-    }
-  };
-
-  const saveRecentRepos = (newRepos: RecentRepo[]) => {
+  const saveRecentRepos = useCallback((newRepos: RecentRepo[]) => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(newRepos));
       setRepos(newRepos);
     } catch (error) {
       console.error('Failed to save recent repos:', error);
     }
-  };
+  }, []);
 
-  const addRecentRepo = async (path: string) => {
+  const addRecentRepo = useCallback(async (path: string) => {
     try {
       const repoInfo = await GitService.discoverRepository(path);
-      const existing = repos.find((r) => r.path === path);
-      const updated = existing
-        ? repos.map((r) => (r.path === path ? { ...r, lastOpened: Date.now() } : r))
-        : [
-            ...repos,
-            {
-              path,
-              name: repoInfo.name,
-              lastOpened: Date.now(),
-              isPinned: false,
-            },
-          ];
-      saveRecentRepos(updated);
+      const timestamp = Date.now();
+      setRepos((currentRepos) => {
+        const existing = currentRepos.find((r) => r.path === path);
+        const updated = existing
+          ? currentRepos.map((r) => (r.path === path ? { ...r, lastOpened: timestamp } : r))
+          : [
+              ...currentRepos,
+              {
+                path,
+                name: repoInfo.name,
+                lastOpened: timestamp,
+                isPinned: false,
+              },
+            ];
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        return updated;
+      });
     } catch (error) {
       console.error('Failed to add recent repo:', error);
     }
-  };
+  }, []);
 
   const handleOpenRepo = async (repo: RecentRepo) => {
     try {
@@ -163,5 +165,3 @@ export function RecentReposList() {
     </div>
   );
 }
-
-

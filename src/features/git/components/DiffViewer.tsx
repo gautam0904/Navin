@@ -51,20 +51,22 @@ function ViewModeToggle({
     <div className="flex rounded-md overflow-hidden border border-[--git-panel-border]">
       <button
         onClick={() => onChange('unified')}
-        className={`flex items-center gap-1 px-2 py-1 text-xs ${mode === 'unified'
-          ? 'bg-[--color-primary] text-white'
-          : 'bg-[--color-bg-surface-2] text-[--color-text-secondary] hover:bg-[--color-bg-surface-3]'
-          }`}
+        className={`flex items-center gap-1 px-2 py-1 text-xs ${
+          mode === 'unified'
+            ? 'bg-[--color-primary] text-white'
+            : 'bg-[--color-bg-surface-2] text-[--color-text-secondary] hover:bg-[--color-bg-surface-3]'
+        }`}
         title="Unified View"
       >
         <AlignLeft className="w-3.5 h-3.5" />
       </button>
       <button
         onClick={() => onChange('split')}
-        className={`flex items-center gap-1 px-2 py-1 text-xs ${mode === 'split'
-          ? 'bg-[--color-primary] text-white'
-          : 'bg-[--color-bg-surface-2] text-[--color-text-secondary] hover:bg-[--color-bg-surface-3]'
-          }`}
+        className={`flex items-center gap-1 px-2 py-1 text-xs ${
+          mode === 'split'
+            ? 'bg-[--color-primary] text-white'
+            : 'bg-[--color-bg-surface-2] text-[--color-text-secondary] hover:bg-[--color-bg-surface-3]'
+        }`}
         title="Split View"
       >
         <SplitSquareHorizontal className="w-3.5 h-3.5" />
@@ -82,7 +84,9 @@ function EmptyDiffState() {
         <div className="mb-4 p-4 bg-[--color-bg-surface-2] rounded-lg inline-block">
           <FileCode className="w-12 h-12 text-[--color-text-tertiary] opacity-50" />
         </div>
-        <h3 className="text-base font-semibold text-[--color-text-primary] mb-2">Select a file to view changes</h3>
+        <h3 className="text-base font-semibold text-[--color-text-primary] mb-2">
+          Select a file to view changes
+        </h3>
         <p className="text-xs text-[--color-text-secondary] leading-relaxed mb-6">
           Click any file from the changes list to see its diff
         </p>

@@ -15,19 +15,24 @@ const shortcuts: Shortcut[] = [
 ];
 
 export function KeyboardShortcuts() {
-  const grouped = shortcuts.reduce((acc, shortcut) => {
-    if (!acc[shortcut.category]) {
-      acc[shortcut.category] = [];
-    }
-    acc[shortcut.category].push(shortcut);
-    return acc;
-  }, {} as Record<string, Shortcut[]>);
+  const grouped = shortcuts.reduce(
+    (acc, shortcut) => {
+      if (!acc[shortcut.category]) {
+        acc[shortcut.category] = [];
+      }
+      acc[shortcut.category].push(shortcut);
+      return acc;
+    },
+    {} as Record<string, Shortcut[]>
+  );
 
   return (
     <div className="p-3 border-t border-[--git-panel-border] bg-[--git-panel-header]">
       <div className="flex items-center gap-2 mb-3">
         <Keyboard className="w-3.5 h-3.5 text-[--color-text-tertiary]" />
-        <span className="text-xs font-semibold text-[--color-text-secondary]">Keyboard Shortcuts</span>
+        <span className="text-xs font-semibold text-[--color-text-secondary]">
+          Keyboard Shortcuts
+        </span>
       </div>
       <div className="space-y-3">
         {Object.entries(grouped).map(([category, items]) => (
@@ -60,4 +65,3 @@ export function KeyboardShortcuts() {
     </div>
   );
 }
-

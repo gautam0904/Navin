@@ -20,5 +20,8 @@ export { BranchSwitchModal } from './components/BranchSwitchModal';
 export { CommitDrawer } from './components/CommitDrawer';
 export { RecentReposList } from './components/RecentReposList';
 export { ReviewModeToggle } from './components/ReviewModeToggle';
+export { GitWorkspace } from './components/GitWorkspace';
+export { MonacoDiffEditor } from './components/MonacoDiffEditor';
+export { EditorToolbar } from './components/EditorToolbar';
 export type { FileStatusType } from './components/FileStatusBadge';
 export type { Toast, ToastType } from './components/Toast';

@@ -1,7 +1,64 @@
-import React, { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { X, GitBranch, Plus, Search, Check } from 'lucide-react';
 import { useGit } from '@/contexts/GitContext';
 import { GitService } from '@/services/gitService';
+
+interface Branch {
+  name: string;
+  is_remote: boolean;
+  is_head: boolean;
+}
+
+interface BranchItemProps {
+  branch: Branch;
+  onSwitch: (name: string) => void;
+  isRemote?: boolean;
+}
+
+function BranchItem({ branch, onSwitch, isRemote = false }: BranchItemProps) {
+  if (isRemote) {
+    return (
+      <button
+        onClick={() => onSwitch(branch.name)}
+        className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left hover:bg-[--color-bg-surface-2] transition-colors text-[--color-text-primary]"
+      >
+        <GitBranch className="w-3.5 h-3.5 text-[--color-text-tertiary]" />
+        <span className="text-sm">{branch.name}</span>
+      </button>
+    );
+  }
+  return (
+    <button
+      onClick={() => onSwitch(branch.name)}
+      className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-left transition-colors ${
+        branch.is_head
+          ? 'bg-[--color-primary]/10 text-[--color-primary]'
+          : 'hover:bg-[--color-bg-surface-2] text-[--color-text-primary]'
+      }`}
+    >
+      <div className="flex items-center gap-2">
+        <GitBranch className="w-3.5 h-3.5" />
+        <span className="text-sm font-medium">{branch.name}</span>
+      </div>
+      {branch.is_head && <Check className="w-4 h-4" />}
+    </button>
+  );
+}
+
+function useBranchFilters(branches: Branch[] | null | undefined, searchQuery: string) {
+  return useMemo(() => {
+    const local = branches?.filter((b) => !b.is_remote) || [];
+    const remote = branches?.filter((b) => b.is_remote) || [];
+    const query = searchQuery.toLowerCase();
+    return {
+      localBranches: local,
+      remoteBranches: remote,
+      recentBranches: local.slice(0, 5),
+      filteredLocalBranches: local.filter((b) => b.name.toLowerCase().includes(query)),
+      filteredRemoteBranches: remote.filter((b) => b.name.toLowerCase().includes(query)),
+    };
+  }, [branches, searchQuery]);
+}
 
 interface BranchSwitchModalProps {
   isOpen: boolean;
@@ -9,25 +66,18 @@ interface BranchSwitchModalProps {
 }
 
 export function BranchSwitchModal({ isOpen, onClose }: BranchSwitchModalProps) {
-  const { branches, remotes, refreshBranches, refreshStatus } = useGit();
+  const { branches, refreshBranches, refreshStatus } = useGit();
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateInput, setShowCreateInput] = useState(false);
   const [newBranchName, setNewBranchName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
 
+  const { recentBranches, filteredLocalBranches, filteredRemoteBranches } = useBranchFilters(
+    branches,
+    searchQuery
+  );
+
   if (!isOpen) return null;
-
-  const currentBranch = branches?.find((b) => b.is_head);
-  const localBranches = branches?.filter((b) => !b.is_remote) || [];
-  const remoteBranches = branches?.filter((b) => b.is_remote) || [];
-  const recentBranches = localBranches.slice(0, 5);
-
-  const filteredLocalBranches = localBranches.filter((b) =>
-    b.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-  const filteredRemoteBranches = remoteBranches.filter((b) =>
-    b.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   const handleSwitchBranch = async (branchName: string) => {
     try {
@@ -56,7 +106,10 @@ export function BranchSwitchModal({ isOpen, onClose }: BranchSwitchModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      onClick={onClose}
+    >
       <div
         className="w-[500px] max-h-[600px] bg-[--color-bg-primary] border border-[--git-panel-border] rounded-lg shadow-xl flex flex-col"
         onClick={(e) => e.stopPropagation()}
@@ -141,24 +194,12 @@ export function BranchSwitchModal({ isOpen, onClose }: BranchSwitchModalProps) {
           {/* Recent Branches */}
           {recentBranches.length > 0 && searchQuery === '' && (
             <div className="px-4 py-2">
-              <h3 className="text-xs font-semibold text-[--color-text-secondary] uppercase mb-2">Recent</h3>
+              <h3 className="text-xs font-semibold text-[--color-text-secondary] uppercase mb-2">
+                Recent
+              </h3>
               <div className="space-y-1">
                 {recentBranches.map((branch) => (
-                  <button
-                    key={branch.name}
-                    onClick={() => handleSwitchBranch(branch.name)}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-left transition-colors ${
-                      branch.is_head
-                        ? 'bg-[--color-primary]/10 text-[--color-primary]'
-                        : 'hover:bg-[--color-bg-surface-2] text-[--color-text-primary]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <GitBranch className="w-3.5 h-3.5" />
-                      <span className="text-sm font-medium">{branch.name}</span>
-                    </div>
-                    {branch.is_head && <Check className="w-4 h-4" />}
-                  </button>
+                  <BranchItem key={branch.name} branch={branch} onSwitch={handleSwitchBranch} />
                 ))}
               </div>
             </div>
@@ -167,24 +208,12 @@ export function BranchSwitchModal({ isOpen, onClose }: BranchSwitchModalProps) {
           {/* Local Branches */}
           {filteredLocalBranches.length > 0 && (
             <div className="px-4 py-2">
-              <h3 className="text-xs font-semibold text-[--color-text-secondary] uppercase mb-2">Local Branches</h3>
+              <h3 className="text-xs font-semibold text-[--color-text-secondary] uppercase mb-2">
+                Local Branches
+              </h3>
               <div className="space-y-1">
                 {filteredLocalBranches.map((branch) => (
-                  <button
-                    key={branch.name}
-                    onClick={() => handleSwitchBranch(branch.name)}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-left transition-colors ${
-                      branch.is_head
-                        ? 'bg-[--color-primary]/10 text-[--color-primary]'
-                        : 'hover:bg-[--color-bg-surface-2] text-[--color-text-primary]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <GitBranch className="w-3.5 h-3.5" />
-                      <span className="text-sm font-medium">{branch.name}</span>
-                    </div>
-                    {branch.is_head && <Check className="w-4 h-4" />}
-                  </button>
+                  <BranchItem key={branch.name} branch={branch} onSwitch={handleSwitchBranch} />
                 ))}
               </div>
             </div>
@@ -193,17 +222,17 @@ export function BranchSwitchModal({ isOpen, onClose }: BranchSwitchModalProps) {
           {/* Remote Branches */}
           {filteredRemoteBranches.length > 0 && (
             <div className="px-4 py-2 border-t border-[--git-panel-border]">
-              <h3 className="text-xs font-semibold text-[--color-text-secondary] uppercase mb-2">Remote Branches</h3>
+              <h3 className="text-xs font-semibold text-[--color-text-secondary] uppercase mb-2">
+                Remote Branches
+              </h3>
               <div className="space-y-1">
                 {filteredRemoteBranches.map((branch) => (
-                  <button
+                  <BranchItem
                     key={branch.name}
-                    onClick={() => handleSwitchBranch(branch.name)}
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left hover:bg-[--color-bg-surface-2] transition-colors text-[--color-text-primary]"
-                  >
-                    <GitBranch className="w-3.5 h-3.5 text-[--color-text-tertiary]" />
-                    <span className="text-sm">{branch.name}</span>
-                  </button>
+                    branch={branch}
+                    onSwitch={handleSwitchBranch}
+                    isRemote
+                  />
                 ))}
               </div>
             </div>
@@ -219,4 +248,3 @@ export function BranchSwitchModal({ isOpen, onClose }: BranchSwitchModalProps) {
     </div>
   );
 }
-

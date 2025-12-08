@@ -4,33 +4,28 @@ interface EmptyStateProps {
   hasOtherSectionFiles?: boolean;
 }
 
-export function EmptyState({ isStaged, isClean = false, hasOtherSectionFiles = false }: EmptyStateProps) {
-  // Determine the message based on context
-  let title: string;
-  let description: string;
+// Message lookup to reduce complexity
+const EMPTY_STATE_MESSAGES: Record<string, string> = {
+  'clean-unstaged': 'Working tree clean',
+  'staged-no-other': 'Stage files from the changes list to prepare for commit',
+  'unstaged-no-other': 'Your working directory is clean',
+  'staged-has-other': 'Stage files from the changes list above',
+  'unstaged-has-other': 'All changes are staged and ready to commit',
+};
 
-  if (isClean && !isStaged) {
-    // Both panels empty - working tree clean
-    title = 'Nothing to commit';
-    description = 'Working tree clean';
-  } else if (isStaged && !hasOtherSectionFiles) {
-    // Staged empty, no unstaged files
-    title = 'No staged changes';
-    description = 'Stage files from the changes list to prepare for commit';
-  } else if (!isStaged && !hasOtherSectionFiles) {
-    // Unstaged empty, no staged files
-    title = 'No changes';
-    description = 'Your working directory is clean';
-  } else if (isStaged) {
-    // Staged empty but unstaged has files
-    title = 'No staged changes';
-    description = 'Stage files from the changes list above';
-  } else {
-    // Unstaged empty but staged has files
-    title = 'No unstaged changes';
-    description = 'All changes are staged and ready to commit';
-  }
+function getMessageKey(isStaged: boolean, isClean: boolean, hasOtherSectionFiles: boolean): string {
+  if (isClean && !isStaged) return 'clean-unstaged';
+  if (isStaged && !hasOtherSectionFiles) return 'staged-no-other';
+  if (!isStaged && !hasOtherSectionFiles) return 'unstaged-no-other';
+  if (isStaged) return 'staged-has-other';
+  return 'unstaged-has-other';
+}
 
+export function EmptyState({
+  isStaged,
+  isClean = false,
+  hasOtherSectionFiles = false,
+}: EmptyStateProps) {
   if (isStaged && hasOtherSectionFiles) {
     return (
       <div className="px-3 py-1.5 border-t border-dashed border-[--git-panel-border]">
@@ -40,6 +35,8 @@ export function EmptyState({ isStaged, isClean = false, hasOtherSectionFiles = f
       </div>
     );
   }
+
+  const description = EMPTY_STATE_MESSAGES[getMessageKey(isStaged, isClean, hasOtherSectionFiles)];
 
   return (
     <div className="px-4 py-3">

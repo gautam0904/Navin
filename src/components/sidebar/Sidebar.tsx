@@ -68,10 +68,11 @@ function SidebarTabs({
         <button
           key={tab}
           onClick={() => onTabChange(tab)}
-          className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab
+          className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === tab
               ? 'border-primary text-primary'
               : 'border-transparent text-text-secondary hover:text-text-primary'
-            }`}
+          }`}
         >
           {tabLabels[tab]}
         </button>

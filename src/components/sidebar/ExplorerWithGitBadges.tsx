@@ -6,11 +6,15 @@ import { getIconPath } from '../../utils/iconResolver';
 
 const getGitStatus = (path: string, status: ReturnType<typeof useGit>['status']) => {
   if (!status) return null;
-  
-  const allFiles = [...(status.staged || []), ...(status.unstaged || []), ...(status.untracked || [])];
+
+  const allFiles = [
+    ...(status.staged || []),
+    ...(status.unstaged || []),
+    ...(status.untracked || []),
+  ];
   const file = allFiles.find((f) => f.path === path);
   if (!file) return null;
-  
+
   const statusType = file.status;
   if ('Modified' in statusType) return { type: 'M', color: '#f59e0b' };
   if ('Added' in statusType) return { type: 'A', color: '#10b981' };
@@ -120,5 +124,3 @@ export const ExplorerWithGitBadges: React.FC = () => {
     </div>
   );
 };
-
-

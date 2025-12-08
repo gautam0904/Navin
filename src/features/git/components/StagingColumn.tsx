@@ -53,12 +53,7 @@ export function StagingColumn({
         onUnstageAll={onUnstageAll}
       />
 
-      {hasFiles && (
-        <FileSearchFilter
-          files={files}
-          onFilterChange={setFilteredFiles}
-        />
-      )}
+      {hasFiles && <FileSearchFilter files={files} onFilterChange={setFilteredFiles} />}
 
       <div className="flex-1 overflow-y-auto">
         {hasFiles ? (
@@ -72,8 +67,8 @@ export function StagingColumn({
             groupByFolder={filteredFiles.length > 3}
           />
         ) : (
-          <EmptyState 
-            isStaged={isStaged} 
+          <EmptyState
+            isStaged={isStaged}
             isClean={isClean}
             hasOtherSectionFiles={hasOtherSectionFiles}
           />

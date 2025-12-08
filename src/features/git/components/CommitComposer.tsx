@@ -21,9 +21,10 @@ function CommitButton({ stagedCount, canCommit, isLoading, onClick }: CommitButt
         w-full py-2 px-3 rounded-md font-semibold text-xs
         flex items-center justify-center gap-2
         transition-all duration-200
-        ${canCommit
-          ? 'bg-[--color-primary] hover:bg-[--color-primary-dark] text-white shadow-sm hover:shadow'
-          : 'bg-[--color-bg-surface-3] text-[--color-text-tertiary] cursor-not-allowed'
+        ${
+          canCommit
+            ? 'bg-[--color-primary] hover:bg-[--color-primary-dark] text-white shadow-sm hover:shadow'
+            : 'bg-[--color-bg-surface-3] text-[--color-text-tertiary] cursor-not-allowed'
         }
         disabled:opacity-50 disabled:cursor-not-allowed
       `}
@@ -159,7 +160,11 @@ interface CommitComposerProps {
 function useCommitStats(status: ReturnType<typeof useGit>['status']) {
   if (!status) return { totalFiles: 0, totalAdditions: 0, totalDeletions: 0, stagedCount: 0 };
 
-  const allFiles = [...(status.staged || []), ...(status.unstaged || []), ...(status.untracked || [])];
+  const allFiles = [
+    ...(status.staged || []),
+    ...(status.unstaged || []),
+    ...(status.untracked || []),
+  ];
   const totalFiles = allFiles.length;
   const totalAdditions = allFiles.reduce((sum, f) => sum + (f.additions ?? 0), 0);
   const totalDeletions = allFiles.reduce((sum, f) => sum + (f.deletions ?? 0), 0);
@@ -172,7 +177,13 @@ export function CommitComposer({ onToast }: CommitComposerProps = {}) {
   const { commit, status, isLoading } = useGit();
   const config = useGitConfig();
   const { effectiveName, effectiveEmail } = getEffectiveAuthor(config);
-  const commitHandler = useCommitHandler(commit, effectiveName, effectiveEmail, config.setError, onToast);
+  const commitHandler = useCommitHandler(
+    commit,
+    effectiveName,
+    effectiveEmail,
+    config.setError,
+    onToast
+  );
   const { totalFiles, totalAdditions, totalDeletions, stagedCount } = useCommitStats(status);
 
   const canCommit = Boolean(
@@ -192,7 +203,7 @@ export function CommitComposer({ onToast }: CommitComposerProps = {}) {
           <CommitTemplates onSelectTemplate={commitHandler.handleTemplateSelect} />
           <div className="flex items-center gap-1.5 text-[10px]">
             <button
-              onClick={() => { }}
+              onClick={() => {}}
               className="flex items-center gap-1 px-1.5 py-0.5 text-[--color-text-tertiary] hover:text-[--color-text-secondary] transition-colors"
               title="Conventional commit format"
             >

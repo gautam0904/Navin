@@ -1,4 +1,3 @@
-import React from 'react';
 import { LayoutGrid, FileText } from 'lucide-react';
 
 interface ReviewModeToggleProps {
@@ -36,5 +35,3 @@ export function ReviewModeToggle({ isReviewMode, onToggle }: ReviewModeTogglePro
     </div>
   );
 }
-
-

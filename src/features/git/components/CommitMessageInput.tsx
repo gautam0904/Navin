@@ -17,22 +17,37 @@ const COMMIT_TYPES = [
   { type: 'chore', description: 'maintenance tasks' },
 ];
 
+const CONVENTIONAL_PATTERN =
+  /^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .+/;
+
+// Validation helper outside component to reduce complexity
+function getValidationState(firstLine: string) {
+  const length = firstLine.length;
+  const isConventional = CONVENTIONAL_PATTERN.test(firstLine);
+  return {
+    isWarning: length > 50 && length <= 72,
+    isError: length > 72,
+    isEmpty: length === 0,
+    isTooShort: length > 0 && length < 10,
+    isConventional,
+    isValid: length > 0 && length >= 10 && length <= 72 && isConventional,
+  };
+}
+
+// Color helper outside component
+function getLengthColor(validation: ReturnType<typeof getValidationState>): string {
+  if (validation.isError) return 'text-[--color-error]';
+  if (validation.isWarning) return 'text-[#f59e0b]';
+  if (validation.isValid) return 'text-[--git-status-added]';
+  return 'text-[--color-text-tertiary]';
+}
+
 export function CommitMessage({ message, onMessageChange, onKeyDown }: CommitMessageProps) {
   const [showExamples, setShowExamples] = useState(false);
   const firstLine = message.split('\n')[0];
-  const firstLineLength = firstLine.length;
-  const charPercentage = Math.min((firstLineLength / 72) * 100, 100);
-  const isWarning = firstLineLength > 50 && firstLineLength <= 72;
-  const isError = firstLineLength > 72;
-  const isEmpty = firstLineLength === 0;
-  const isTooShort = firstLineLength > 0 && firstLineLength < 10;
+  const validation = useMemo(() => getValidationState(firstLine), [firstLine]);
+  const lengthColor = getLengthColor(validation);
 
-  // Check if message follows conventional commit format
-  const conventionalPattern = /^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .+/;
-  const isConventional = conventionalPattern.test(firstLine);
-  const isValid = !isEmpty && !isTooShort && !isError && isConventional;
-
-  // Get suggestions based on what user is typing
   const suggestions = useMemo(() => {
     if (!firstLine || firstLine.length > 5) return [];
     const lower = firstLine.toLowerCase();
@@ -40,7 +55,7 @@ export function CommitMessage({ message, onMessageChange, onKeyDown }: CommitMes
   }, [firstLine]);
 
   const handleSuggestionClick = (type: string) => {
-    const description = COMMIT_TYPES.find(t => t.type === type)?.description || '';
+    const description = COMMIT_TYPES.find((t) => t.type === type)?.description || '';
     onMessageChange(`${type}: ${description}`);
   };
 
@@ -60,16 +75,12 @@ export function CommitMessage({ message, onMessageChange, onKeyDown }: CommitMes
           className="w-full px-3 py-1.5 pr-16 text-sm rounded border border-[--git-panel-border] bg-[--color-bg-primary] text-[--color-text-primary] focus:outline-none focus:ring-1 focus:ring-[--color-primary]"
         />
         <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-          {isValid && <CheckCircle2 className="w-3 h-3 text-[--git-status-added]" />}
-          {isTooShort && <XCircle className="w-3 h-3 text-[--color-error]" />}
-          {!isConventional && !isEmpty && !isTooShort && <AlertCircle className="w-3 h-3 text-[#f59e0b]" />}
-          <span
-            className={`text-xs font-mono ${
-              isError ? 'text-[--color-error]' : isWarning ? 'text-[#f59e0b]' : isValid ? 'text-[--git-status-added]' : 'text-[--color-text-tertiary]'
-            }`}
-          >
-            {firstLineLength}/72
-          </span>
+          {validation.isValid && <CheckCircle2 className="w-3 h-3 text-[--git-status-added]" />}
+          {validation.isTooShort && <XCircle className="w-3 h-3 text-[--color-error]" />}
+          {!validation.isConventional && !validation.isEmpty && !validation.isTooShort && (
+            <AlertCircle className="w-3 h-3 text-[#f59e0b]" />
+          )}
+          <span className={`text-xs font-mono ${lengthColor}`}>{firstLine.length}/72</span>
         </div>
       </div>
 
@@ -94,10 +105,14 @@ export function CommitMessage({ message, onMessageChange, onKeyDown }: CommitMes
         >
           <Sparkles className="w-3 h-3" />
           <span>Examples</span>
-          {showExamples ? <ChevronUp className="w-2.5 h-2.5" /> : <ChevronDown className="w-2.5 h-2.5" />}
+          {showExamples ? (
+            <ChevronUp className="w-2.5 h-2.5" />
+          ) : (
+            <ChevronDown className="w-2.5 h-2.5" />
+          )}
         </button>
       </div>
-      
+
       {showExamples && (
         <div className="pt-1 pb-0.5 space-y-0.5 border-t border-[--git-panel-border]">
           {COMMIT_TYPES.slice(0, 4).map(({ type, description }) => (

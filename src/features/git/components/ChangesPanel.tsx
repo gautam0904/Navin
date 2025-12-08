@@ -13,12 +13,17 @@ function useFileSelection(
   externalOnFileSelect: ((path: string | null) => void) | undefined
 ) {
   const [internalSelectedFile, setInternalSelectedFile] = useState<string | null>(null);
-  const selectedFile = externalSelectedFile !== undefined ? externalSelectedFile : internalSelectedFile;
-  const setSelectedFile = externalOnFileSelect || ((path: string | null) => setInternalSelectedFile(path));
+  const selectedFile =
+    externalSelectedFile !== undefined ? externalSelectedFile : internalSelectedFile;
+  const setSelectedFile =
+    externalOnFileSelect || ((path: string | null) => setInternalSelectedFile(path));
   return { selectedFile, setSelectedFile };
 }
 
-function calculateStats(unstagedFiles: Array<{ additions?: number | null; deletions?: number | null }>, stagedFiles: Array<{ additions?: number | null; deletions?: number | null }>) {
+function calculateStats(
+  unstagedFiles: Array<{ additions?: number | null; deletions?: number | null }>,
+  stagedFiles: Array<{ additions?: number | null; deletions?: number | null }>
+) {
   const allFiles = [...unstagedFiles, ...stagedFiles];
   return {
     totalFiles: allFiles.length,
@@ -27,9 +32,15 @@ function calculateStats(unstagedFiles: Array<{ additions?: number | null; deleti
   };
 }
 
-export function ChangesPanel({ selectedFile: externalSelectedFile, onFileSelect: externalOnFileSelect }: ChangesPanelProps = {}) {
+export function ChangesPanel({
+  selectedFile: externalSelectedFile,
+  onFileSelect: externalOnFileSelect,
+}: ChangesPanelProps = {}) {
   const { status, stageFile, unstageFile, stageAll, unstageAll, isLoading } = useGit();
-  const { selectedFile, setSelectedFile } = useFileSelection(externalSelectedFile, externalOnFileSelect);
+  const { selectedFile, setSelectedFile } = useFileSelection(
+    externalSelectedFile,
+    externalOnFileSelect
+  );
 
   if (!status) {
     return (
@@ -72,7 +83,9 @@ export function ChangesPanel({ selectedFile: externalSelectedFile, onFileSelect:
       )}
 
       <div className="flex flex-col flex-1 min-h-0">
-        <div className={`${hasStaged ? 'flex-1' : 'flex-2'} min-h-0 border-b border-[--git-panel-border]`}>
+        <div
+          className={`${hasStaged ? 'flex-1' : 'flex-2'} min-h-0 border-b border-[--git-panel-border]`}
+        >
           <StagingColumn
             title="Changes"
             files={unstagedFiles}

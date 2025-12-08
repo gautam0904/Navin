@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { CheckCircle2, XCircle, AlertCircle, X } from 'lucide-react';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
@@ -15,7 +15,10 @@ interface ToastProps {
   onClose: (id: string) => void;
 }
 
-const toastConfig: Record<ToastType, { icon: React.ReactNode; bgColor: string; textColor: string; borderColor: string }> = {
+const toastConfig: Record<
+  ToastType,
+  { icon: React.ReactNode; bgColor: string; textColor: string; borderColor: string }
+> = {
   success: {
     icon: <CheckCircle2 className="w-4 h-4" />,
     bgColor: 'bg-[rgba(16,185,129,0.1)]',
@@ -64,10 +67,7 @@ export function ToastComponent({ toast, onClose }: ToastProps) {
     >
       {config.icon}
       <span className="text-sm font-medium flex-1">{toast.message}</span>
-      <button
-        onClick={() => onClose(toast.id)}
-        className="p-0.5 hover:bg-black/10 rounded"
-      >
+      <button onClick={() => onClose(toast.id)} className="p-0.5 hover:bg-black/10 rounded">
         <X className="w-3.5 h-3.5" />
       </button>
     </div>
@@ -102,4 +102,3 @@ export function createToast(message: string, type: ToastType = 'info', duration?
     duration,
   };
 }
-

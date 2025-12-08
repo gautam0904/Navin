@@ -60,3 +60,18 @@ pub fn read_dir(path: String) -> AppResult<Vec<FileEntry>> {
 
     Ok(entries)
 }
+#[tauri::command]
+pub fn read_file_content(path: String) -> AppResult<String> {
+    let path = Path::new(&path);
+    if !path.exists() {
+        return Err(AppError::IoError(std::io::Error::new(
+            std::io::ErrorKind::NotFound,
+            "File not found",
+        )));
+    }
+
+    match fs::read_to_string(path) {
+        Ok(content) => Ok(content),
+        Err(e) => Err(AppError::IoError(e)),
+    }
+}

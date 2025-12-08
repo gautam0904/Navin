@@ -95,9 +95,10 @@ function FileItemActions({ isStaged, onActionClick, onDiscard, onOpenFile }: Fil
         onClick={onActionClick}
         className={`
           p-1.5 rounded-md transition-all opacity-0 group-hover:opacity-100
-          ${isStaged
-            ? 'hover:bg-[rgba(239,68,68,0.15)] text-[--color-error]'
-            : 'hover:bg-[rgba(16,185,129,0.15)] text-[--color-success]'
+          ${
+            isStaged
+              ? 'hover:bg-[rgba(239,68,68,0.15)] text-[--color-error]'
+              : 'hover:bg-[rgba(16,185,129,0.15)] text-[--color-success]'
           }
         `}
         title={isStaged ? 'Unstage file' : 'Stage file'}
