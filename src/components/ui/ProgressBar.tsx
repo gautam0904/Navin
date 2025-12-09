@@ -13,7 +13,6 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
 }) => {
   return (
     <div className="space-y-4">
-      {/* Header Row - Aligned with sections */}
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-linear-to-br from-primary to-primary-dark flex items-center justify-center shadow-sm shrink-0">

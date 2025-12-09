@@ -73,13 +73,12 @@ export function CommitTemplates({ onSelectTemplate }: CommitTemplatesProps) {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] text-[--color-text-tertiary] hover:text-[--color-text-secondary] transition-colors"
       >
-        <span>📋</span>
         <span>Templates</span>
         <ChevronDown className={`w-2.5 h-2.5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-1 p-2 bg-[--color-bg-primary] border border-[--git-panel-border] rounded-md shadow-lg z-10 max-h-64 overflow-y-auto">
+        <div className="absolute top-full left-0 mt-1 p-2 z-50 bg-[black] border border-[--git-panel-border] rounded-md shadow-lg max-h-64 overflow-y-auto min-w-max w-auto">
           <div className="space-y-1">
             {COMMIT_TEMPLATES.map((template) => (
               <button

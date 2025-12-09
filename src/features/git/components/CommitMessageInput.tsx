@@ -114,12 +114,19 @@ export function CommitMessage({ message, onMessageChange, onKeyDown }: CommitMes
       </div>
 
       {showExamples && (
-        <div className="pt-1 pb-0.5 space-y-0.5 border-t border-[--git-panel-border]">
-          {COMMIT_TYPES.slice(0, 4).map(({ type, description }) => (
-            <div key={type} className="text-[10px] text-[--color-text-secondary] font-mono">
-              <span className="text-[--color-primary]">{type}:</span> {description}
-            </div>
-          ))}
+        <div className="pt-1 border-t border-[--git-panel-border]">
+          <div className="flex flex-wrap gap-1.5">
+            {COMMIT_TYPES.map(({ type, description }) => (
+              <button
+                key={type}
+                onClick={() => onMessageChange(`${type}: `)}
+                className="px-2 py-0.5 text-[10px] rounded bg-[--color-bg-surface-2] text-[--color-text-secondary] hover:bg-[--color-bg-surface-3] hover:text-[--color-text-primary] transition-colors font-mono"
+                title={description}
+              >
+                {type}:
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>

@@ -5,7 +5,7 @@
   --git-status-modified: #dbab09;
   --git-status-deleted: #d73a49;
   --git-status-renamed: #6f42c1;
-  --git-status-untracked: #6a737d;
+  --git-status-untracked: #28a745;
   --git-status-conflicted: #cb2431;
 
   /* File Status Backgrounds (lighter variants) */
@@ -66,7 +66,7 @@
   --git-status-modified: #d29922;
   --git-status-deleted: #f85149;
   --git-status-renamed: #a371f7;
-  --git-status-untracked: #8b949e;
+  --git-status-untracked: #3fb950;
   --git-status-conflicted: #f85149;
 
   /* File Status Backgrounds */

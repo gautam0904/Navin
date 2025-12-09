@@ -1,7 +1,5 @@
-import React, { useRef } from 'react';
-import Editor, { OnMount } from '@monaco-editor/react';
-import type { editor } from 'monaco-editor';
-import { Loader2 } from 'lucide-react';
+import React from 'react';
+import { CodeEditor as CommonCodeEditor } from '@/components/ui/editor/CodeEditor';
 
 interface CodeEditorProps {
   value: string;
@@ -18,52 +16,15 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   height = '400px',
   readOnly = false,
 }) => {
-  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-
-  const handleEditorDidMount: OnMount = (editor) => {
-    editorRef.current = editor;
-
-    // Configure editor options
-    editor.updateOptions({
-      minimap: { enabled: false },
-      fontSize: 14,
-      lineNumbers: 'on',
-      roundedSelection: false,
-      scrollBeyondLastLine: false,
-      automaticLayout: true,
-      tabSize: 2,
-      wordWrap: 'on',
-    });
-  };
-
   return (
-    <div className="border border-gray-300 rounded-lg overflow-hidden">
-      <Editor
-        height={height}
-        defaultLanguage={language}
-        language={language}
-        value={value}
-        onChange={onChange}
-        onMount={handleEditorDidMount}
-        theme="vs-dark"
-        loading={
-          <div className="flex items-center justify-center h-full bg-gray-900">
-            <Loader2 className="w-6 h-6 text-white animate-spin" />
-          </div>
-        }
-        options={{
-          readOnly,
-          minimap: { enabled: false },
-          fontSize: 14,
-          lineNumbers: 'on',
-          roundedSelection: false,
-          scrollBeyondLastLine: false,
-          automaticLayout: true,
-          tabSize: 2,
-          wordWrap: 'on',
-          padding: { top: 10, bottom: 10 },
-        }}
-      />
-    </div>
+    <CommonCodeEditor
+      value={value}
+      onChange={onChange}
+      language={language}
+      height={height}
+      options={{
+        readOnly,
+      }}
+    />
   );
 };

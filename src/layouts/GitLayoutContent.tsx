@@ -1,14 +1,6 @@
 import { useState, useEffect } from 'react';
 import { DiffViewer } from '../features/git/components/DiffViewer';
-import {
-  ChangesPanel,
-  CommitHistory,
-  BranchPanel,
-  StashPanel,
-  RemotePanel,
-  CommitComposer,
-} from '../features/git';
-import { RecentCommits } from '../features/git/components/RecentCommits';
+import { CommitHistory, BranchPanel, StashPanel, RemotePanel } from '../features/git';
 import { GitService } from '../services/gitService';
 import { useGit } from '../contexts/GitContext';
 import type { FileDiff } from '../features/git/types/diff';
@@ -27,10 +19,13 @@ interface MainContentProps {
 export function MainContent({
   activeView,
   selectedFile,
-  onFileSelect,
-  onToast,
+  onFileSelect: _onFileSelect,
+  onToast: _onToast,
   isReviewMode = false,
 }: MainContentProps) {
+  // onFileSelect and onToast are reserved for future use
+  void _onFileSelect;
+  void _onToast;
   const [diff, setDiff] = useState<FileDiff | null>(null);
   const { status } = useGit();
 
@@ -98,17 +93,7 @@ export function MainContent({
         <div className="flex flex-1 min-h-0">
           <div
             className={`${isReviewMode ? 'w-[420px]' : 'w-80'} border-r border-[--git-panel-border] flex flex-col bg-[--git-panel-bg] transition-all`}
-          >
-            <div className="bg-[--git-panel-header] shrink-0">
-              <CommitComposer onToast={onToast} />
-            </div>
-            <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
-              <ChangesPanel selectedFile={selectedFile} onFileSelect={onFileSelect} />
-            </div>
-            <div className="shrink-0">
-              <RecentCommits />
-            </div>
-          </div>
+          ></div>
           <div className="flex-1 min-w-0 bg-[--git-panel-bg] relative">
             <DiffViewer diff={diff} />
           </div>

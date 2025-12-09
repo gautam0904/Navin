@@ -1,15 +1,10 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useGit } from '@/contexts/GitContext';
-import { ChangesPanel } from './ChangesPanel';
-import { CommitComposer } from './CommitComposer';
-import { RecentCommits } from './RecentCommits';
 import { MonacoDiffEditor } from './MonacoDiffEditor';
 import { RepositoryPicker } from './RepositoryPicker';
 import { GripVertical } from 'lucide-react';
-import type { Toast } from './Toast';
-
 interface GitWorkspaceProps {
-  onToast?: (toast: Toast) => void;
+  onToast?: (toast: unknown) => void;
 }
 
 // Custom hook to handle resizable panel logic
@@ -59,14 +54,16 @@ function useResizablePanel(
   return { width, isResizing, handleMouseDown };
 }
 
-export function GitWorkspace({ onToast }: GitWorkspaceProps) {
-  const { repository, status } = useGit();
-  const [selectedFile, setSelectedFile] = useState<string | null>(null);
-  const {
-    width: leftPanelWidth,
-    isResizing,
-    handleMouseDown,
-  } = useResizablePanel('git-workspace-left-width', 380, 280, 600);
+export function GitWorkspace({ onToast: _onToast }: GitWorkspaceProps) {
+  // onToast is reserved for future use
+  void _onToast;
+  const { repository, status, selectedFile } = useGit();
+  const { isResizing, handleMouseDown } = useResizablePanel(
+    'git-workspace-left-width',
+    380,
+    280,
+    600
+  );
 
   const selectedFileInfo = useMemo(() => {
     if (!selectedFile) return null;
@@ -88,27 +85,6 @@ export function GitWorkspace({ onToast }: GitWorkspaceProps) {
 
   return (
     <div className="flex h-full bg-[--git-panel-bg] overflow-hidden">
-      {/* Left Panel: Changes */}
-      <div
-        className="flex flex-col shrink-0 border-r border-[--git-panel-border] bg-[--git-panel-bg]"
-        style={{ width: leftPanelWidth }}
-      >
-        {/* Commit Composer */}
-        <div className="shrink-0 border-b border-[--git-panel-border]">
-          <CommitComposer onToast={onToast} />
-        </div>
-
-        {/* Changes Panel */}
-        <div className="flex-1 min-h-0 overflow-hidden">
-          <ChangesPanel selectedFile={selectedFile} onFileSelect={setSelectedFile} />
-        </div>
-
-        {/* Recent Commits */}
-        <div className="shrink-0">
-          <RecentCommits />
-        </div>
-      </div>
-
       {/* Resize Handle */}
       <div
         className={`

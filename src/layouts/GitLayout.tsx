@@ -1,75 +1,14 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { RepositoryPicker, GitWorkspace } from '../features/git';
 import { MainContent } from './GitLayoutContent';
 import { TopBar } from './GitLayoutTopBar';
 import { StatusBar } from './GitLayoutStatusBar';
 import { GitAppHeader } from './GitAppHeader';
 import { CommitDrawer } from '../features/git/components/CommitDrawer';
-import { RecentReposList } from '../features/git/components/RecentReposList';
 import { ReviewModeToggle } from '../features/git/components/ReviewModeToggle';
 import { useGit } from '../contexts/GitContext';
-import { History, Package, Globe, GitCommit, GitBranch, Maximize2, Minimize2 } from 'lucide-react';
+import { Maximize2, Minimize2 } from 'lucide-react';
 import { ToastContainer, type Toast } from '../features/git/components/Toast';
-
-type GitView = 'changes' | 'history' | 'branches' | 'stash' | 'remotes';
-
-// Left Navigation Component
-interface LeftNavProps {
-  activeView: GitView;
-  onViewChange: (view: GitView) => void;
-  changesCount: number;
-}
-
-function LeftNav({ activeView, onViewChange, changesCount }: LeftNavProps) {
-  const navItems: { id: GitView; icon: React.ReactNode; label: string; badge?: number }[] = [
-    {
-      id: 'changes',
-      icon: <GitCommit className="w-5 h-5" />,
-      label: 'Changes',
-      badge: changesCount,
-    },
-    { id: 'history', icon: <History className="w-5 h-5" />, label: 'History' },
-    { id: 'branches', icon: <GitBranch className="w-5 h-5" />, label: 'Branches' },
-    { id: 'stash', icon: <Package className="w-5 h-5" />, label: 'Stash' },
-    { id: 'remotes', icon: <Globe className="w-5 h-5" />, label: 'Remotes' },
-  ];
-
-  return (
-    <nav className="flex flex-col py-3 px-2 gap-1">
-      {navItems.map((item) => (
-        <button
-          key={item.id}
-          onClick={() => onViewChange(item.id)}
-          className={`
-            flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-left
-            ${
-              activeView === item.id
-                ? 'bg-[--git-panel-item-selected] text-[--color-primary] font-semibold'
-                : 'text-[--color-text-secondary] hover:bg-[--git-panel-item-hover] hover:text-[--color-text-primary]'
-            }
-          `}
-        >
-          <span className="shrink-0">{item.icon}</span>
-          <span className="font-medium flex-1">{item.label}</span>
-          {item.badge !== undefined && item.badge > 0 && (
-            <span
-              className={`
-              ml-auto px-2 py-0.5 text-xs font-bold rounded-full min-w-[20px] text-center
-              ${
-                activeView === item.id
-                  ? 'bg-[--color-primary] text-white'
-                  : 'bg-[--color-bg-surface-3] text-[--color-text-primary]'
-              }
-            `}
-            >
-              {item.badge}
-            </span>
-          )}
-        </button>
-      ))}
-    </nav>
-  );
-}
 
 // Main GitLayout Component
 const useGitActions = () => {
@@ -140,23 +79,12 @@ function DistractionFreeToolbar({
 }
 
 export function GitLayout() {
-  const { repository, status, isLoading } = useGit();
-  const [activeView, setActiveView] = useState<GitView>('changes');
-  const [selectedFile, setSelectedFile] = useState<string | null>(null);
+  const { repository, isLoading, activeView, selectedFile, setSelectedFile } = useGit();
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [isCommitDrawerOpen, setIsCommitDrawerOpen] = useState(false);
   const [isReviewMode, setIsReviewMode] = useState(false);
   const [isDistractionFree, setIsDistractionFree] = useState(false);
   const { handleFetch, handlePull, handlePush } = useGitActions();
-
-  const changesCount = useMemo(() => {
-    if (!status) return 0;
-    return (
-      (status.staged?.length || 0) +
-      (status.unstaged?.length || 0) +
-      (status.untracked?.length || 0)
-    );
-  }, [status]);
 
   const handleToast = useCallback((toast: Toast) => {
     setToasts((prev) => [...prev, toast]);
@@ -175,18 +103,6 @@ export function GitLayout() {
       <GitAppHeader currentFilePath={selectedFile} />
       <TopBar onPull={handlePull} onPush={handlePush} onFetch={handleFetch} isLoading={isLoading} />
       <div className="flex flex-1 min-h-0">
-        {!isDistractionFree && (
-          <div className="w-56 border-r border-[--git-panel-border] bg-[--color-bg-secondary] flex flex-col">
-            <LeftNav
-              activeView={activeView}
-              onViewChange={setActiveView}
-              changesCount={changesCount}
-            />
-            <div className="mt-auto">
-              <RecentReposList />
-            </div>
-          </div>
-        )}
         <div className="flex-1 flex flex-col min-w-0">
           <DistractionFreeToolbar
             isDistractionFree={isDistractionFree}
@@ -197,13 +113,21 @@ export function GitLayout() {
           {activeView === 'changes' ? (
             <GitWorkspace onToast={handleToast} />
           ) : (
-            <MainContent
-              activeView={activeView}
-              selectedFile={selectedFile}
-              onFileSelect={setSelectedFile}
-              onToast={handleToast}
-              isReviewMode={isReviewMode}
-            />
+            (() => {
+              const allowed = ['history', 'branches', 'stash', 'remotes'] as const;
+              const view = (allowed as readonly string[]).includes(activeView)
+                ? (activeView as 'history' | 'branches' | 'stash' | 'remotes')
+                : 'history';
+              return (
+                <MainContent
+                  activeView={view}
+                  selectedFile={selectedFile}
+                  onFileSelect={setSelectedFile}
+                  onToast={handleToast}
+                  isReviewMode={isReviewMode}
+                />
+              );
+            })()
           )}
         </div>
       </div>

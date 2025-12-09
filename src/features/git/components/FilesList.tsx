@@ -1,5 +1,3 @@
-import { useState } from 'react';
-import { ChevronDown, ChevronRight, Folder } from 'lucide-react';
 import { FileItem } from './FileItem';
 import type { FileStatus } from '@/types/git';
 
@@ -37,7 +35,6 @@ function groupFilesByFolder(files: FileStatus[]): FileGroup[] {
 }
 
 function FolderGroup({
-  folder,
   files,
   isStaged,
   selectedFile,
@@ -53,41 +50,21 @@ function FolderGroup({
   onUnstageFile?: (path: string) => void;
   onSelectFile?: (path: string) => void;
 }) {
-  const [isExpanded, setIsExpanded] = useState(true);
-  const displayFolder = folder === '/' ? 'Root' : folder;
-
   return (
-    <div className="mb-1">
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-[--color-bg-surface-2] transition-colors"
-      >
-        {isExpanded ? (
-          <ChevronDown className="w-3.5 h-3.5" />
-        ) : (
-          <ChevronRight className="w-3.5 h-3.5" />
-        )}
-        <Folder className="w-3.5 h-3.5" />
-        <span className="flex-1 text-left">{displayFolder}</span>
-        <span className="text-[10px] font-normal text-[--color-text-tertiary]">
-          {files.length} {files.length === 1 ? 'file' : 'files'}
-        </span>
-      </button>
-      {isExpanded && (
-        <div className="ml-4">
-          {files.map((file) => (
-            <FileItem
-              key={file.path}
-              file={file}
-              onStage={() => onStageFile?.(file.path)}
-              onUnstage={() => onUnstageFile?.(file.path)}
-              isStaged={isStaged}
-              onSelect={() => onSelectFile?.(file.path)}
-              isSelected={selectedFile === file.path}
-            />
-          ))}
-        </div>
-      )}
+    <div className="mb-0.5">
+      <div className="ml-2 border-l border-[--git-panel-border]">
+        {files.map((file) => (
+          <FileItem
+            key={file.path}
+            file={file}
+            onStage={() => onStageFile?.(file.path)}
+            onUnstage={() => onUnstageFile?.(file.path)}
+            isStaged={isStaged}
+            onSelect={() => onSelectFile?.(file.path)}
+            isSelected={selectedFile === file.path}
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -101,11 +78,15 @@ export function FilesList({
   onSelectFile,
   groupByFolder = true,
 }: FilesListProps) {
+  const handleSelect = (path: string) => {
+    onSelectFile?.(path);
+    window.dispatchEvent(new CustomEvent('view-changes', { detail: { path } }));
+  };
   if (groupByFolder && files.length > 3) {
     const groups = groupFilesByFolder(files);
 
     return (
-      <div>
+      <div className="py-1">
         {groups.map((group) => (
           <FolderGroup
             key={group.folder}
@@ -123,7 +104,7 @@ export function FilesList({
   }
 
   return (
-    <div>
+    <div className="py-1">
       {files.map((file) => (
         <FileItem
           key={file.path}
@@ -131,7 +112,7 @@ export function FilesList({
           onStage={() => onStageFile?.(file.path)}
           onUnstage={() => onUnstageFile?.(file.path)}
           isStaged={isStaged}
-          onSelect={() => onSelectFile?.(file.path)}
+          onSelect={() => handleSelect(file.path)}
           isSelected={selectedFile === file.path}
         />
       ))}

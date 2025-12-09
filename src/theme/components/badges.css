@@ -86,9 +86,9 @@
 }
 
 .status-badge-untracked {
-  background: linear-gradient(135deg, rgba(107, 114, 128, 0.25) 0%, rgba(107, 114, 128, 0.15) 100%);
-  color: #6b7280;
-  border: 1px solid rgba(107, 114, 128, 0.4);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(16, 185, 129, 0.15) 100%);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.4);
 }
 
 .status-badge-conflicted {

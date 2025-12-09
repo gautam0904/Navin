@@ -37,6 +37,8 @@ const FileTreeNode: React.FC<{ entry: FileEntry; depth: number }> = ({ entry, de
         setIsLoading(false);
       }
       setIsExpanded(!isExpanded);
+    } else {
+      window.dispatchEvent(new CustomEvent('open-file', { detail: { path: entry.path } }));
     }
   };
 

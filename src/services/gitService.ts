@@ -104,6 +104,13 @@ export class GitService {
   }
 
   /**
+   * Write content to a file
+   */
+  static async writeFileContent(path: string, content: string): Promise<void> {
+    return invoke('write_file_content', { path, content });
+  }
+
+  /**
    * Get current repository path
    */
   static async getCurrentRepository(): Promise<string | null> {

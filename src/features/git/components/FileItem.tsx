@@ -1,84 +1,23 @@
-import { Plus, Minus, FileCode, File, Shield, ExternalLink, X, FileText } from 'lucide-react';
+import { Plus, Minus, ExternalLink, Undo2 } from 'lucide-react';
 import { FileStatusBadge, parseFileStatus, type FileStatusType } from './FileStatusBadge';
 import type { FileStatus } from '@/types/git';
 import React from 'react';
+import { getIconPath } from '@/utils/iconResolver';
+import type { FileEntry } from '@/contexts/FileExplorerContext';
 
 function getFileStatusType(status: FileStatus['status']): FileStatusType {
   return parseFileStatus(status);
 }
 
-// Get file extension for icon coloring
 function getFileExtension(path: string): string {
   const parts = path.split('.');
   return parts.length > 1 ? parts[parts.length - 1].toLowerCase() : '';
-}
-
-// Get color and icon based on file type
-function getFileTypeInfo(ext: string): { color: string; icon: React.ReactNode } {
-  const baseClass = 'w-4 h-4';
-  const icons: Record<string, { color: string; icon: React.ReactNode }> = {
-    ts: { color: '#3178c6', icon: <FileCode className={baseClass} style={{ color: '#3178c6' }} /> },
-    tsx: {
-      color: '#3178c6',
-      icon: <FileCode className={baseClass} style={{ color: '#3178c6' }} />,
-    },
-    js: { color: '#f7df1e', icon: <FileCode className={baseClass} style={{ color: '#f7df1e' }} /> },
-    jsx: {
-      color: '#61dafb',
-      icon: <FileCode className={baseClass} style={{ color: '#61dafb' }} />,
-    },
-    css: {
-      color: '#264de4',
-      icon: <FileCode className={baseClass} style={{ color: '#264de4' }} />,
-    },
-    scss: {
-      color: '#cc6699',
-      icon: <FileCode className={baseClass} style={{ color: '#cc6699' }} />,
-    },
-    html: {
-      color: '#e34c26',
-      icon: <FileCode className={baseClass} style={{ color: '#e34c26' }} />,
-    },
-    json: {
-      color: '#cbcb41',
-      icon: <FileText className={baseClass} style={{ color: '#cbcb41' }} />,
-    },
-    md: { color: '#083fa1', icon: <FileText className={baseClass} style={{ color: '#083fa1' }} /> },
-    rs: { color: '#dea584', icon: <FileCode className={baseClass} style={{ color: '#dea584' }} /> },
-    py: { color: '#3776ab', icon: <FileCode className={baseClass} style={{ color: '#3776ab' }} /> },
-    go: { color: '#00add8', icon: <FileCode className={baseClass} style={{ color: '#00add8' }} /> },
-  };
-  return (
-    icons[ext] || { color: 'var(--color-text-tertiary)', icon: <File className={baseClass} /> }
-  );
 }
 
 // Quality score display for file items
 interface FileQualityScore {
   score: number;
   issueCount: number;
-}
-
-function getQualityLevel(score: number): { color: string; bgColor: string } {
-  if (score >= 90) return { color: '#10b981', bgColor: 'rgba(16,185,129,0.15)' };
-  if (score >= 75) return { color: '#3b82f6', bgColor: 'rgba(59,130,246,0.15)' };
-  if (score >= 60) return { color: '#f59e0b', bgColor: 'rgba(245,158,11,0.15)' };
-  return { color: '#ef4444', bgColor: 'rgba(239,68,68,0.15)' };
-}
-
-function FileQualityBadge({ quality }: { quality: FileQualityScore }) {
-  const { color, bgColor } = getQualityLevel(quality.score);
-
-  return (
-    <div
-      className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold shrink-0"
-      style={{ backgroundColor: bgColor, color }}
-      title={`Quality: ${quality.score}% • ${quality.issueCount} issue${quality.issueCount !== 1 ? 's' : ''}`}
-    >
-      <Shield className="w-3 h-3" />
-      {quality.score}
-    </div>
-  );
 }
 
 interface FileItemActionsProps {
@@ -90,15 +29,15 @@ interface FileItemActionsProps {
 
 function FileItemActions({ isStaged, onActionClick, onDiscard, onOpenFile }: FileItemActionsProps) {
   return (
-    <div className="list-item-actions flex items-center gap-1">
+    <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
       <button
         onClick={onActionClick}
         className={`
-          p-1.5 rounded-md transition-all opacity-0 group-hover:opacity-100
+          p-1.5 rounded-md transition-all
           ${
             isStaged
-              ? 'hover:bg-[rgba(239,68,68,0.15)] text-[--color-error]'
-              : 'hover:bg-[rgba(16,185,129,0.15)] text-[--color-success]'
+              ? 'hover:bg-[rgba(239,68,68,0.15)] text-[--color-error] hover:text-[--color-error]'
+              : 'hover:bg-[rgba(16,185,129,0.15)] text-[--color-success] hover:text-[--color-success]'
           }
         `}
         title={isStaged ? 'Unstage file' : 'Stage file'}
@@ -108,15 +47,15 @@ function FileItemActions({ isStaged, onActionClick, onDiscard, onOpenFile }: Fil
       {!isStaged && onDiscard && (
         <button
           onClick={onDiscard}
-          className="p-1.5 rounded-md transition-all opacity-0 group-hover:opacity-100 hover:bg-[rgba(239,68,68,0.15)] text-[--color-error]"
+          className="p-1.5 rounded-md transition-all hover:bg-[rgba(239,68,68,0.15)] text-[--color-text-tertiary] hover:text-[--color-error]"
           title="Discard changes"
         >
-          <X className="w-4 h-4" />
+          <Undo2 className="w-4 h-4" />
         </button>
       )}
       <button
         onClick={onOpenFile}
-        className="p-1.5 rounded-md transition-all opacity-0 group-hover:opacity-100 hover:bg-[--color-bg-surface-2] text-[--color-text-secondary]"
+        className="p-1.5 rounded-md transition-all hover:bg-[--color-bg-surface-2] text-[--color-text-tertiary] hover:text-[--color-text-primary]"
         title="Open file"
       >
         <ExternalLink className="w-4 h-4" />
@@ -140,10 +79,9 @@ function useFileInfo(file: FileStatus) {
   const fileName = file.path.split('/').pop() || file.path;
   const filePath = file.path.substring(0, file.path.lastIndexOf('/'));
   const fileExt = getFileExtension(fileName);
-  const fileTypeInfo = getFileTypeInfo(fileExt);
-  const additions = file.additions ?? 0;
-  const deletions = file.deletions ?? 0;
-  return { statusType, fileName, filePath, fileTypeInfo, additions, deletions };
+  const entry: FileEntry = { name: fileName, path: file.path, is_dir: false, extension: fileExt };
+  const iconPath = getIconPath(entry, false);
+  return { statusType, fileName, filePath, iconPath };
 }
 
 function useFileHandlers(
@@ -164,7 +102,7 @@ function useFileHandlers(
 
   const handleOpenFile = (e: React.MouseEvent) => {
     e.stopPropagation();
-    window.dispatchEvent(new CustomEvent('open-file', { detail: { path: file.path } }));
+    window.dispatchEvent(new CustomEvent('view-changes', { detail: { path: file.path } }));
   };
 
   const handleDiscard = (e: React.MouseEvent) => {
@@ -184,9 +122,9 @@ export function FileItem({
   isStaged = false,
   onSelect,
   isSelected,
-  qualityScore,
 }: FileItemProps) {
-  const { statusType, fileName, filePath, fileTypeInfo, additions, deletions } = useFileInfo(file);
+  const [isHovered, setIsHovered] = React.useState(false);
+  const { statusType, fileName, filePath, iconPath } = useFileInfo(file);
   const { handleActionClick, handleOpenFile, handleDiscard } = useFileHandlers(
     file,
     fileName,
@@ -197,38 +135,81 @@ export function FileItem({
 
   return (
     <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       onClick={onSelect}
-      className={`list-item group ${isSelected ? 'list-item-active' : ''} min-h-[40px]`}
+      className={`
+        group relative flex items-center px-3
+        transition-all duration-150 cursor-pointer
+        ${
+          isSelected
+            ? 'bg-[--color-bg-surface-2] border-l-2 border-l-[--color-primary]'
+            : 'hover:bg-[--color-bg-surface-1] border-l-2 border-l-transparent'
+        }
+      `}
     >
-      <div className="shrink-0 w-4 h-4 flex items-center justify-center">{fileTypeInfo.icon}</div>
+      <div className="shrink-0 flex items-center justify-center w-5 h-5">
+        <img
+          src={iconPath}
+          alt={fileName}
+          className="w-4 h-4"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.src = '/icons/file.svg';
+          }}
+        />
+      </div>
 
-      <div className="list-item-content flex-1 min-w-0">
+      <div className="flex-1 min-w-0 overflow-hidden">
         <div className="flex items-center gap-2">
-          <span className="list-item-title font-semibold text-white text-[13px] leading-tight">
+          <span
+            className="font-medium text-sm truncate"
+            style={{ color: getStatusColor(statusType) }}
+            title={file.path}
+          >
             {fileName}
           </span>
-          <FileStatusBadge status={statusType} />
-          <span className="flex items-center gap-1 text-xs font-medium text-[--color-text-secondary]">
-            <span className="text-[--git-status-added]">+{additions}</span>
-            <span className="text-[--git-status-deleted]">-{deletions}</span>
-          </span>
-          {qualityScore && <FileQualityBadge quality={qualityScore} />}
+
+          <div className="ml-auto opacity-100 group-hover:opacity-0 transition-opacity">
+            <FileStatusBadge status={statusType} />
+          </div>
         </div>
+
+        {/* LINE 2 (file path) - hide on hover */}
         {filePath && (
-          <span className="list-item-subtitle text-[--color-text-secondary] text-[11px] opacity-70 leading-tight mt-0.5 block truncate">
+          <span className="text-[11px] text-[--color-text-tertiary] truncate group-hover:opacity-0 transition-opacity">
             {filePath}
           </span>
         )}
       </div>
 
-      <FileItemActions
-        isStaged={isStaged}
-        onActionClick={handleActionClick}
-        onDiscard={!isStaged ? handleDiscard : undefined}
-        onOpenFile={handleOpenFile}
-      />
+      {isHovered && (
+        <FileItemActions
+          isStaged={isStaged}
+          onActionClick={handleActionClick}
+          onDiscard={!isStaged ? handleDiscard : undefined}
+          onOpenFile={handleOpenFile}
+        />
+      )}
     </div>
   );
+}
+
+function getStatusColor(status: FileStatusType): string {
+  switch (status) {
+    case 'modified':
+      return 'var(--git-status-modified)';
+    case 'added':
+      return 'var(--git-status-added)';
+    case 'deleted':
+      return 'var(--git-status-deleted)';
+    case 'renamed':
+      return 'var(--git-status-renamed)';
+    case 'untracked':
+      return 'var(--git-status-untracked)';
+    default:
+      return 'var(--color-text-primary)';
+  }
 }
 
 // Export types for use in other components

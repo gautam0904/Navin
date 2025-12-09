@@ -1,31 +1,29 @@
 import { useState, useEffect } from 'react';
-import { DiffEditor, loader } from '@monaco-editor/react';
+// import { loader } from '@monaco-editor/react'; // Removed loader config
 
-import { GitService } from '@/services/gitService';
 import { useGit } from '@/contexts/GitContext';
 import { EditorToolbar } from './EditorToolbar';
 import { FileCode, Loader2 } from 'lucide-react';
 import { KeyboardShortcuts } from './KeyboardShortcuts';
 import type { FileStatusType } from '@/types/git';
 
-// Configure Monaco loader
+// Configure Monaco loader - Removed to fix loading issue (use default local)
+/*
 loader.config({
   paths: {
     vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs',
   },
 });
+*/
 
 interface MonacoDiffEditorProps {
   filePath: string | null;
   fileStatus?: FileStatusType;
   isStaged?: boolean;
 }
-import {
-  getStatusString,
-  getLanguageFromPath,
-  processHunks,
-  readFallbackContent,
-} from '../utils/diffEditorUtils';
+import { getStatusString, getLanguageFromPath } from '../utils/diffEditorUtils';
+import { loadFileDiff } from './MonacoDiffEditorHelpers';
+import { DiffEditor } from '@monaco-editor/react';
 
 function EmptyState() {
   return (
@@ -73,88 +71,38 @@ export function MonacoDiffEditor({
   const [deletions, setDeletions] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
+  // Reset state when filePath becomes null - using cleanup pattern
   useEffect(() => {
     if (!filePath) {
-      setOriginalContent('');
-      setModifiedContent('');
-      setAdditions(0);
-      setDeletions(0);
+      const timeoutId = setTimeout(() => {
+        setOriginalContent('');
+        setModifiedContent('');
+        setAdditions(0);
+        setDeletions(0);
+        setError(null);
+        setIsLoading(false);
+      }, 0);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [filePath]);
+
+  useEffect(() => {
+    if (!filePath) {
       return;
     }
 
-    // eslint-disable-next-line complexity
-    const loadDiff = async () => {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        // Check if file is untracked (new file)
-        const statusStr = getStatusString(fileStatus);
-        const isUntracked = statusStr === 'untracked' || statusStr === 'added';
-
-        console.log(
-          '[MonacoDiffEditor] Loading diff for:',
-          filePath,
-          'isStaged:',
-          isStaged,
-          'status:',
-          statusStr
-        );
-
-        // For untracked files, we can't get a diff since there's no previous version
-        if (isUntracked && !isStaged) {
-          console.log('[MonacoDiffEditor] Untracked file - cannot show diff');
-          setOriginalContent('');
-          setModifiedContent('(New file - no previous version to compare)');
-          setAdditions(0);
-          setDeletions(0);
-          setIsLoading(false);
-          return;
-        }
-
-        // Get diff from git service
-        const diff = isStaged
-          ? await GitService.getFileDiffStaged(filePath)
-          : await GitService.getFileDiffUnstaged(filePath);
-
-        console.log('[MonacoDiffEditor] Received diff:', diff);
-
-        // Extract original and modified content from hunks
-        let adds = 0;
-        let dels = 0;
-
-        if (diff && diff.hunks && diff.hunks.length > 0) {
-          const result = processHunks(diff.hunks);
-          setOriginalContent(result.original.trimEnd());
-          setModifiedContent(result.modified.trimEnd());
-          adds = result.additions;
-          dels = result.deletions;
-        } else {
-          const content = await readFallbackContent(repository?.path, filePath);
-          setOriginalContent('');
-          setModifiedContent(content);
-        }
-
-        setAdditions(diff?.additions || adds);
-        setDeletions(diff?.deletions || dels);
-      } catch (err: unknown) {
-        const errMsg = err instanceof Error ? err.message : String(err);
-        // Handle specific error cases - show new file message or error
-        if (errMsg.includes('not found') || errMsg.includes('Untracked')) {
-          setOriginalContent('');
-          setModifiedContent('(New file - no previous version to compare)');
-          setError(null);
-        } else {
-          setError(`Failed to load diff`);
-          setOriginalContent('');
-          setModifiedContent('');
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadDiff();
+    loadFileDiff(
+      filePath,
+      fileStatus,
+      isStaged,
+      repository?.path,
+      setOriginalContent,
+      setModifiedContent,
+      setAdditions,
+      setDeletions,
+      setError,
+      setIsLoading
+    );
   }, [filePath, isStaged, fileStatus, repository?.path]);
 
   if (!filePath) {
@@ -198,7 +146,7 @@ export function MonacoDiffEditor({
           theme="vs-dark"
           options={{
             readOnly: true,
-            renderSideBySide: viewMode === 'split',
+            // enderSideBySide: viewMode === 'split',
             enableSplitViewResizing: true,
             renderIndicators: true,
             originalEditable: false,

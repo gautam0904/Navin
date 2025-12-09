@@ -18,18 +18,18 @@ function CommitButton({ stagedCount, canCommit, isLoading, onClick }: CommitButt
       onClick={onClick}
       disabled={!canCommit || isLoading}
       className={`
-        w-full py-2 px-3 rounded-md font-semibold text-xs
+        w-full py-2.5 px-3 rounded-md font-semibold text-sm
         flex items-center justify-center gap-2
         transition-all duration-200
         ${
           canCommit
-            ? 'bg-[--color-primary] hover:bg-[--color-primary-dark] text-white shadow-sm hover:shadow'
-            : 'bg-[--color-bg-surface-3] text-[--color-text-tertiary] cursor-not-allowed'
+            ? 'bg-[--color-primary] hover:bg-[--color-primary-dark] text-white shadow-md hover:shadow-lg active:scale-[0.98]'
+            : 'bg-[--color-bg-surface-2] text-[--color-text-tertiary] cursor-not-allowed border border-[--git-panel-border]'
         }
         disabled:opacity-50 disabled:cursor-not-allowed
       `}
     >
-      <Send className="w-3.5 h-3.5" />
+      <Send className={`w-4 h-4 ${isLoading ? 'animate-pulse' : ''}`} />
       <span>
         {stagedCount === 0
           ? 'No files staged'
@@ -191,25 +191,22 @@ export function CommitComposer({ onToast }: CommitComposerProps = {}) {
   );
 
   return (
-    <div className="commit-composer p-2 border-b border-[--git-panel-border] bg-[--git-panel-header]">
-      <div className="space-y-1.5">
+    <div className="commit-composer p-3 border-b border-[--git-panel-border] bg-[--git-panel-header]">
+      <div className="space-y-2">
         <CommitMessage
           message={commitHandler.message}
           onMessageChange={commitHandler.setMessage}
           onKeyDown={commitHandler.handleKeyDown}
         />
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <CommitTemplates onSelectTemplate={commitHandler.handleTemplateSelect} />
           <div className="flex items-center gap-1.5 text-[10px]">
             <button
               onClick={() => {}}
-              className="flex items-center gap-1 px-1.5 py-0.5 text-[--color-text-tertiary] hover:text-[--color-text-secondary] transition-colors"
+              className="flex items-center gap-1 px-1.5 py-0.5 text-[--color-text-tertiary] hover:text-[--color-text-secondary] transition-colors rounded"
               title="Conventional commit format"
-            >
-              <span>🔒</span>
-              <span>Conventional</span>
-            </button>
+            ></button>
           </div>
         </div>
 
@@ -235,24 +232,12 @@ export function CommitComposer({ onToast }: CommitComposerProps = {}) {
           </div>
         )}
 
-        <div className="flex items-center gap-2">
-          <CommitButton
-            stagedCount={stagedCount}
-            canCommit={canCommit}
-            isLoading={isLoading}
-            onClick={commitHandler.handleCommit}
-          />
-          <button
-            onClick={() => {
-              // Open commit drawer - this will be handled by parent
-              window.dispatchEvent(new CustomEvent('open-commit-drawer'));
-            }}
-            className="px-3 py-1.5 text-xs font-medium rounded-md border border-[--git-panel-border] hover:bg-[--color-bg-surface-2] transition-colors text-[--color-text-secondary] hover:text-[--color-text-primary]"
-            title="Open commit drawer"
-          >
-            Open Drawer
-          </button>
-        </div>
+        <CommitButton
+          stagedCount={stagedCount}
+          canCommit={canCommit}
+          isLoading={isLoading}
+          onClick={commitHandler.handleCommit}
+        />
       </div>
     </div>
   );

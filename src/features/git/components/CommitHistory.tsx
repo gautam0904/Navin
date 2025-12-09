@@ -61,10 +61,10 @@ function CommitItem({ commit, isSelected, index, totalInGroup, onSelect }: Commi
     >
       {/* Timeline connector */}
       {!isFirst && (
-        <div className="absolute left-[19px] top-0 h-1/2 w-0.5 bg-[(--color-border-light)]" />
+        <div className="absolute left-[19px] top-0 h-1/2 w-0.5 bg-[--git-panel-border]" />
       )}
       {!isLast && (
-        <div className="absolute left-[19px] bottom-0 h-1/2 w-0.5 bg-[(--color-border-light)]" />
+        <div className="absolute left-[19px] bottom-0 h-1/2 w-0.5 bg-[--git-panel-border]" />
       )}
 
       {/* Timeline node */}
@@ -90,7 +90,7 @@ function CommitItem({ commit, isSelected, index, totalInGroup, onSelect }: Commi
                 </span>
               )}
               <p
-                className={`text-sm font-medium leading-tight ${isSelected ? 'text-[(--color-primary)]' : 'text-[(--color-text-primary)]'} line-clamp-2`}
+                className={`text-sm font-medium leading-tight ${isSelected ? 'text-[--color-primary]' : 'text-[--color-text-primary]'} line-clamp-2`}
               >
                 {commitType
                   ? firstLine.replace(
@@ -98,18 +98,18 @@ function CommitItem({ commit, isSelected, index, totalInGroup, onSelect }: Commi
                       ''
                     )
                   : firstLine}
-                {hasMoreLines && <span className="text-[(--color-text-tertiary)]"> ...</span>}
+                {hasMoreLines && <span className="text-[--color-text-tertiary]"> ...</span>}
               </p>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <span className="flex items-center gap-1 text-[10px] font-mono text-[(--color-text-tertiary)] bg-[(--color-bg-surface-2)] px-2 py-1 rounded-md border border-[(--color-border-light)]">
+              <span className="flex items-center gap-1 text-[10px] font-mono text-[--color-text-tertiary] bg-[--color-bg-surface-2] px-2 py-1 rounded-md border border-[--git-panel-border]">
                 <Hash className="w-3 h-3" />
                 {commit.sha.substring(0, 7)}
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 text-xs text-[(--color-text-tertiary)]">
+          <div className="flex items-center gap-4 text-xs text-[--color-text-tertiary]">
             <span className="flex items-center gap-1.5 truncate">
               <User className="w-3 h-3" />
               <span className="truncate max-w-[120px]">{commit.author_name}</span>
@@ -121,7 +121,7 @@ function CommitItem({ commit, isSelected, index, totalInGroup, onSelect }: Commi
           </div>
         </div>
 
-        <ChevronRight className="w-4 h-4 text-[(--color-text-tertiary)] opacity-0 group-hover:opacity-100 transition-opacity self-center shrink-0" />
+        <ChevronRight className="w-4 h-4 text-[--color-text-tertiary] opacity-0 group-hover:opacity-100 transition-opacity self-center shrink-0" />
       </div>
     </div>
   );
@@ -137,7 +137,7 @@ interface DateGroupProps {
 function DateGroup({ label, commits, selectedSha, onSelectCommit }: DateGroupProps) {
   return (
     <div className="mb-4">
-      <h3 className="text-xs font-semibold text-[(--color-text-secondary)] uppercase tracking-wider px-4 py-2 sticky top-0 bg-[(--git-panel-bg)] z-10 border-b border-[(--color-border-light)]">
+      <h3 className="text-xs font-semibold text-[--color-text-secondary] uppercase tracking-wider px-4 py-2 sticky top-0 bg-[--git-panel-bg] z-10 border-b border-[--git-panel-border] backdrop-blur-sm">
         {label}
       </h3>
       {commits.map((commit, idx) => (
@@ -190,8 +190,8 @@ export function CommitHistory({ onSelectCommit, selectedSha }: CommitHistoryProp
     return (
       <div className="flex items-center justify-center h-full">
         <div className="flex flex-col items-center gap-2">
-          <GitCommit className="w-6 h-6 text-[(--color-primary)] animate-pulse" />
-          <span className="text-xs text-[(--color-text-tertiary)]">Loading commits...</span>
+          <GitCommit className="w-6 h-6 text-[--color-primary] animate-pulse" />
+          <span className="text-xs text-[--color-text-tertiary]">Loading commits...</span>
         </div>
       </div>
     );
@@ -202,28 +202,30 @@ export function CommitHistory({ onSelectCommit, selectedSha }: CommitHistoryProp
   }
 
   return (
-    <div className="flex flex-col h-full bg-[(--git-panel-bg)]">
+    <div className="flex flex-col h-full bg-[--git-panel-bg]">
       {/* Commit list */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-[--color-bg-surface-3] scrollbar-track-transparent">
         {filteredCommits && filteredCommits.length > 0 ? (
-          groupedCommits.map((group) => (
-            <DateGroup
-              key={group.label}
-              label={group.label}
-              commits={group.commits}
-              selectedSha={selectedSha}
-              onSelectCommit={onSelectCommit}
-            />
-          ))
+          <div className="py-2">
+            {groupedCommits.map((group) => (
+              <DateGroup
+                key={group.label}
+                label={group.label}
+                commits={group.commits}
+                selectedSha={selectedSha}
+                onSelectCommit={onSelectCommit}
+              />
+            ))}
+          </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-            <Filter className="w-8 h-8 text-[(--color-text-tertiary)] mb-3 opacity-50" />
-            <p className="text-sm text-[(--color-text-secondary)]">
+            <Filter className="w-8 h-8 text-[--color-text-tertiary] mb-3 opacity-50" />
+            <p className="text-sm text-[--color-text-secondary]">
               No commits match the {qualityFilter} quality filter
             </p>
             <button
               onClick={() => setQualityFilter('all')}
-              className="mt-3 text-xs text-[(--color-primary)] hover:underline"
+              className="mt-3 text-xs text-[--color-primary] hover:underline"
             >
               Show all commits
             </button>

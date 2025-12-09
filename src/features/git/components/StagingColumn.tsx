@@ -18,6 +18,7 @@ interface StagingColumnProps {
   isLoading?: boolean;
   isClean?: boolean;
   hasOtherSectionFiles?: boolean;
+  showFilter?: boolean;
 }
 
 export function StagingColumn({
@@ -33,6 +34,7 @@ export function StagingColumn({
   isLoading = false,
   isClean = false,
   hasOtherSectionFiles = false,
+  showFilter = true,
 }: StagingColumnProps) {
   const [filteredFiles, setFilteredFiles] = useState<FileStatus[]>(files);
   const hasFiles = files.length > 0;
@@ -53,9 +55,13 @@ export function StagingColumn({
         onUnstageAll={onUnstageAll}
       />
 
-      {hasFiles && <FileSearchFilter files={files} onFilterChange={setFilteredFiles} />}
+      {hasFiles && showFilter && (
+        <div className="px-3 py-2 border-b border-[--git-panel-border] bg-[--git-panel-header]">
+          <FileSearchFilter files={files} onFilterChange={setFilteredFiles} />
+        </div>
+      )}
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-[--color-bg-surface-3] scrollbar-track-transparent">
         {hasFiles ? (
           <FilesList
             files={filteredFiles}

@@ -6,8 +6,6 @@
 @import './features/git/styles/git-theme.css';
 @import 'tailwindcss';
 
-/* index.css - ensure Tailwind base/utilities are included elsewhere already */
-
 /* small visual handle when hovering the separator */
 [data-theme='dark'] .hover\:bg-border-light:hover {
   background-color: rgba(255, 255, 255, 0.06);

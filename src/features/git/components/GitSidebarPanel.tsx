@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
-import {
-  GitBranch,
-  GitCommit,
-  FolderGit2,
-  History,
-  Package,
-  ArrowUpCircle,
-  ArrowDownCircle,
-  RefreshCw,
-  Shield,
-} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { GitBranch, GitCommit, FolderGit2, History, Package, Shield } from 'lucide-react';
 import { ChangesPanel } from './ChangesPanel';
 import { BranchPanel } from './BranchPanel';
 import { CommitHistory } from './CommitHistory';
@@ -66,69 +57,6 @@ function TabButton({ tab, activeTab, icon, label, badge, highlight, onClick }: T
         <span className="absolute top-1 right-1 w-2 h-2 bg-[--color-primary] rounded-full animate-pulse" />
       )}
     </button>
-  );
-}
-
-const BranchSyncInfo: React.FC<{ ahead: number; behind: number }> = ({ ahead, behind }) => {
-  if (ahead === 0 && behind === 0) return null;
-
-  return (
-    <div className="flex items-center gap-3 mt-1 text-xs">
-      {ahead > 0 && (
-        <span className="git-sync-badge git-sync-badge--ahead flex items-center gap-1">
-          <ArrowUpCircle className="w-3 h-3" />
-          {ahead} ahead
-        </span>
-      )}
-      {behind > 0 && (
-        <span className="git-sync-badge git-sync-badge--behind flex items-center gap-1">
-          <ArrowDownCircle className="w-3 h-3" />
-          {behind} behind
-        </span>
-      )}
-    </div>
-  );
-};
-
-function RepositoryHeader() {
-  const { repository, branches, refreshStatus, isLoading } = useGit();
-
-  if (!repository) return null;
-
-  const currentBranch = branches?.find((b) => b.is_head);
-  const ahead = currentBranch?.ahead || 0;
-  const behind = currentBranch?.behind || 0;
-
-  return (
-    <div className="px-3 py-2 border-b border-[--git-panel-border] bg-[--git-panel-header]">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 min-w-0">
-          <FolderGit2 className="w-4 h-4 text-[--color-primary] shrink-0" />
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold text-[--color-text-primary] truncate">
-                {repository.name}
-              </span>
-              {currentBranch && (
-                <span className="flex items-center gap-1 text-xs font-medium text-[--git-branch-current] bg-[--git-panel-item-selected] px-2 py-0.5 rounded-full">
-                  <GitBranch className="w-3 h-3" />
-                  {currentBranch.name}
-                </span>
-              )}
-            </div>
-            <BranchSyncInfo ahead={ahead} behind={behind} />
-          </div>
-        </div>
-        <button
-          onClick={() => refreshStatus()}
-          disabled={isLoading}
-          className={`btn-premium btn-premium-ghost btn-premium-icon ${isLoading ? 'animate-spin' : ''}`}
-          title="Refresh"
-        >
-          <RefreshCw className="w-4 h-4" />
-        </button>
-      </div>
-    </div>
   );
 }
 
@@ -202,7 +130,8 @@ const TabContent: React.FC<{ activeTab: GitTab; onSelectCommit: (sha: string) =>
 
 export function GitSidebarPanel() {
   const [activeTab, setActiveTab] = useState<GitTab>('changes');
-  const { status, repository } = useGit();
+  const { status, repository, setActiveView } = useGit();
+  const navigate = useNavigate();
 
   const changesCount = status
     ? (status.staged?.length || 0) +
@@ -230,9 +159,16 @@ export function GitSidebarPanel() {
 
   return (
     <div className="flex flex-col h-full bg-[--git-panel-bg]">
-      <RepositoryHeader />
-      <TabNavigation activeTab={activeTab} changesCount={changesCount} onTabChange={setActiveTab} />
-      <div className="flex-1 overflow-hidden">
+      <TabNavigation
+        activeTab={activeTab}
+        changesCount={changesCount}
+        onTabChange={(tab) => {
+          setActiveTab(tab);
+          setActiveView(tab);
+          navigate('/git');
+        }}
+      />
+      <div className="flex-1 overflow-hidden min-h-0">
         <TabContent activeTab={activeTab} onSelectCommit={handleSelectCommit} />
       </div>
     </div>
