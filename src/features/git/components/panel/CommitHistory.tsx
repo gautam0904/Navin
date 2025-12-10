@@ -8,7 +8,7 @@ import {
   stringToColor,
   parseCommitType,
   groupCommitsByDate,
-} from './CommitHistoryHelpers';
+} from '../CommitHistoryHelpers';
 
 interface CommitHistoryProps {
   onSelectCommit: (sha: string) => void;

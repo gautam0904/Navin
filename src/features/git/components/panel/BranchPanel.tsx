@@ -11,9 +11,9 @@ import {
   ArrowDownCircle,
 } from 'lucide-react';
 import { useGit } from '@/contexts/GitContext';
-import { CreateBranchForm } from './CreateBranchForm';
-import { DeleteConfirm } from './DeleteConfirmDialog';
-import { BranchItem } from './BranchPanelHelpers';
+import { CreateBranchForm } from '../CreateBranchForm';
+import { DeleteConfirm } from '../DeleteConfirmDialog';
+import { BranchItem } from '../BranchPanelHelpers';
 
 interface Branch {
   name: string;

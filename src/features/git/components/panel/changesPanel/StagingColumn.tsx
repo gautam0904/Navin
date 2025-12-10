@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { StagingHeader } from './StagingHeader';
-import { FilesList } from './FilesList';
-import { EmptyState } from './EmptyState';
-import { FileSearchFilter } from './FileSearchFilter';
+import { StagingHeader } from '../../StagingHeader';
+import { FilesList } from '../../FilesList';
+import { EmptyState } from '../../EmptyState';
+import { FileSearchFilter } from '../../FileSearchFilter';
 import type { FileStatus } from '@/types/git';
 
 interface StagingColumnProps {

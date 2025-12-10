@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { useGit } from '@/contexts/GitContext';
 import { RecentCommits } from './RecentCommits';
-import { GitFilterModal } from './GitFilterModal';
+import { GitFilterModal } from '../../GitFilterModal';
 import {
   EmptyState,
   ConflictedFilesBanner,
@@ -36,7 +36,7 @@ export function ChangesPanel({
     externalSelectedFile,
     externalOnFileSelect
   );
-  const filterBtnRef = useRef<HTMLButtonElement | null>(null);
+  const filterBtnRef = useRef<HTMLButtonElement>(null);
   const {
     gQuery,
     gType,
@@ -45,7 +45,11 @@ export function ChangesPanel({
     handleFilterClick,
     handleFilterApply,
     handleFilterClose,
-  } = useFilterHandlers(globalQuery, globalFilterType, filterBtnRef);
+  } = useFilterHandlers(
+    globalQuery,
+    globalFilterType,
+    filterBtnRef as React.RefObject<HTMLButtonElement>
+  );
 
   const { unstagedFiles, stagedFiles } = useFilteredFiles(status, gQuery, gType);
   const conflictedFiles = status?.conflicted || [];
@@ -71,7 +75,7 @@ export function ChangesPanel({
         gQuery={gQuery}
         gType={gType}
         onFilterClick={handleFilterClick}
-        filterBtnRef={filterBtnRef}
+        filterBtnRef={filterBtnRef as React.RefObject<HTMLButtonElement>}
       />
       {hasStaged && <CommitSection />}
       <StagingColumns

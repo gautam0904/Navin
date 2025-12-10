@@ -1,6 +1,6 @@
 import { GitBranch, ChevronDown } from 'lucide-react';
 import { useGit } from '@/contexts/GitContext';
-import { BranchPanel } from './BranchPanel';
+import { BranchPanel } from './panel/BranchPanel';
 
 export function LeftPanel() {
   const { repository } = useGit();

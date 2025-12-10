@@ -1,4 +1,4 @@
-import { CommitHistory } from './CommitHistory';
+import { CommitHistory } from './panel/CommitHistory';
 import { GitCommit } from 'lucide-react';
 
 export function RightPanel() {

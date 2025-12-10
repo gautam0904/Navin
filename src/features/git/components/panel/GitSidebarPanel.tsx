@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GitBranch, GitCommit, FolderGit2, History, Package, Shield } from 'lucide-react';
-import { ChangesPanel } from './ChangesPanel';
+import { ChangesPanel } from './changesPanel/ChangesPanel';
 import { BranchPanel } from './BranchPanel';
 import { CommitHistory } from './CommitHistory';
 import { StashPanel } from './StashPanel';

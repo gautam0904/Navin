@@ -1,6 +1,6 @@
 import React from 'react';
 import { File, AlertTriangle, Filter as FilterIcon } from 'lucide-react';
-import { CommitComposer } from './CommitComposer';
+import { CommitComposer } from '../../CommitComposer';
 import { StagingColumn } from './StagingColumn';
 import type { FileStatus } from '@/types/git';
 
